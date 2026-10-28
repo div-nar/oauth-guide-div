@@ -28,17 +28,25 @@ export function AccessModal({
   const [existing, setExisting] = useState(initial.existing);
   const ref = useRef<HTMLDialogElement>(null);
 
+  // Only explicit user actions (Escape, backdrop, close button) call onClose. The
+  // dialog's own "close" event also fires when React unmounts it (twice in dev),
+  // which must not count as the user dismissing it.
   useEffect(() => {
     const d = ref.current;
-    d?.showModal();
-    return () => d?.close();
+    if (d && !d.open) d.showModal();
+    return () => {
+      if (d?.open) d.close();
+    };
   }, []);
 
   return (
     <dialog
       ref={ref}
       className="modal"
-      onClose={onClose}
+      onCancel={(e) => {
+        e.preventDefault();
+        onClose();
+      }}
       onClick={(e) => {
         if (e.target === ref.current) onClose();
       }}

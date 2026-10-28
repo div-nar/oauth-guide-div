@@ -319,3 +319,6 @@ details.tech div { margin-top: 6px; padding: 10px 12px; background: var(--card);
 .change-btn:hover { background: #161616; }
 .picker .verdict-card { margin-top: 16px; padding-top: 0; border-top: 0; }
 .refresh-link { color: var(--muted); }
+
+.modal { margin: auto; inset: 0; }
+.modal[open] { animation: none; }
