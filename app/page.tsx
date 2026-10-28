@@ -60,10 +60,12 @@ export default async function Home() {
             <h2 className="handoff-title">Hand it to your agent</h2>
             <p>Agents read the plain-text version of every guide. Start with this prompt, or pick your agent.</p>
           </div>
-          <CopyButton text={prompt} label="Copy prompt" className="copy-btn" />
+          <div className="handoff-actions">
+            <AgentLaunchers prompt={prompt} />
+            <CopyButton text={prompt} label="Copy prompt" className="copy-btn" />
+          </div>
         </div>
         <code className="prompt-line">{prompt}</code>
-        <AgentLaunchers prompt={prompt} />
       </section>
 
       <GuideTable rows={rows} />

@@ -12,11 +12,13 @@ export function HandoffButtons({ guide, baseUrl }: { guide: Guide; baseUrl: stri
       <div className="handoff-head">
         <div>
           <h2 className="handoff-title">Hand this to your agent</h2>
-          <p>It does the {agentSteps} agent steps and stops to ask you at each of yours.</p>
+          <p>Your agent does {agentSteps === 1 ? "1 step" : `${agentSteps} steps`} and stops for yours.</p>
         </div>
-        <CopyButton text={prompt} label="Copy prompt" className="copy-btn" />
+        <div className="handoff-actions">
+          <AgentLaunchers prompt={prompt} />
+          <CopyButton text={prompt} label="Copy prompt" className="copy-btn" />
+        </div>
       </div>
-      <AgentLaunchers prompt={prompt} />
     </section>
   );
 }

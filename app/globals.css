@@ -271,3 +271,11 @@ details.tech div { margin-top: 6px; padding: 10px 12px; background: var(--card);
 .site-header { flex-wrap: wrap; }
 .launcher { width: auto; min-width: 72px; padding: 10px 10px 8px; }
 .launcher-name { white-space: nowrap; }
+/* compact hand-off: logos only, on the title row */
+.handoff-head { align-items: center; flex-wrap: wrap; }
+.handoff-actions { display: flex; align-items: center; gap: 10px; }
+.launchers { margin: 0; gap: 4px; }
+.launcher { min-width: 0; width: auto; padding: 6px; }
+.launcher:hover, .launcher:focus-visible { transform: none; }
+.handoff-head { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 20px; }
+@media (max-width: 760px) { .handoff-head { grid-template-columns: minmax(0, 1fr); } }

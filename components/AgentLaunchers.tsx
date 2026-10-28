@@ -31,7 +31,6 @@ export function AgentLaunchers({ prompt }: { prompt: string }) {
         const inner = (
           <>
             <AppLogo name={a.name} website={a.site} size={30} />
-            <span className="launcher-name">{a.name}</span>
             <span className="launcher-tip" role="tooltip">{label}</span>
           </>
         );
