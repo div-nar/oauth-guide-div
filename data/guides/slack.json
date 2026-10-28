@@ -371,7 +371,15 @@
             "title": "Slack: Distributing your app"
           }
         ]
-      }
+      },
+      "stepIds": [
+        "sign-in",
+        "create-app",
+        "redirect-scopes",
+        "distribute",
+        "credentials",
+        "test"
+      ]
     },
     {
       "id": "read",
@@ -402,7 +410,8 @@
             "title": "Slack Marketplace review guide"
           }
         ]
-      }
+      },
+      "stepIds": []
     },
     {
       "id": "internal",
@@ -429,7 +438,76 @@
             "title": "Slack changelog: rate limits for non-Marketplace apps"
           }
         ]
-      }
+      },
+      "stepIds": [
+        "sign-in",
+        "create-app",
+        "redirect-scopes",
+        "credentials",
+        "test"
+      ]
     }
-  ]
+  ],
+  "composio": {
+    "managedApp": "yes",
+    "note": "You can connect users today with Composio's own Slack app while yours is set up or in review. Users see 'Composio' on the consent screen, rate limits are shared with other Composio customers, and polling triggers run at most every 15 minutes. Switch to your own app when it is ready. Check whether Composio's managed Slack app is Marketplace-listed before relying on it for reading history; we could not confirm that.",
+    "evidence": {
+      "level": "sourced",
+      "sources": [
+        {
+          "url": "https://docs.composio.dev/toolkits/managed-auth",
+          "title": "Composio: managed OAuth apps"
+        },
+        {
+          "url": "https://docs.composio.dev/docs/authentication/custom-app-vs-managed-app",
+          "title": "Composio: managed vs custom auth"
+        }
+      ]
+    }
+  },
+  "existingApp": {
+    "summary": "Add Composio's redirect address under OAuth & Permissions, then paste the existing client ID and secret into Composio. Existing installs keep working.",
+    "steps": [],
+    "reReviewTriggers": [
+      {
+        "trigger": "You add permissions",
+        "effect": "New scopes only apply after each workspace reinstalls the app.",
+        "evidence": {
+          "level": "sourced",
+          "sources": [
+            {
+              "url": "https://docs.slack.dev/app-manifests/configuring-apps-with-app-manifests",
+              "title": "Slack: Configuring apps with manifests"
+            }
+          ]
+        }
+      },
+      {
+        "trigger": "Your app is already in the Slack Marketplace and you change permissions",
+        "effect": "Resubmit for review: the functional review takes up to 6 weeks for published apps.",
+        "evidence": {
+          "level": "sourced",
+          "sources": [
+            {
+              "url": "https://docs.slack.dev/slack-marketplace/slack-marketplace-review-guide",
+              "title": "Slack Marketplace review guide"
+            }
+          ]
+        }
+      },
+      {
+        "trigger": "Your app is unlisted and gets new installs",
+        "effect": "Installs made after May 29, 2025 are throttled when reading history, even if the app itself is older.",
+        "evidence": {
+          "level": "sourced",
+          "sources": [
+            {
+              "url": "https://docs.slack.dev/changelog/2025/05/29/rate-limit-changes-for-non-marketplace-apps",
+              "title": "Slack changelog: rate limits for non-Marketplace apps"
+            }
+          ]
+        }
+      }
+    ]
+  }
 }

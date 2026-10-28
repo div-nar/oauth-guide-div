@@ -6,7 +6,7 @@ export type CountFn = (ip: string, now: Date) => Promise<{ ipHour: number; day: 
 export function capsFromEnv(): Caps {
   return {
     perIpHourly: Number(process.env.PER_IP_HOURLY_CAP ?? 3),
-    daily: Number(process.env.DAILY_GENERATION_CAP ?? 50),
+    daily: Number(process.env.DAILY_GENERATION_CAP ?? 10),
   };
 }
 

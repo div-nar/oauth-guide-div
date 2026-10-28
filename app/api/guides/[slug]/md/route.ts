@@ -1,6 +1,7 @@
 import { getBaseUrl } from "@/lib/base-url";
 import { getGuide } from "@/lib/guides";
 import { clientIp, startResearch } from "@/lib/jobs";
+import { resolveSlug } from "@/lib/slug";
 import { guideToMarkdown } from "@/lib/render-markdown";
 
 export const maxDuration = 300;
@@ -19,6 +20,10 @@ export async function GET(req: Request, ctx: RouteContext<"/api/guides/[slug]/md
     new Response(body, { status, headers: { "content-type": "text/markdown; charset=utf-8", "retry-after": "60" } });
   if (r.kind === "rejected") return text(`# No guide for ${slug} yet\n\n${r.reason}\n`, r.status);
   if (r.kind === "ready") return text(guideToMarkdown((await getGuide(r.slug))!, base), 200);
+  if (r.kind === "ambiguous") {
+    const opts = r.options.map((o) => `- ${o.name}: ${o.description} Fetch ${base}/guides/${resolveSlug(o.query)}.md`);
+    return text([`# "${name}" could mean several apps`, "", "Ask the user which one, then fetch that guide:", "", ...opts, ""].join("\n"), 300);
+  }
   return text(
     [
       `# Researching ${r.job.query}`,

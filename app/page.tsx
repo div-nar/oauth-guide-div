@@ -29,6 +29,9 @@ function toRow(g: Guide): GuideRow {
     waitMax: v.waitDays.max,
     source: g.generatedBy,
     easier: easiest && easiest.difficulty !== v.difficulty ? `${GRADE_WORD[easiest.difficulty]} for: ${easiest.label}` : null,
+    options: g.useCases.map((u) => ({ id: u.id, label: u.label, difficulty: u.difficulty })),
+    defaultAccess: (g.useCases.find((u) => u.difficulty === v.difficulty) ?? g.useCases[0])?.id ?? null,
+    hasExisting: !!g.existingApp,
   };
 }
 

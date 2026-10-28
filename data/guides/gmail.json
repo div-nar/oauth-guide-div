@@ -457,7 +457,8 @@
             "title": "Google: Restricted scope verification"
           }
         ]
-      }
+      },
+      "stepIds": []
     },
     {
       "id": "send",
@@ -484,7 +485,19 @@
           }
         ],
         "note": "The scope class is sourced. Google gives no duration for sensitive-scope verification, so the wait is our estimate."
-      }
+      },
+      "stepIds": [
+        "sign-in",
+        "enable-api",
+        "consent-screen",
+        "client",
+        "secret",
+        "test-users",
+        "domain",
+        "policy-video",
+        "submit",
+        "review"
+      ]
     },
     {
       "id": "internal",
@@ -510,7 +523,73 @@
             "title": "Google: Unverified apps"
           }
         ]
-      }
+      },
+      "stepIds": [
+        "sign-in",
+        "enable-api",
+        "consent-screen",
+        "client",
+        "secret",
+        "test-users"
+      ]
     }
-  ]
+  ],
+  "composio": {
+    "managedApp": "yes",
+    "note": "You can connect users today with Composio's own Gmail app while yours is set up or in review. Users see 'Composio' on the consent screen, rate limits are shared with other Composio customers, and polling triggers run at most every 15 minutes. Switch to your own app when it is ready. This is the realistic way to pilot Gmail during Google's weeks of review.",
+    "evidence": {
+      "level": "sourced",
+      "sources": [
+        {
+          "url": "https://docs.composio.dev/toolkits/managed-auth",
+          "title": "Composio: managed OAuth apps"
+        },
+        {
+          "url": "https://docs.composio.dev/docs/authentication/custom-app-vs-managed-app",
+          "title": "Composio: managed vs custom auth"
+        }
+      ]
+    }
+  },
+  "existingApp": {
+    "summary": "Add Composio's redirect address to your existing OAuth client, or create a second client in the same project. Either way you keep the verification your project already has, as long as the permissions stay the same.",
+    "steps": [],
+    "reReviewTriggers": [
+      {
+        "trigger": "You add a restricted permission you were not verified for",
+        "effect": "Google re-verifies the app, and a new restricted scope can require a new security assessment.",
+        "evidence": {
+          "level": "sourced",
+          "sources": [
+            {
+              "url": "https://developers.google.com/identity/protocols/oauth2/production-readiness/restricted-scope-verification",
+              "title": "Google: Restricted scope verification"
+            }
+          ]
+        }
+      },
+      {
+        "trigger": "You change the app name, logo or domains users see",
+        "effect": "Brand verification runs again, typically 2 to 3 business days.",
+        "evidence": {
+          "level": "sourced",
+          "sources": [
+            {
+              "url": "https://developers.google.com/identity/protocols/oauth2/production-readiness/restricted-scope-verification",
+              "title": "Google: Restricted scope verification"
+            }
+          ]
+        }
+      },
+      {
+        "trigger": "A second client in the same project",
+        "effect": "It sits under the same consent screen, so it should not need its own verification.",
+        "evidence": {
+          "level": "uncertain",
+          "sources": [],
+          "note": "Our reading of how verification attaches to the project's consent screen; not stated outright on the page."
+        }
+      }
+    ]
+  }
 }

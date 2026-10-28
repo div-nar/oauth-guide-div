@@ -1,14 +1,14 @@
-import type { Guide } from "@/lib/guide-schema";
+import type { Step } from "@/lib/guide-schema";
 import { formatWait } from "@/lib/format";
 
 // A journey strip: one stop per step, coloured by who does it. Waiting stretches
 // out because it is the part that takes calendar time.
-export function PathVisual({ guide }: { guide: Guide }) {
-  const total = (o: string) => guide.steps.filter((s) => s.owner === o).length;
+export function PathVisual({ steps }: { steps: Step[] }) {
+  const total = (o: string) => steps.filter((s) => s.owner === o).length;
   return (
     <figure className="journey" aria-label="Who does each step, in order">
       <ol className="journey-track">
-        {guide.steps.map((s, i) => (
+        {steps.map((s, i) => (
           <li
             key={s.id}
             className={`stop ${s.owner}`}

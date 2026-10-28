@@ -1,4 +1,5 @@
 import { after } from "next/server";
+import { disambiguate, type Option } from "@/lib/agent/disambiguate";
 import type { AgentEvent } from "@/lib/agent/events";
 import { runGuideAgent } from "@/lib/agent/run";
 import { query } from "@/lib/db";
@@ -20,6 +21,7 @@ export type Job = {
 
 export type StartResult =
   | { kind: "ready"; slug: string }
+  | { kind: "ambiguous"; options: Option[] }
   | { kind: "job"; job: Pick<Job, "id" | "slug" | "query"> }
   | { kind: "rejected"; reason: string; status: number };
 
@@ -49,12 +51,22 @@ async function runJob(id: number, q: string) {
 }
 
 // Starts research in the background (or reuses a running job for the same app).
-export async function startResearch(rawQuery: string, ip: string): Promise<StartResult> {
+// exact: the name was already chosen from a list, skip the ambiguity check.
+// refresh: research again even though a guide exists (replaces it when done).
+export async function startResearch(
+  rawQuery: string,
+  ip: string,
+  opts: { exact?: boolean; refresh?: boolean } = {},
+): Promise<StartResult> {
   const check = validateQuery(rawQuery);
   if (!check.ok) return { kind: "rejected", reason: check.reason, status: 400 };
   const q = check.value;
   const slug = resolveSlug(q);
-  if (await getGuide(slug)) return { kind: "ready", slug };
+  if (!opts.refresh && (await getGuide(slug))) return { kind: "ready", slug };
+  if (!opts.exact && !opts.refresh) {
+    const d = await disambiguate(q);
+    if (d.ambiguous) return { kind: "ambiguous", options: d.options };
+  }
 
   const [running] = await query<{ id: number; query: string }>(
     `SELECT id, query FROM generations

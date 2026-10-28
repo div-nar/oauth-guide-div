@@ -1,0 +1,63 @@
+import { describe, expect, test } from "bun:test";
+import { minimalGuide } from "./fixtures";
+import { parseGuide } from "@/lib/guide-schema";
+import { listLibraryGuides } from "@/lib/library";
+import { stepsFor } from "@/lib/paths";
+
+const twoStep = () => {
+  const g = minimalGuide();
+  g.steps.push({ ...g.steps[0], id: "apply", title: "Apply for partner access" });
+  g.useCases.push({ ...g.useCases[0], id: "partner", label: "Partner access", stepIds: ["create-app", "apply"] });
+  g.useCases[0].stepIds = ["create-app"];
+  return parseGuide(g);
+};
+
+describe("stepsFor", () => {
+  test("returns only the steps a use case lists, in guide order", () => {
+    const g = twoStep();
+    expect(stepsFor(g, "default").map((s) => s.id)).toEqual(["create-app"]);
+    expect(stepsFor(g, "partner").map((s) => s.id)).toEqual(["create-app", "apply"]);
+  });
+
+  test("an empty list means every step", () => {
+    const g = twoStep();
+    g.useCases[0].stepIds = [];
+    expect(stepsFor(g, "default").length).toBe(2);
+  });
+
+  test("unknown use case or unknown step ids fall back safely", () => {
+    const g = twoStep();
+    expect(stepsFor(g, "nope").length).toBe(2);
+    g.useCases[0].stepIds = ["ghost"];
+    expect(stepsFor(g, "default").length).toBe(2);
+  });
+});
+
+describe("library paths and edge cases", () => {
+  test("every use case's step ids exist in its guide", () => {
+    for (const g of listLibraryGuides()) {
+      const ids = new Set(g.steps.map((s) => s.id));
+      for (const u of g.useCases) for (const id of u.stepIds) expect(ids.has(id), `${g.slug}/${u.id}/${id}`).toBe(true);
+    }
+  });
+
+  test("use cases with different difficulty have different paths", () => {
+    for (const g of listLibraryGuides()) {
+      const byDiff = new Map<string, string>();
+      for (const u of g.useCases) {
+        const key = stepsFor(g, u.id).map((s) => s.id).join(",");
+        if (byDiff.has(u.difficulty)) continue;
+        for (const [d, k] of byDiff) if (d !== u.difficulty) expect(k, `${g.slug}: ${u.id}`).not.toBe(key);
+        byDiff.set(u.difficulty, key);
+      }
+    }
+  });
+
+  test("every library guide covers the 'already have an app' case and Composio's managed app", () => {
+    for (const g of listLibraryGuides()) {
+      expect(g.existingApp?.summary, g.slug).toBeTruthy();
+      expect(g.existingApp!.reReviewTriggers.length, g.slug).toBeGreaterThan(0);
+      expect(g.composio?.managedApp, g.slug).toBeDefined();
+    }
+  });
+});

@@ -89,11 +89,32 @@ function repair(node: unknown): unknown {
   return o;
 }
 
+function baseDomain(host: string): string {
+  const parts = host.toLowerCase().replace(/^www\./, "").split(".");
+  const sl = parts.length > 2 && ["co", "com", "org", "net", "ac", "gov"].includes(parts[parts.length - 2]);
+  return parts.slice(sl ? -3 : -2).join(".");
+}
+
+// A step link is clickable on our site, so only keep it if it points at the app's own
+// domain, Composio, or a host the agent actually saw. A poisoned page cannot plant one.
+function safeLink(url: string, appWebsite: string, seen: Set<string>): boolean {
+  try {
+    const host = new URL(url).hostname.toLowerCase().replace(/^www\./, "");
+    if (new URL(url).protocol !== "https:") return false;
+    const appBase = baseDomain(new URL(appWebsite.startsWith("http") ? appWebsite : `https://${appWebsite}`).hostname);
+    const seenHosts = new Set([...seen].map((u) => u.split("/")[0]));
+    return baseDomain(host) === appBase || baseDomain(host) === "composio.dev" || seenHosts.has(host);
+  } catch {
+    return false;
+  }
+}
+
 function finalize(raw: unknown, query: string, today: string, seen: Set<string>): Guide {
   const fixed = repair(raw) as object;
   const g = GuideSchema.parse({ ...fixed, slug: resolveSlug(query), generatedBy: "agent", lastChecked: today });
   const fix = <T extends { evidence: Evidence }>(xs: T[]) => xs.map((x) => ({ ...x, evidence: sanitizeEvidence(x.evidence, seen) }));
-  return { ...g, useCases: fix(g.useCases), steps: fix(g.steps), forks: fix(g.forks), nuances: fix(g.nuances) };
+  const steps = fix(g.steps).map((st) => (st.link && !safeLink(st.link.url, g.app.website, seen) ? { ...st, link: null } : st));
+  return { ...g, useCases: fix(g.useCases), steps, forks: fix(g.forks), nuances: fix(g.nuances) };
 }
 
 export async function runGuideAgent(query: string, emit: (e: AgentEvent) => void, deps: AgentDeps = {}): Promise<Guide> {

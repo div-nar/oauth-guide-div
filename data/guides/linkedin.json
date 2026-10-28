@@ -202,6 +202,71 @@
         ],
         "note": "The two tiers and the vetting are sourced. The day range is our estimate. LinkedIn gives none."
       }
+    },
+    {
+      "id": "apply-partner",
+      "owner": "human",
+      "title": "Apply to the partner program (ads, sales or recruiting)",
+      "plain": "Each area is its own program: add the Advertising API product from your app's Products tab, or apply to Sales Navigator (SNAP) or the Talent partner programs.",
+      "whyHuman": "LinkedIn reviews your business and use case.",
+      "minutes": {
+        "min": 30,
+        "max": 90
+      },
+      "link": {
+        "url": "https://www.linkedin.com/developers/apps",
+        "label": "Open your app, then Products",
+        "prefilled": false
+      },
+      "evidence": {
+        "level": "sourced",
+        "sources": [
+          {
+            "url": "https://learn.microsoft.com/en-us/linkedin/shared/authentication/getting-access",
+            "title": "LinkedIn: Getting access"
+          }
+        ]
+      }
+    },
+    {
+      "id": "partner-review",
+      "owner": "waiting",
+      "title": "LinkedIn reviews your partner application",
+      "plain": "LinkedIn does not publish how long partner reviews take.",
+      "waitDays": {
+        "min": 14,
+        "max": 90
+      },
+      "evidence": {
+        "level": "uncertain",
+        "sources": [
+          {
+            "url": "https://learn.microsoft.com/en-us/linkedin/shared/authentication/getting-access",
+            "title": "LinkedIn: Getting access"
+          }
+        ],
+        "note": "The programs are sourced; the wait is our estimate."
+      }
+    },
+    {
+      "id": "closed-permission",
+      "owner": "human",
+      "title": "Reading a person's own posts is closed",
+      "plain": "LinkedIn is not accepting requests for r_member_social. There is no path to this access today; design around it.",
+      "link": {
+        "url": "https://learn.microsoft.com/en-us/linkedin/marketing/community-management/community-management-overview",
+        "label": "Read LinkedIn's note on r_member_social",
+        "prefilled": false
+      },
+      "evidence": {
+        "level": "sourced",
+        "sources": [
+          {
+            "url": "https://learn.microsoft.com/en-us/linkedin/marketing/community-management/community-management-overview",
+            "title": "LinkedIn: Community Management overview"
+          }
+        ]
+      }
     }
   ],
   "forks": [
@@ -325,7 +390,14 @@
             "title": "LinkedIn: Getting access"
           }
         ]
-      }
+      },
+      "stepIds": [
+        "sign-in",
+        "create-app",
+        "verify-page",
+        "open-products",
+        "redirect-credentials"
+      ]
     },
     {
       "id": "pages",
@@ -352,7 +424,16 @@
             "title": "LinkedIn: Community Management overview"
           }
         ]
-      }
+      },
+      "stepIds": [
+        "sign-in",
+        "create-app",
+        "verify-page",
+        "open-products",
+        "redirect-credentials",
+        "apply-cm",
+        "vetting"
+      ]
     },
     {
       "id": "partners",
@@ -377,7 +458,15 @@
           }
         ],
         "note": "Programs are sourced. LinkedIn publishes no timelines; the wait is our estimate."
-      }
+      },
+      "stepIds": [
+        "sign-in",
+        "create-app",
+        "verify-page",
+        "redirect-credentials",
+        "apply-partner",
+        "partner-review"
+      ]
     },
     {
       "id": "member-read",
@@ -403,7 +492,59 @@
             "title": "LinkedIn: Community Management overview"
           }
         ]
-      }
+      },
+      "stepIds": [
+        "closed-permission"
+      ]
     }
-  ]
+  ],
+  "composio": {
+    "managedApp": "yes",
+    "note": "You can connect users today with Composio's own LinkedIn app while yours is set up or in review. Users see 'Composio' on the consent screen, rate limits are shared with other Composio customers, and polling triggers run at most every 15 minutes. Switch to your own app when it is ready. LinkedIn Ads is a separate Composio toolkit that needs your own app.",
+    "evidence": {
+      "level": "sourced",
+      "sources": [
+        {
+          "url": "https://docs.composio.dev/toolkits/managed-auth",
+          "title": "Composio: managed OAuth apps"
+        },
+        {
+          "url": "https://docs.composio.dev/docs/authentication/custom-app-vs-managed-app",
+          "title": "Composio: managed vs custom auth"
+        }
+      ]
+    }
+  },
+  "existingApp": {
+    "summary": "Add Composio's redirect address on your app's Auth tab and paste the client ID and secret into Composio. Products you already have approved carry over.",
+    "steps": [],
+    "reReviewTriggers": [
+      {
+        "trigger": "You want Community Management on an app that already has other products",
+        "effect": "LinkedIn only accepts Community Management requests from a new app with no other products. Create a second app tied to the same Page.",
+        "evidence": {
+          "level": "sourced",
+          "sources": [
+            {
+              "url": "https://learn.microsoft.com/en-us/linkedin/marketing/community-management/community-management-overview",
+              "title": "LinkedIn: Community Management overview"
+            }
+          ]
+        }
+      },
+      {
+        "trigger": "You need a new partner product (ads, sales, recruiting)",
+        "effect": "Each product needs its own application and approval, even on an approved app.",
+        "evidence": {
+          "level": "sourced",
+          "sources": [
+            {
+              "url": "https://learn.microsoft.com/en-us/linkedin/shared/authentication/getting-access",
+              "title": "LinkedIn: Getting access"
+            }
+          ]
+        }
+      }
+    ]
+  }
 }

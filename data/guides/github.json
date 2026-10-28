@@ -265,7 +265,62 @@
             "title": "GitHub Docs: Creating an OAuth app"
           }
         ]
-      }
+      },
+      "stepIds": []
     }
-  ]
+  ],
+  "composio": {
+    "managedApp": "yes",
+    "note": "You can connect users today with Composio's own GitHub app while yours is set up or in review. Users see 'Composio' on the consent screen, rate limits are shared with other Composio customers, and polling triggers run at most every 15 minutes. Switch to your own app when it is ready.",
+    "evidence": {
+      "level": "sourced",
+      "sources": [
+        {
+          "url": "https://docs.composio.dev/toolkits/managed-auth",
+          "title": "Composio: managed OAuth apps"
+        },
+        {
+          "url": "https://docs.composio.dev/docs/authentication/custom-app-vs-managed-app",
+          "title": "Composio: managed vs custom auth"
+        }
+      ]
+    }
+  },
+  "existingApp": {
+    "summary": "Reuse it. Add Composio's redirect address as an extra callback URL (an OAuth app can have up to 10), then paste the client ID and a client secret into Composio. Generate a separate secret for Composio so you can revoke it without touching your product.",
+    "steps": [],
+    "reReviewTriggers": [
+      {
+        "trigger": "Your callback list is full",
+        "effect": "An OAuth app holds at most 10 callback URLs. Remove an unused one or register a second app.",
+        "evidence": {
+          "level": "sourced",
+          "sources": [
+            {
+              "url": "https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/creating-an-oauth-app",
+              "title": "GitHub Docs: Creating an OAuth app"
+            }
+          ]
+        }
+      },
+      {
+        "trigger": "You want a separate secret for Composio",
+        "effect": "GitHub lets you generate another client secret on the app's page; the existing one keeps working until you delete it.",
+        "evidence": {
+          "level": "uncertain",
+          "sources": [],
+          "note": "From GitHub's app settings screen; not confirmed on a docs page we read."
+        }
+      },
+      {
+        "trigger": "You need more permissions",
+        "effect": "No review. GitHub OAuth apps ask for scopes when the user connects, so users just see a new approval screen.",
+        "evidence": {
+          "level": "uncertain",
+          "sources": [],
+          "note": "GitHub's scope docs were not part of this check."
+        }
+      }
+    ]
+  }
 }

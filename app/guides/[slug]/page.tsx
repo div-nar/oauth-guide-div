@@ -1,11 +1,10 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { AccessPicker } from "@/components/AccessPicker";
+import { GuideBody } from "@/components/GuideBody";
 import { AppLogo } from "@/components/AppLogo";
 import { EvidenceBadge } from "@/components/EvidenceBadge";
 import { HandoffButtons } from "@/components/HandoffButtons";
-import { PathVisual } from "@/components/PathVisual";
 import { StepTable } from "@/components/StepTable";
 import { ViewToggle } from "@/components/ViewToggle";
 import { getBaseUrl } from "@/lib/base-url";
@@ -26,8 +25,9 @@ export async function generateMetadata({ params }: PageProps<"/guides/[slug]">):
   return g ? { title: `${g.app.name} OAuth app setup`, description: g.verdict.summary } : {};
 }
 
-export default async function GuidePage({ params }: PageProps<"/guides/[slug]">) {
+export default async function GuidePage({ params, searchParams }: PageProps<"/guides/[slug]">) {
   const { slug } = await params;
+  const sp = await searchParams;
   const g = await getGuide(slug);
   if (!g) {
     if (!/^[a-z0-9-]{1,80}$/.test(slug)) notFound();
@@ -42,13 +42,10 @@ export default async function GuidePage({ params }: PageProps<"/guides/[slug]">)
     );
   }
   const baseUrl = await getBaseUrl();
-  const headline = g.useCases.find((u) => u.difficulty === g.verdict.difficulty) ?? g.useCases[0];
+  const picked = typeof sp.access === "string" ? g.useCases.find((u) => u.id === sp.access) : undefined;
+  const headline = picked ?? g.useCases.find((u) => u.difficulty === g.verdict.difficulty) ?? g.useCases[0];
 
   const faqs: Faq[] = [
-    ...(g.existingApp
-      ? [{ q: `I already have a ${g.app.name} app. What changes?`, a: g.existingApp.summary }]
-      : []),
-    ...(g.existingApp?.reReviewTriggers ?? []).map((t) => ({ q: `What if ${t.trigger.charAt(0).toLowerCase() + t.trigger.slice(1)}?`, a: t.effect, evidence: t.evidence })),
     ...g.forks.map((f) => ({ q: `What if ${f.condition.charAt(0).toLowerCase() + f.condition.slice(1)}?`, a: f.effect, evidence: f.evidence })),
     ...g.nuances.map((n) => ({ q: n.title, a: n.detail, extra: `If you're stuck: ${n.ifStuck}`, evidence: n.evidence })),
     ...GLOSSARY.map(([q, a]) => ({ q, a })),
@@ -66,6 +63,12 @@ export default async function GuidePage({ params }: PageProps<"/guides/[slug]">)
           <p className="small muted">
             {g.generatedBy === "agent" ? "Researched by the agent from public docs" : "Researched by hand from official docs"},
             last checked {g.lastChecked}
+            {g.generatedBy === "agent" && (
+              <>
+                {" "}
+                <Link className="refresh-link" href={`/generate?q=${encodeURIComponent(g.app.name)}&exact=1&refresh=1`}>Re-check now</Link>
+              </>
+            )}
           </p>
         </div>
       </header>
@@ -73,17 +76,19 @@ export default async function GuidePage({ params }: PageProps<"/guides/[slug]">)
       <HandoffButtons guide={g} baseUrl={baseUrl} />
 
       {g.oauth.supported && headline ? (
-        <AccessPicker useCases={g.useCases} defaultId={headline.id} appName={g.app.name} />
+        <GuideBody guide={g} defaultId={headline.id} initialExisting={sp.existing === "1"} />
       ) : (
-        <p className="verdict-summary">{g.verdict.summary} {g.oauth.notes}</p>
+        <>
+          <p className="verdict-summary">{g.verdict.summary} {g.oauth.notes}</p>
+          {g.steps.length > 0 && (
+            <section className="block">
+              <h2 className="label">Steps</h2>
+              <StepTable steps={g.steps} />
+            </section>
+          )}
+        </>
       )}
 
-      {g.steps.length > 0 && (
-        <section className="block">
-          <h2 className="label">The path</h2>
-          <PathVisual guide={g} />
-        </section>
-      )}
 
       {g.whoYouNeed.length > 0 && (
         <section className="block">
@@ -96,12 +101,6 @@ export default async function GuidePage({ params }: PageProps<"/guides/[slug]">)
         </section>
       )}
 
-      {g.steps.length > 0 && (
-        <section className="block">
-          <h2 className="label">Steps</h2>
-          <StepTable steps={g.steps} />
-        </section>
-      )}
 
 
       {faqs.length > 0 && (

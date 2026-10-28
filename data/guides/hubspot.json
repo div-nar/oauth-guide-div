@@ -188,6 +188,32 @@
         "label": "Open Composio auth configs",
         "prefilled": false
       }
+    },
+    {
+      "id": "own-token",
+      "owner": "human",
+      "title": "Copy the access token into Composio (your own account only)",
+      "plain": "For a private app on your own account there is no sign-in flow: copy the app's access token and add it to Composio as a token-based connection.",
+      "technical": "Set auth.type to \"static\" in app-hsmeta.json and remove redirectUrls. After hs project upload, copy the access token from the app's Auth tab.",
+      "whyHuman": "The token is a password for your account. Paste it yourself.",
+      "minutes": {
+        "min": 2,
+        "max": 5
+      },
+      "link": {
+        "url": "https://app.hubspot.com/developer",
+        "label": "Open your HubSpot developer projects",
+        "prefilled": false
+      },
+      "evidence": {
+        "level": "sourced",
+        "sources": [
+          {
+            "url": "https://developers.hubspot.com/docs/apps/developer-platform/build-apps/create-an-app",
+            "title": "HubSpot: Create an app"
+          }
+        ]
+      }
     }
   ],
   "forks": [
@@ -305,7 +331,15 @@
             "title": "HubSpot: Create an app"
           }
         ]
-      }
+      },
+      "stepIds": [
+        "sign-in",
+        "create-project",
+        "configure",
+        "upload",
+        "credentials",
+        "test"
+      ]
     },
     {
       "id": "own",
@@ -331,7 +365,67 @@
             "title": "HubSpot: Create an app"
           }
         ]
-      }
+      },
+      "stepIds": [
+        "sign-in",
+        "create-project",
+        "upload",
+        "own-token"
+      ]
     }
-  ]
+  ],
+  "composio": {
+    "managedApp": "yes",
+    "note": "You can connect users today with Composio's own HubSpot app while yours is set up or in review. Users see 'Composio' on the consent screen, rate limits are shared with other Composio customers, and polling triggers run at most every 15 minutes. Switch to your own app when it is ready.",
+    "evidence": {
+      "level": "sourced",
+      "sources": [
+        {
+          "url": "https://docs.composio.dev/toolkits/managed-auth",
+          "title": "Composio: managed OAuth apps"
+        },
+        {
+          "url": "https://docs.composio.dev/docs/authentication/custom-app-vs-managed-app",
+          "title": "Composio: managed vs custom auth"
+        }
+      ]
+    }
+  },
+  "existingApp": {
+    "summary": "Add Composio's redirect address to auth.redirectUrls in app-hsmeta.json, run hs project upload, then paste the client ID and secret into Composio.",
+    "steps": [],
+    "reReviewTriggers": [
+      {
+        "trigger": "You change the app's uid",
+        "effect": "HubSpot treats it as a different app, so existing installs do not carry over. Keep the uid.",
+        "evidence": {
+          "level": "sourced",
+          "sources": [
+            {
+              "url": "https://developers.hubspot.com/docs/apps/developer-platform/build-apps/create-an-app",
+              "title": "HubSpot: Create an app"
+            }
+          ]
+        }
+      },
+      {
+        "trigger": "You add required scopes",
+        "effect": "Accounts that already installed the app need to reinstall to grant the new scopes.",
+        "evidence": {
+          "level": "uncertain",
+          "sources": [],
+          "note": "Not stated on the pages we read."
+        }
+      },
+      {
+        "trigger": "Your app is listed on the HubSpot Marketplace",
+        "effect": "Listing changes go back through HubSpot's Ecosystem Quality review.",
+        "evidence": {
+          "level": "uncertain",
+          "sources": [],
+          "note": "Inferred from the listing process; not stated for changes."
+        }
+      }
+    ]
+  }
 }

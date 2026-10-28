@@ -20,9 +20,15 @@ export function minimalGuide(overrides: Record<string, unknown> = {}) {
         waitDays: { min: 0, max: 0 },
         summary: "No review.",
         scopes: [],
+        stepIds: [] as string[],
         evidence: { level: "sourced", sources: [{ url: "https://acme.example/docs", title: "Docs" }] },
       },
     ],
+    composio: {
+      managedApp: "yes",
+      note: "Composio has its own Acme app you can use while yours is set up.",
+      evidence: { level: "sourced", sources: [{ url: "https://docs.composio.dev/toolkits/managed-auth", title: "Composio managed auth" }] },
+    },
     whoYouNeed: [],
     steps: [
       {

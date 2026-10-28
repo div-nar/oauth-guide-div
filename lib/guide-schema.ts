@@ -41,6 +41,8 @@ export const UseCaseSchema = z.object({
   waitDays: Range,
   summary: z.string(),
   scopes: z.array(z.string()),
+  // Which steps make up this path; empty means all steps.
+  stepIds: z.array(z.string()),
   evidence: EvidenceSchema,
 });
 
@@ -76,6 +78,10 @@ export const GuideSchema = z
       }),
     ),
   }),
+  // Whether Composio's own (managed) app can be used while yours is set up or in review.
+  composio: z
+    .object({ managedApp: z.enum(["yes", "no", "unknown"]), note: z.string(), evidence: EvidenceSchema })
+    .nullish(),
   // For teams that already have an OAuth app with this provider.
   existingApp: z
     .object({
