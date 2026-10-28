@@ -4,6 +4,7 @@ import type { AgentEvent } from "@/lib/agent/events";
 import { runGuideAgent } from "@/lib/agent/run";
 import { query } from "@/lib/db";
 import { getGuide, saveGuide } from "@/lib/guides";
+import { getLibraryGuide } from "@/lib/library";
 import { checkRateLimit } from "@/lib/rate-limit";
 import { resolveSlug } from "@/lib/slug";
 import { validateQuery } from "@/lib/validate-query";
@@ -62,11 +63,9 @@ export async function startResearch(
   if (!check.ok) return { kind: "rejected", reason: check.reason, status: 400 };
   const q = check.value;
   const slug = resolveSlug(q);
+  // Hand-checked guides are never overwritten by a refresh (the library copy always wins).
+  if (getLibraryGuide(slug)) return { kind: "ready", slug };
   if (!opts.refresh && (await getGuide(slug))) return { kind: "ready", slug };
-  if (!opts.exact && !opts.refresh) {
-    const d = await disambiguate(q);
-    if (d.ambiguous) return { kind: "ambiguous", options: d.options };
-  }
 
   const [running] = await query<{ id: number; query: string }>(
     `SELECT id, query FROM generations
@@ -76,8 +75,14 @@ export async function startResearch(
   );
   if (running) return { kind: "job", job: { id: running.id, slug, query: running.query } };
 
+  // Rate limit before any model call, including the name check.
   const limit = await checkRateLimit(ip, new Date());
   if (!limit.allowed) return { kind: "rejected", reason: limit.reason!, status: 429 };
+
+  if (!opts.exact && !opts.refresh) {
+    const d = await disambiguate(q);
+    if (d.ambiguous) return { kind: "ambiguous", options: d.options };
+  }
 
   const [row] = await query<{ id: number }>(
     "INSERT INTO generations (ip, query, slug) VALUES ($1, $2, $3) RETURNING id",
