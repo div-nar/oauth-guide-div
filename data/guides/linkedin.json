@@ -1,18 +1,35 @@
 {
   "slug": "linkedin",
-  "app": { "name": "LinkedIn", "website": "https://www.linkedin.com" },
+  "app": {
+    "name": "LinkedIn",
+    "website": "https://www.linkedin.com"
+  },
   "lastChecked": "2026-10-28",
   "generatedBy": "library",
-  "oauth": { "supported": true },
+  "oauth": {
+    "supported": true
+  },
   "verdict": {
-    "difficulty": "gated",
-    "handsOnMinutes": { "min": 20, "max": 60 },
-    "waitDays": { "min": 7, "max": 60 },
-    "summary": "Signing in and posting as a person are self-serve. Anything for company pages, ads, sales or recruiting needs LinkedIn to approve you as a partner, and some permissions are closed to new applicants."
+    "difficulty": "easy",
+    "handsOnMinutes": {
+      "min": 20,
+      "max": 30
+    },
+    "waitDays": {
+      "min": 0,
+      "max": 0
+    },
+    "summary": "Signing people in and posting as them is self-serve once a company Page admin confirms your app. Company pages, ads, sales and recruiting need LinkedIn's partner approval."
   },
   "whoYouNeed": [
-    { "role": "An admin of your company's LinkedIn Page", "why": "Every developer app is tied to a LinkedIn Page, and a Page admin must confirm that link." },
-    { "role": "Someone who can describe your business use case", "why": "Partner programs ask what you will build, and the higher tier needs a screen recording." }
+    {
+      "role": "An admin of your company's LinkedIn Page",
+      "why": "Every developer app is tied to a LinkedIn Page, and a Page admin must confirm that link."
+    },
+    {
+      "role": "Someone who can describe your business use case",
+      "why": "Partner programs ask what you will build, and the higher tier needs a screen recording."
+    }
   ],
   "steps": [
     {
@@ -21,21 +38,48 @@
       "title": "Sign in to the LinkedIn Developer Portal",
       "plain": "Log in at linkedin.com/developers with your own LinkedIn account.",
       "whyHuman": "Signing in and accepting LinkedIn's API terms are yours to do.",
-      "minutes": { "min": 1, "max": 3 },
-      "url": "https://www.linkedin.com/developers/apps",
-      "evidence": { "level": "sourced", "sources": [{ "url": "https://learn.microsoft.com/en-us/linkedin/shared/authentication/getting-access", "title": "LinkedIn: Getting access" }] }
+      "minutes": {
+        "min": 1,
+        "max": 3
+      },
+      "evidence": {
+        "level": "sourced",
+        "sources": [
+          {
+            "url": "https://learn.microsoft.com/en-us/linkedin/shared/authentication/getting-access",
+            "title": "LinkedIn: Getting access"
+          }
+        ]
+      },
+      "link": {
+        "url": "https://www.linkedin.com/developers/apps",
+        "label": "Open LinkedIn Developer Portal",
+        "prefilled": false
+      }
     },
     {
       "id": "create-app",
       "owner": "agent",
       "title": "Create the app and link your company Page",
       "plain": "Create a new app, give it a name and logo, and pick your company's LinkedIn Page.",
-      "minutes": { "min": 3, "max": 8 },
-      "url": "https://www.linkedin.com/developers/apps/new",
+      "minutes": {
+        "min": 3,
+        "max": 8
+      },
       "evidence": {
         "level": "uncertain",
-        "sources": [{ "url": "https://docs.zoolanders.com/essentials-for-yootheme-pro/auths/custom-linkedin-dev-app", "title": "Third-party guide: custom LinkedIn app" }],
+        "sources": [
+          {
+            "url": "https://docs.zoolanders.com/essentials-for-yootheme-pro/auths/custom-linkedin-dev-app",
+            "title": "Third-party guide: custom LinkedIn app"
+          }
+        ],
         "note": "The Page requirement comes from third-party guides. LinkedIn's own docs we read do not spell it out."
+      },
+      "link": {
+        "url": "https://www.linkedin.com/developers/apps/new",
+        "label": "Create a LinkedIn app",
+        "prefilled": false
       }
     },
     {
@@ -44,11 +88,24 @@
       "title": "Have a Page admin verify the link",
       "plain": "In the app's Settings, click Verify next to the Page, generate a link, and send it to a Page admin to approve. The link lasts 30 days.",
       "whyHuman": "Only an admin of the company Page can approve.",
-      "minutes": { "min": 2, "max": 10 },
+      "minutes": {
+        "min": 2,
+        "max": 10
+      },
       "evidence": {
         "level": "uncertain",
-        "sources": [{ "url": "https://docs.zoolanders.com/essentials-for-yootheme-pro/auths/custom-linkedin-dev-app", "title": "Third-party guide: custom LinkedIn app" }],
+        "sources": [
+          {
+            "url": "https://docs.zoolanders.com/essentials-for-yootheme-pro/auths/custom-linkedin-dev-app",
+            "title": "Third-party guide: custom LinkedIn app"
+          }
+        ],
         "note": "Third-party sources differ on whether any Page admin or only a super admin can approve."
+      },
+      "link": {
+        "url": "https://www.linkedin.com/developers/apps",
+        "label": "Open your app, then Settings",
+        "prefilled": false
       }
     },
     {
@@ -57,8 +114,24 @@
       "title": "Add the self-serve products",
       "plain": "On the Products tab, add 'Sign in with LinkedIn using OpenID Connect' and 'Share on LinkedIn'. These need no approval.",
       "technical": "Grants openid, profile, email and w_member_social (post, comment and react as the member).",
-      "minutes": { "min": 2, "max": 5 },
-      "evidence": { "level": "sourced", "sources": [{ "url": "https://learn.microsoft.com/en-us/linkedin/shared/authentication/getting-access", "title": "LinkedIn: Getting access" }] }
+      "minutes": {
+        "min": 2,
+        "max": 5
+      },
+      "evidence": {
+        "level": "sourced",
+        "sources": [
+          {
+            "url": "https://learn.microsoft.com/en-us/linkedin/shared/authentication/getting-access",
+            "title": "LinkedIn: Getting access"
+          }
+        ]
+      },
+      "link": {
+        "url": "https://www.linkedin.com/developers/apps",
+        "label": "Open your app, then Products",
+        "prefilled": false
+      }
     },
     {
       "id": "redirect-credentials",
@@ -66,8 +139,24 @@
       "title": "Add the redirect address and copy the credentials",
       "plain": "On the Auth tab, add the redirect address from your Composio LinkedIn auth config, then paste the client ID and secret into Composio.",
       "whyHuman": "The secret is a password for your app. Pasting it yourself keeps it out of any agent's chat history.",
-      "minutes": { "min": 2, "max": 5 },
-      "evidence": { "level": "sourced", "sources": [{ "url": "https://docs.composio.dev/docs/authentication/custom-app-vs-managed-app", "title": "Composio: Managed vs custom auth" }] }
+      "minutes": {
+        "min": 2,
+        "max": 5
+      },
+      "evidence": {
+        "level": "sourced",
+        "sources": [
+          {
+            "url": "https://docs.composio.dev/docs/authentication/custom-app-vs-managed-app",
+            "title": "Composio: Managed vs custom auth"
+          }
+        ]
+      },
+      "link": {
+        "url": "https://www.linkedin.com/developers/apps",
+        "label": "Open your app, then Auth",
+        "prefilled": false
+      }
     },
     {
       "id": "apply-cm",
@@ -75,37 +164,72 @@
       "title": "Apply for Community Management API (only for company pages)",
       "plain": "If your agent posts for, or reads analytics from, company pages, apply for the Community Management API. Start with the Development tier, then apply for Standard with a screen recording of each use case.",
       "whyHuman": "The application describes your business and use case, and LinkedIn vets you.",
-      "minutes": { "min": 20, "max": 45 },
-      "evidence": { "level": "sourced", "sources": [{ "url": "https://learn.microsoft.com/en-us/linkedin/marketing/community-management/community-management-overview", "title": "LinkedIn: Community Management overview" }] }
+      "minutes": {
+        "min": 20,
+        "max": 45
+      },
+      "evidence": {
+        "level": "sourced",
+        "sources": [
+          {
+            "url": "https://learn.microsoft.com/en-us/linkedin/marketing/community-management/community-management-overview",
+            "title": "LinkedIn: Community Management overview"
+          }
+        ]
+      },
+      "link": {
+        "url": "https://learn.microsoft.com/en-us/linkedin/marketing/quick-start",
+        "label": "Read LinkedIn's apply-for-access steps",
+        "prefilled": false
+      }
     },
     {
       "id": "vetting",
       "owner": "waiting",
-      "title": "LinkedIn vets your application",
+      "title": "LinkedIn vets your application (company pages only)",
       "plain": "LinkedIn reviews the Development tier request, then the Standard tier upgrade. LinkedIn does not publish how long either takes.",
-      "waitDays": { "min": 7, "max": 60 },
+      "waitDays": {
+        "min": 7,
+        "max": 60
+      },
       "evidence": {
         "level": "uncertain",
-        "sources": [{ "url": "https://learn.microsoft.com/en-us/linkedin/marketing/community-management/community-management-overview", "title": "LinkedIn: Community Management overview" }],
+        "sources": [
+          {
+            "url": "https://learn.microsoft.com/en-us/linkedin/marketing/community-management/community-management-overview",
+            "title": "LinkedIn: Community Management overview"
+          }
+        ],
         "note": "The two tiers and the vetting are sourced. The day range is our estimate. LinkedIn gives none."
       }
     }
   ],
   "forks": [
     {
-      "condition": "Your agent only signs people in or posts as the person who connected",
-      "effect": "Stop after the self-serve products. No vetting, about 20 minutes in total.",
-      "evidence": { "level": "sourced", "sources": [{ "url": "https://learn.microsoft.com/en-us/linkedin/shared/authentication/getting-access", "title": "LinkedIn: Getting access" }] }
-    },
-    {
       "condition": "Your agent works with ads, Sales Navigator or recruiting",
       "effect": "Each is a separate partner program with its own application (Advertising API, SNAP, Talent). Expect a business review, not a form.",
-      "evidence": { "level": "sourced", "sources": [{ "url": "https://learn.microsoft.com/en-us/linkedin/shared/authentication/getting-access", "title": "LinkedIn: Getting access" }] }
+      "evidence": {
+        "level": "sourced",
+        "sources": [
+          {
+            "url": "https://learn.microsoft.com/en-us/linkedin/shared/authentication/getting-access",
+            "title": "LinkedIn: Getting access"
+          }
+        ]
+      }
     },
     {
       "condition": "Your agent needs to read a member's own posts (r_member_social)",
       "effect": "Closed. LinkedIn is not accepting requests for this permission.",
-      "evidence": { "level": "sourced", "sources": [{ "url": "https://learn.microsoft.com/en-us/linkedin/marketing/community-management/community-management-overview", "title": "LinkedIn: Community Management overview" }] }
+      "evidence": {
+        "level": "sourced",
+        "sources": [
+          {
+            "url": "https://learn.microsoft.com/en-us/linkedin/marketing/community-management/community-management-overview",
+            "title": "LinkedIn: Community Management overview"
+          }
+        ]
+      }
     }
   ],
   "nuances": [
@@ -113,28 +237,173 @@
       "title": "Community Management needs a fresh app",
       "detail": "You can only request Community Management Development tier on a new app that has no other API products. If the request button is greyed out, that's why.",
       "ifStuck": "Create a second app tied to the same Page just for the application.",
-      "evidence": { "level": "sourced", "sources": [{ "url": "https://learn.microsoft.com/en-us/linkedin/marketing/community-management/community-management-overview", "title": "LinkedIn: Community Management overview" }] }
+      "evidence": {
+        "level": "sourced",
+        "sources": [
+          {
+            "url": "https://learn.microsoft.com/en-us/linkedin/marketing/community-management/community-management-overview",
+            "title": "LinkedIn: Community Management overview"
+          }
+        ]
+      }
     },
     {
       "title": "Development tier limits",
       "detail": "Development tier allows 500 requests per app and 100 per member (LinkedIn does not say over what period on this page).",
       "ifStuck": "Plan for Standard tier before a real launch.",
-      "evidence": { "level": "sourced", "sources": [{ "url": "https://learn.microsoft.com/en-us/linkedin/marketing/community-management/community-management-overview", "title": "LinkedIn: Community Management overview" }] }
+      "evidence": {
+        "level": "sourced",
+        "sources": [
+          {
+            "url": "https://learn.microsoft.com/en-us/linkedin/marketing/community-management/community-management-overview",
+            "title": "LinkedIn: Community Management overview"
+          }
+        ]
+      }
     },
     {
       "title": "API versions expire",
       "detail": "LinkedIn's marketing APIs are versioned monthly and old versions are sunset (for example, November 2025 ends on November 16, 2026).",
       "ifStuck": "Check the version Composio uses if calls start failing after a sunset date.",
-      "evidence": { "level": "sourced", "sources": [{ "url": "https://learn.microsoft.com/en-us/linkedin/marketing/community-management/community-management-overview", "title": "LinkedIn: Community Management overview" }] }
+      "evidence": {
+        "level": "sourced",
+        "sources": [
+          {
+            "url": "https://learn.microsoft.com/en-us/linkedin/marketing/community-management/community-management-overview",
+            "title": "LinkedIn: Community Management overview"
+          }
+        ]
+      }
     }
   ],
   "config": {
     "consoleUrl": "https://www.linkedin.com/developers/apps",
     "redirectUriNote": "Add the redirect URI shown in your Composio auth config on the app's Auth tab.",
     "scopes": [
-      { "name": "openid profile email", "plain": "Sign the person in and read their name, photo and email.", "sensitivity": "basic" },
-      { "name": "w_member_social", "plain": "Post, comment and react as the person.", "sensitivity": "basic" },
-      { "name": "w_organization_social", "plain": "Post as a company page (needs Community Management approval).", "sensitivity": "restricted" }
+      {
+        "name": "openid profile email",
+        "plain": "Sign the person in and read their name, photo and email.",
+        "sensitivity": "basic"
+      },
+      {
+        "name": "w_member_social",
+        "plain": "Post, comment and react as the person.",
+        "sensitivity": "basic"
+      },
+      {
+        "name": "w_organization_social",
+        "plain": "Post as a company page (needs Community Management approval).",
+        "sensitivity": "restricted"
+      }
     ]
-  }
+  },
+  "useCases": [
+    {
+      "id": "member",
+      "label": "Sign people in, or post as the person who connected",
+      "difficulty": "easy",
+      "handsOnMinutes": {
+        "min": 20,
+        "max": 30
+      },
+      "waitDays": {
+        "min": 0,
+        "max": 0
+      },
+      "summary": "Self-serve products. Steps 1 to 5.",
+      "scopes": [
+        "openid",
+        "profile",
+        "email",
+        "w_member_social"
+      ],
+      "evidence": {
+        "level": "sourced",
+        "sources": [
+          {
+            "url": "https://learn.microsoft.com/en-us/linkedin/shared/authentication/getting-access",
+            "title": "LinkedIn: Getting access"
+          }
+        ]
+      }
+    },
+    {
+      "id": "pages",
+      "label": "Post for, or read analytics from, company pages",
+      "difficulty": "gated",
+      "handsOnMinutes": {
+        "min": 45,
+        "max": 90
+      },
+      "waitDays": {
+        "min": 7,
+        "max": 60
+      },
+      "summary": "Community Management API: vetted Development tier, then Standard tier with a screen recording.",
+      "scopes": [
+        "w_organization_social",
+        "r_organization_social"
+      ],
+      "evidence": {
+        "level": "sourced",
+        "sources": [
+          {
+            "url": "https://learn.microsoft.com/en-us/linkedin/marketing/community-management/community-management-overview",
+            "title": "LinkedIn: Community Management overview"
+          }
+        ]
+      }
+    },
+    {
+      "id": "partners",
+      "label": "Ads, Sales Navigator or recruiting",
+      "difficulty": "gated",
+      "handsOnMinutes": {
+        "min": 60,
+        "max": 120
+      },
+      "waitDays": {
+        "min": 14,
+        "max": 90
+      },
+      "summary": "Separate partner programs, each with a business review.",
+      "scopes": [],
+      "evidence": {
+        "level": "uncertain",
+        "sources": [
+          {
+            "url": "https://learn.microsoft.com/en-us/linkedin/shared/authentication/getting-access",
+            "title": "LinkedIn: Getting access"
+          }
+        ],
+        "note": "Programs are sourced. LinkedIn publishes no timelines; the wait is our estimate."
+      }
+    },
+    {
+      "id": "member-read",
+      "label": "Read a person's own posts",
+      "difficulty": "gated",
+      "handsOnMinutes": {
+        "min": 0,
+        "max": 0
+      },
+      "waitDays": {
+        "min": 0,
+        "max": 0
+      },
+      "summary": "Closed: LinkedIn is not accepting requests for r_member_social.",
+      "scopes": [
+        "r_member_social"
+      ],
+      "evidence": {
+        "level": "sourced",
+        "sources": [
+          {
+            "url": "https://learn.microsoft.com/en-us/linkedin/marketing/community-management/community-management-overview",
+            "title": "LinkedIn: Community Management overview"
+          }
+        ]
+      }
+    }
+  ]
 }

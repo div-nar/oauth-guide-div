@@ -28,6 +28,14 @@ export function guideToMarkdown(g: Guide, baseUrl: string): string {
     "Step tags: [AGENT] an agent can do this in your signed-in browser or CLI. [YOU] a person must do this. [WAIT] waiting on the provider.",
   ];
   if (g.oauth.notes) out.push("", `Note: ${g.oauth.notes}`);
+  if (g.useCases.length) {
+    out.push("", "## Difficulty depends on what access you need");
+    for (const u of g.useCases) {
+      out.push(
+        `- ${u.label}: ${u.difficulty} (hands-on ${range(u.handsOnMinutes, "min")}, waiting ${range(u.waitDays, "days")}). ${u.summary}${u.scopes.length ? ` Scopes: ${u.scopes.join(", ")}.` : ""}`,
+      );
+    }
+  }
   if (g.whoYouNeed.length) {
     out.push("", "## Who you need");
     for (const w of g.whoYouNeed) out.push(`- ${w.role}: ${w.why}`);
@@ -35,10 +43,10 @@ export function guideToMarkdown(g: Guide, baseUrl: string): string {
   out.push("", "## Steps");
   g.steps.forEach((s, i) => {
     const time = range(s.minutes, "min") ?? range(s.waitDays, "days");
-    out.push("", `${i + 1}. ${OWNER_TAG[s.owner]} ${s.title}${time ? ` (${time})` : ""}`, `   ${s.plain}`);
+    out.push("", `${i + 1}. ${OWNER_TAG[s.owner]} ${s.title}${time ? ` (${time})` : ""}`, `   ${s.plain}`, `   Permalink: ${baseUrl}/guides/${g.slug}#step-${s.id}`);
     if (s.technical) out.push(`   Technical: ${s.technical}`);
     if (s.whyHuman) out.push(`   Why a person: ${s.whyHuman}`);
-    if (s.url) out.push(`   Go to: ${s.url}`);
+    if (s.link) out.push(`   Link${s.link.prefilled ? " (pre-filled)" : ""}: ${s.link.url}`);
     out.push(`   ${evidenceLine(s.evidence)}`);
   });
   if (g.forks.length) {

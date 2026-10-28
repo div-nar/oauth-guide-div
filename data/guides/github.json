@@ -1,18 +1,36 @@
 {
   "slug": "github",
-  "app": { "name": "GitHub", "website": "https://github.com" },
+  "app": {
+    "name": "GitHub",
+    "website": "https://github.com"
+  },
   "lastChecked": "2026-10-28",
   "generatedBy": "library",
-  "oauth": { "supported": true, "notes": "GitHub offers OAuth apps and GitHub Apps. This guide covers OAuth apps, which is what Composio's GitHub auth config uses." },
+  "oauth": {
+    "supported": true,
+    "notes": "GitHub offers OAuth apps and GitHub Apps. This guide covers OAuth apps, which is what Composio's GitHub auth config uses."
+  },
   "verdict": {
     "difficulty": "easy",
-    "handsOnMinutes": { "min": 5, "max": 15 },
-    "waitDays": { "min": 0, "max": 0 },
+    "handsOnMinutes": {
+      "min": 5,
+      "max": 15
+    },
+    "waitDays": {
+      "min": 0,
+      "max": 0
+    },
     "summary": "A self-serve form with no review. The only surprise comes later: organisations block new OAuth apps by default, so an owner must approve yours."
   },
   "whoYouNeed": [
-    { "role": "Anyone with a GitHub account", "why": "To register the app under a personal account." },
-    { "role": "An owner or admin of your GitHub organisation (optional)", "why": "Only if the app should belong to the company's organisation rather than a person." }
+    {
+      "role": "Anyone with a GitHub account",
+      "why": "To register the app under a personal account."
+    },
+    {
+      "role": "An owner or admin of your GitHub organisation (optional)",
+      "why": "Only if the app should belong to the company's organisation rather than a person."
+    }
   ],
   "steps": [
     {
@@ -21,9 +39,24 @@
       "title": "Sign in to GitHub",
       "plain": "Log in to the GitHub account (or organisation) that should own the app.",
       "whyHuman": "Signing in is yours to do. An agent can carry on once you are signed in.",
-      "minutes": { "min": 1, "max": 2 },
-      "url": "https://github.com/login",
-      "evidence": { "level": "sourced", "sources": [{ "url": "https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/creating-an-oauth-app", "title": "GitHub Docs: Creating an OAuth app" }] }
+      "minutes": {
+        "min": 1,
+        "max": 2
+      },
+      "evidence": {
+        "level": "sourced",
+        "sources": [
+          {
+            "url": "https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/creating-an-oauth-app",
+            "title": "GitHub Docs: Creating an OAuth app"
+          }
+        ]
+      },
+      "link": {
+        "url": "https://github.com/login",
+        "label": "Sign in to GitHub",
+        "prefilled": false
+      }
     },
     {
       "id": "get-redirect",
@@ -31,15 +64,28 @@
       "title": "Copy the redirect address from Composio",
       "plain": "In the Composio dashboard, create a GitHub auth config and copy the redirect address it shows. GitHub needs this address so it knows where to send users back after they click Allow.",
       "technical": "Dashboard > Auth Configs > Create Auth Config > GitHub > OAuth2 > Use your own developer credentials. Composio's docs currently give https://backend.composio.dev/api/v3/toolkits/auth/callback, but always use the value the dashboard shows.",
-      "minutes": { "min": 1, "max": 3 },
-      "url": "https://dashboard.composio.dev",
+      "minutes": {
+        "min": 1,
+        "max": 3
+      },
       "evidence": {
         "level": "sourced",
         "sources": [
-          { "url": "https://docs.composio.dev/docs/authentication/custom-app-vs-managed-app", "title": "Composio: Managed vs custom auth" },
-          { "url": "https://composio.dev/auth/github", "title": "Composio: GitHub OAuth guide" }
+          {
+            "url": "https://docs.composio.dev/docs/authentication/custom-app-vs-managed-app",
+            "title": "Composio: Managed vs custom auth"
+          },
+          {
+            "url": "https://composio.dev/auth/github",
+            "title": "Composio: GitHub OAuth guide"
+          }
         ],
         "note": "Composio's older Google guide still shows the v1 address (/api/v1/auth-apps/add). The dashboard value wins."
+      },
+      "link": {
+        "url": "https://dashboard.composio.dev/~/project/auth-configs",
+        "label": "Open Composio auth configs",
+        "prefilled": false
       }
     },
     {
@@ -47,10 +93,25 @@
       "owner": "agent",
       "title": "Register the OAuth app",
       "plain": "Fill in GitHub's short form: the app's name, your website, and the redirect address from Composio.",
-      "technical": "Profile picture > Settings > Developer settings > OAuth apps > New OAuth App. Fields: Application name, Homepage URL, Application description (optional), Authorization callback URL (up to 10). Leave Enable Device Flow off unless you need a CLI flow. 'Expire user access tokens' is on by default.",
-      "minutes": { "min": 2, "max": 5 },
-      "url": "https://github.com/settings/applications/new",
-      "evidence": { "level": "sourced", "sources": [{ "url": "https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/creating-an-oauth-app", "title": "GitHub Docs: Creating an OAuth app" }] }
+      "technical": "Profile picture > Settings > Developer settings > OAuth apps > New OAuth App. Fields: Application name, Homepage URL, Application description (optional), Authorization callback URL (up to 10). Leave Enable Device Flow off unless you need a CLI flow. 'Expire user access tokens' is on by default. For an organisation-owned app use https://github.com/organizations/YOUR-ORG/settings/applications/new.",
+      "minutes": {
+        "min": 2,
+        "max": 5
+      },
+      "evidence": {
+        "level": "sourced",
+        "sources": [
+          {
+            "url": "https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/creating-an-oauth-app",
+            "title": "GitHub Docs: Creating an OAuth app"
+          }
+        ]
+      },
+      "link": {
+        "url": "https://github.com/settings/applications/new",
+        "label": "Open GitHub's new OAuth app form",
+        "prefilled": false
+      }
     },
     {
       "id": "secret",
@@ -58,11 +119,24 @@
       "title": "Generate the client secret and paste it into Composio",
       "plain": "On the new app's page, click to generate a client secret, then paste it, with the client ID, into the Composio auth config.",
       "whyHuman": "The secret is a password for your app. Pasting it yourself keeps it out of any agent's chat history.",
-      "minutes": { "min": 1, "max": 2 },
+      "minutes": {
+        "min": 1,
+        "max": 2
+      },
       "evidence": {
         "level": "sourced",
-        "sources": [{ "url": "https://composio.dev/auth/github", "title": "Composio: GitHub OAuth guide" }],
+        "sources": [
+          {
+            "url": "https://composio.dev/auth/github",
+            "title": "Composio: GitHub OAuth guide"
+          }
+        ],
         "note": "Keeping secrets out of the agent's context is our recommendation, not a GitHub rule."
+      },
+      "link": {
+        "url": "https://github.com/settings/developers",
+        "label": "Open your GitHub OAuth apps",
+        "prefilled": false
       }
     },
     {
@@ -70,15 +144,39 @@
       "owner": "agent",
       "title": "Test a connection",
       "plain": "Connect a test GitHub account through Composio. The approval screen should now show your app's name instead of Composio's.",
-      "minutes": { "min": 1, "max": 3 },
-      "evidence": { "level": "sourced", "sources": [{ "url": "https://docs.composio.dev/docs/authentication/custom-app-vs-managed-app", "title": "Composio: Managed vs custom auth" }] }
+      "minutes": {
+        "min": 1,
+        "max": 3
+      },
+      "evidence": {
+        "level": "sourced",
+        "sources": [
+          {
+            "url": "https://docs.composio.dev/docs/authentication/custom-app-vs-managed-app",
+            "title": "Composio: Managed vs custom auth"
+          }
+        ]
+      },
+      "link": {
+        "url": "https://dashboard.composio.dev/~/project/auth-configs",
+        "label": "Open Composio auth configs",
+        "prefilled": false
+      }
     }
   ],
   "forks": [
     {
       "condition": "Your users connect accounts that belong to a GitHub organisation",
       "effect": "New organisations restrict OAuth apps by default. Each user's organisation owner must approve your app before it can see that organisation's private repositories.",
-      "evidence": { "level": "sourced", "sources": [{ "url": "https://docs.github.com/en/organizations/managing-oauth-access-to-your-organizations-data/about-oauth-app-access-restrictions", "title": "GitHub Docs: OAuth app access restrictions" }] }
+      "evidence": {
+        "level": "sourced",
+        "sources": [
+          {
+            "url": "https://docs.github.com/en/organizations/managing-oauth-access-to-your-organizations-data/about-oauth-app-access-restrictions",
+            "title": "GitHub Docs: OAuth app access restrictions"
+          }
+        ]
+      }
     }
   ],
   "nuances": [
@@ -86,27 +184,88 @@
       "title": "Everything on the form is public",
       "detail": "GitHub shows the app's name, description and homepage to users. Do not put internal URLs or other private details there.",
       "ifStuck": "Edit the app under Developer settings at any time.",
-      "evidence": { "level": "sourced", "sources": [{ "url": "https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/creating-an-oauth-app", "title": "GitHub Docs: Creating an OAuth app" }] }
+      "evidence": {
+        "level": "sourced",
+        "sources": [
+          {
+            "url": "https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/creating-an-oauth-app",
+            "title": "GitHub Docs: Creating an OAuth app"
+          }
+        ]
+      }
     },
     {
       "title": "A user says the app can't see their company's repositories",
       "detail": "Their organisation has OAuth app restrictions on, which is the default for new organisations.",
       "ifStuck": "Ask the user to request access from their organisation owner during the connection, or the owner can approve the app in the organisation's settings.",
-      "evidence": { "level": "sourced", "sources": [{ "url": "https://docs.github.com/en/organizations/managing-oauth-access-to-your-organizations-data/about-oauth-app-access-restrictions", "title": "GitHub Docs: OAuth app access restrictions" }] }
+      "evidence": {
+        "level": "sourced",
+        "sources": [
+          {
+            "url": "https://docs.github.com/en/organizations/managing-oauth-access-to-your-organizations-data/about-oauth-app-access-restrictions",
+            "title": "GitHub Docs: OAuth app access restrictions"
+          }
+        ]
+      }
     },
     {
       "title": "Limits",
       "detail": "One account or organisation can own up to 100 OAuth apps, and each app can have up to 10 redirect addresses.",
       "ifStuck": "Reuse one app per environment rather than one per customer.",
-      "evidence": { "level": "sourced", "sources": [{ "url": "https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/creating-an-oauth-app", "title": "GitHub Docs: Creating an OAuth app" }] }
+      "evidence": {
+        "level": "sourced",
+        "sources": [
+          {
+            "url": "https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/creating-an-oauth-app",
+            "title": "GitHub Docs: Creating an OAuth app"
+          }
+        ]
+      }
     }
   ],
   "config": {
     "consoleUrl": "https://github.com/settings/developers",
     "redirectUriNote": "Use the redirect URI shown in your Composio auth config (documented as https://backend.composio.dev/api/v3/toolkits/auth/callback).",
     "scopes": [
-      { "name": "repo", "plain": "Read and write all repositories the user can access, including private ones.", "sensitivity": "basic" },
-      { "name": "read:user", "plain": "Read the user's profile.", "sensitivity": "basic" }
+      {
+        "name": "repo",
+        "plain": "Read and write all repositories the user can access, including private ones.",
+        "sensitivity": "basic"
+      },
+      {
+        "name": "read:user",
+        "plain": "Read the user's profile.",
+        "sensitivity": "basic"
+      }
     ]
-  }
+  },
+  "useCases": [
+    {
+      "id": "repos",
+      "label": "Read or change code, issues and pull requests",
+      "difficulty": "easy",
+      "handsOnMinutes": {
+        "min": 5,
+        "max": 15
+      },
+      "waitDays": {
+        "min": 0,
+        "max": 0
+      },
+      "summary": "No review. Users in organisations may need their org owner to approve your app.",
+      "scopes": [
+        "repo",
+        "read:user"
+      ],
+      "evidence": {
+        "level": "sourced",
+        "sources": [
+          {
+            "url": "https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/creating-an-oauth-app",
+            "title": "GitHub Docs: Creating an OAuth app"
+          }
+        ]
+      }
+    }
+  ]
 }

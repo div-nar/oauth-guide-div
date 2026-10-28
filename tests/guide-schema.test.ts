@@ -28,4 +28,22 @@ describe("GuideSchema", () => {
     });
     expect(() => parseGuide(g)).toThrow();
   });
+
+  test("requires at least one use case when OAuth is supported", () => {
+    expect(() => parseGuide(minimalGuide({ useCases: [] }))).toThrow();
+  });
+
+  test("allows zero use cases when OAuth is not supported", () => {
+    const g = minimalGuide({
+      oauth: { supported: false },
+      useCases: [],
+      verdict: { difficulty: "not_applicable", handsOnMinutes: { min: 0, max: 0 }, waitDays: { min: 0, max: 0 }, summary: "No OAuth." },
+      steps: [],
+    });
+    expect(parseGuide(g).useCases).toEqual([]);
+  });
+
+  test("keeps a step's direct link and its prefilled flag", () => {
+    expect(parseGuide(minimalGuide()).steps[0].link?.prefilled).toBe(false);
+  });
 });

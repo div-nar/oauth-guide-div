@@ -1,19 +1,40 @@
 {
   "slug": "gmail",
-  "app": { "name": "Gmail", "website": "https://mail.google.com" },
+  "app": {
+    "name": "Gmail",
+    "website": "https://mail.google.com"
+  },
   "lastChecked": "2026-10-28",
   "generatedBy": "library",
-  "oauth": { "supported": true, "notes": "Set up in Google Cloud. The same steps apply to other Google APIs, but Gmail's reading permissions are among the most tightly controlled." },
+  "oauth": {
+    "supported": true,
+    "notes": "Set up in Google Cloud. The same steps apply to other Google APIs, but Gmail's reading permissions are among the most tightly controlled."
+  },
   "verdict": {
     "difficulty": "hard",
-    "handsOnMinutes": { "min": 90, "max": 240 },
-    "waitDays": { "min": 14, "max": 60 },
+    "handsOnMinutes": {
+      "min": 90,
+      "max": 240
+    },
+    "waitDays": {
+      "min": 14,
+      "max": 60
+    },
     "summary": "Creating the app takes minutes, but reading or changing email counts as 'restricted' access. Google must verify your app, and if your servers handle that email, an approved security assessor must audit you every year. Expect weeks."
   },
   "whoYouNeed": [
-    { "role": "Someone who can edit DNS for your company domain", "why": "Google requires proof that you own the domain on your homepage and privacy policy." },
-    { "role": "Someone who can approve spend", "why": "The yearly security assessment is done by a third-party assessor. Google does not publish a price." },
-    { "role": "A person to record a demo video", "why": "Google wants a video of the sign-in flow and of each restricted permission in use." }
+    {
+      "role": "Someone who can edit DNS for your company domain",
+      "why": "Google requires proof that you own the domain on your homepage and privacy policy."
+    },
+    {
+      "role": "Someone who can approve spend",
+      "why": "The yearly security assessment is done by a third-party assessor. Google does not publish a price."
+    },
+    {
+      "role": "A person to record a demo video",
+      "why": "Google wants a video of the sign-in flow and of each restricted permission in use."
+    }
   ],
   "steps": [
     {
@@ -22,17 +43,48 @@
       "title": "Sign in to Google Cloud and create a project",
       "plain": "Log in to console.cloud.google.com with a company account and create a project for your app.",
       "whyHuman": "Signing in and accepting Google Cloud's terms are yours to do.",
-      "minutes": { "min": 3, "max": 10 },
-      "url": "https://console.cloud.google.com/projectcreate",
-      "evidence": { "level": "sourced", "sources": [{ "url": "https://composio.dev/auth/googleapps", "title": "Composio: Google OAuth guide" }] }
+      "minutes": {
+        "min": 3,
+        "max": 10
+      },
+      "evidence": {
+        "level": "sourced",
+        "sources": [
+          {
+            "url": "https://composio.dev/auth/googleapps",
+            "title": "Composio: Google OAuth guide"
+          }
+        ]
+      },
+      "link": {
+        "url": "https://console.cloud.google.com/projectcreate",
+        "label": "Create a Google Cloud project",
+        "prefilled": false
+      }
     },
     {
       "id": "enable-api",
       "owner": "agent",
       "title": "Turn on the Gmail API",
       "plain": "In the project, open the API Library, search for Gmail API and enable it.",
-      "minutes": { "min": 1, "max": 3 },
-      "evidence": { "level": "sourced", "sources": [{ "url": "https://composio.dev/auth/googleapps", "title": "Composio: Google OAuth guide" }] }
+      "minutes": {
+        "min": 1,
+        "max": 3
+      },
+      "evidence": {
+        "level": "sourced",
+        "sources": [
+          {
+            "url": "https://composio.dev/auth/googleapps",
+            "title": "Composio: Google OAuth guide"
+          }
+        ]
+      },
+      "link": {
+        "url": "https://console.cloud.google.com/apis/library/gmail.googleapis.com",
+        "label": "Open the Gmail API page",
+        "prefilled": false
+      }
     },
     {
       "id": "consent-screen",
@@ -40,8 +92,24 @@
       "title": "Set up the consent screen",
       "plain": "This is the 'Allow?' page your users will see. Enter your app's name, a support email, and choose 'External' so people outside your company can connect.",
       "technical": "Google Auth Platform > Get started. Audience: External (any Google user) or Internal (your Workspace org only). Add your homepage, privacy policy and authorized domains.",
-      "minutes": { "min": 5, "max": 15 },
-      "evidence": { "level": "sourced", "sources": [{ "url": "https://composio.dev/auth/googleapps", "title": "Composio: Google OAuth guide" }] }
+      "minutes": {
+        "min": 5,
+        "max": 15
+      },
+      "evidence": {
+        "level": "sourced",
+        "sources": [
+          {
+            "url": "https://composio.dev/auth/googleapps",
+            "title": "Composio: Google OAuth guide"
+          }
+        ]
+      },
+      "link": {
+        "url": "https://console.cloud.google.com/auth/branding",
+        "label": "Open the consent screen settings",
+        "prefilled": false
+      }
     },
     {
       "id": "client",
@@ -49,14 +117,28 @@
       "title": "Create the OAuth client",
       "plain": "Create a 'Web application' client and paste in the redirect address from your Composio Gmail auth config.",
       "technical": "Clients > Create client > Web application. Authorized redirect URIs: the value your Composio auth config shows. Composio's Google guide still shows the older https://backend.composio.dev/api/v1/auth-apps/add.",
-      "minutes": { "min": 2, "max": 5 },
+      "minutes": {
+        "min": 2,
+        "max": 5
+      },
       "evidence": {
         "level": "sourced",
         "sources": [
-          { "url": "https://composio.dev/auth/googleapps", "title": "Composio: Google OAuth guide" },
-          { "url": "https://composio.dev/auth/github", "title": "Composio: GitHub OAuth guide (notes the v3 address)" }
+          {
+            "url": "https://composio.dev/auth/googleapps",
+            "title": "Composio: Google OAuth guide"
+          },
+          {
+            "url": "https://composio.dev/auth/github",
+            "title": "Composio: GitHub OAuth guide (notes the v3 address)"
+          }
         ],
         "note": "Composio's own guides disagree on the redirect address. Use the dashboard value."
+      },
+      "link": {
+        "url": "https://console.cloud.google.com/auth/clients/create",
+        "label": "Create an OAuth client",
+        "prefilled": false
       }
     },
     {
@@ -65,16 +147,48 @@
       "title": "Copy the client ID and secret into Composio",
       "plain": "Create a client secret and paste it, with the client ID, into your Composio auth config.",
       "whyHuman": "The secret is a password for your app. Pasting it yourself keeps it out of any agent's chat history.",
-      "minutes": { "min": 1, "max": 3 },
-      "evidence": { "level": "sourced", "sources": [{ "url": "https://composio.dev/auth/googleapps", "title": "Composio: Google OAuth guide" }] }
+      "minutes": {
+        "min": 1,
+        "max": 3
+      },
+      "evidence": {
+        "level": "sourced",
+        "sources": [
+          {
+            "url": "https://composio.dev/auth/googleapps",
+            "title": "Composio: Google OAuth guide"
+          }
+        ]
+      },
+      "link": {
+        "url": "https://console.cloud.google.com/auth/clients",
+        "label": "Open your OAuth clients",
+        "prefilled": false
+      }
     },
     {
       "id": "test-users",
       "owner": "agent",
       "title": "Add test users and try it",
       "plain": "While the app is in 'Testing', only people you list can connect, and they see a warning screen. Add your team's emails and try a connection.",
-      "minutes": { "min": 2, "max": 5 },
-      "evidence": { "level": "sourced", "sources": [{ "url": "https://developers.google.com/identity/protocols/oauth2/production-readiness/restricted-scope-verification", "title": "Google: Restricted scope verification" }] }
+      "minutes": {
+        "min": 2,
+        "max": 5
+      },
+      "evidence": {
+        "level": "sourced",
+        "sources": [
+          {
+            "url": "https://developers.google.com/identity/protocols/oauth2/production-readiness/restricted-scope-verification",
+            "title": "Google: Restricted scope verification"
+          }
+        ]
+      },
+      "link": {
+        "url": "https://console.cloud.google.com/auth/audience",
+        "label": "Add test users",
+        "prefilled": false
+      }
     },
     {
       "id": "domain",
@@ -82,9 +196,24 @@
       "title": "Prove you own your domain",
       "plain": "Verify your company domain in Google Search Console, usually by adding a DNS record.",
       "whyHuman": "Needs access to your domain's DNS settings.",
-      "minutes": { "min": 10, "max": 30 },
-      "url": "https://search.google.com/search-console",
-      "evidence": { "level": "sourced", "sources": [{ "url": "https://developers.google.com/identity/protocols/oauth2/production-readiness/restricted-scope-verification", "title": "Google: Restricted scope verification" }] }
+      "minutes": {
+        "min": 10,
+        "max": 30
+      },
+      "evidence": {
+        "level": "sourced",
+        "sources": [
+          {
+            "url": "https://developers.google.com/identity/protocols/oauth2/production-readiness/restricted-scope-verification",
+            "title": "Google: Restricted scope verification"
+          }
+        ]
+      },
+      "link": {
+        "url": "https://search.google.com/search-console",
+        "label": "Open Search Console",
+        "prefilled": false
+      }
     },
     {
       "id": "policy-video",
@@ -92,43 +221,92 @@
       "title": "Publish a privacy policy and record a demo video",
       "plain": "Your privacy policy must live on the same domain as your homepage and explain how you use Google data. Record a video showing the sign-in flow and how you use each restricted permission, and upload it to YouTube as Unlisted.",
       "whyHuman": "The policy is a legal commitment, and the video needs a real walkthrough. An agent can draft both for you to review.",
-      "minutes": { "min": 45, "max": 120 },
-      "evidence": { "level": "sourced", "sources": [{ "url": "https://developers.google.com/identity/protocols/oauth2/production-readiness/restricted-scope-verification", "title": "Google: Restricted scope verification" }] }
+      "minutes": {
+        "min": 45,
+        "max": 120
+      },
+      "evidence": {
+        "level": "sourced",
+        "sources": [
+          {
+            "url": "https://developers.google.com/identity/protocols/oauth2/production-readiness/restricted-scope-verification",
+            "title": "Google: Restricted scope verification"
+          }
+        ]
+      },
+      "link": {
+        "url": "https://studio.youtube.com",
+        "label": "Open YouTube Studio to upload as Unlisted",
+        "prefilled": false
+      }
     },
     {
       "id": "submit",
       "owner": "agent",
       "title": "Submit for verification",
       "plain": "Fill in the verification form: why you need each restricted permission and why a narrower one won't do. Attach the video link.",
-      "minutes": { "min": 15, "max": 30 },
-      "evidence": { "level": "sourced", "sources": [{ "url": "https://developers.google.com/identity/protocols/oauth2/production-readiness/restricted-scope-verification", "title": "Google: Restricted scope verification" }] }
+      "minutes": {
+        "min": 15,
+        "max": 30
+      },
+      "evidence": {
+        "level": "sourced",
+        "sources": [
+          {
+            "url": "https://developers.google.com/identity/protocols/oauth2/production-readiness/restricted-scope-verification",
+            "title": "Google: Restricted scope verification"
+          }
+        ]
+      },
+      "link": {
+        "url": "https://console.cloud.google.com/auth/verification",
+        "label": "Open verification center",
+        "prefilled": false
+      }
     },
     {
       "id": "review",
       "owner": "waiting",
       "title": "Google reviews your app",
       "plain": "Google checks your branding, then the restricted permissions. Branding takes 2 to 3 business days. The restricted review 'can potentially take several weeks'.",
-      "waitDays": { "min": 14, "max": 42 },
+      "waitDays": {
+        "min": 14,
+        "max": 42
+      },
       "evidence": {
         "level": "sourced",
-        "sources": [{ "url": "https://developers.google.com/identity/protocols/oauth2/production-readiness/restricted-scope-verification", "title": "Google: Restricted scope verification" }],
+        "sources": [
+          {
+            "url": "https://developers.google.com/identity/protocols/oauth2/production-readiness/restricted-scope-verification",
+            "title": "Google: Restricted scope verification"
+          }
+        ],
         "note": "Google says 'several weeks'. The 14 to 42 day range is our reading of that, not a Google number."
       }
     },
     {
       "id": "casa",
       "owner": "waiting",
-      "title": "Security assessment (if your servers touch the email)",
-      "plain": "If Gmail data passes through or is stored on your servers, an assessor approved by Google must check your security. Google's Trust and Safety team contacts you when it's time. You repeat this every 12 months.",
+      "title": "Security assessment (yearly)",
+      "plain": "Apps that reach restricted Gmail data through a server, not just the user's browser, need an assessment by a Google-approved assessor. When Composio fetches email for your agent, the data passes through Composio's servers under your app, so expect this to apply. Google's Trust and Safety team contacts you when it's time, and you repeat it every 12 months.",
       "whyHuman": "You choose and pay an assessor, and answer their questions.",
-      "waitDays": { "min": 7, "max": 30 },
+      "waitDays": {
+        "min": 7,
+        "max": 30
+      },
       "evidence": {
         "level": "uncertain",
         "sources": [
-          { "url": "https://support.google.com/cloud/answer/13465431", "title": "Google: Security assessment" },
-          { "url": "https://developers.google.com/identity/protocols/oauth2/production-readiness/restricted-scope-verification", "title": "Google: Restricted scope verification" }
+          {
+            "url": "https://support.google.com/cloud/answer/13465431",
+            "title": "Google: Security assessment"
+          },
+          {
+            "url": "https://developers.google.com/identity/protocols/oauth2/production-readiness/restricted-scope-verification",
+            "title": "Google: Restricted scope verification"
+          }
         ],
-        "note": "The requirement and the yearly repeat are sourced. Google gives no duration or price, so the 7 to 30 day range is a guess."
+        "note": "The requirement and yearly repeat are sourced. That Composio relaying data triggers it for your app is our reading, not confirmed by Google or Composio. Google gives no price or duration; 7 to 30 days is a guess."
       }
     }
   ],
@@ -136,12 +314,28 @@
     {
       "condition": "Your agent only sends email (gmail.send)",
       "effect": "Sending is 'sensitive', not 'restricted'. You still need Google's app verification, but no security assessment. This is much faster.",
-      "evidence": { "level": "sourced", "sources": [{ "url": "https://developers.google.com/workspace/gmail/api/auth/scopes", "title": "Gmail API scopes" }] }
+      "evidence": {
+        "level": "sourced",
+        "sources": [
+          {
+            "url": "https://developers.google.com/workspace/gmail/api/auth/scopes",
+            "title": "Gmail API scopes"
+          }
+        ]
+      }
     },
     {
       "condition": "Only people inside your own Google Workspace will connect",
       "effect": "Choose 'Internal' on the consent screen. No verification is needed.",
-      "evidence": { "level": "sourced", "sources": [{ "url": "https://support.google.com/cloud/answer/7454865", "title": "Google: Unverified apps" }] }
+      "evidence": {
+        "level": "sourced",
+        "sources": [
+          {
+            "url": "https://support.google.com/cloud/answer/7454865",
+            "title": "Google: Unverified apps"
+          }
+        ]
+      }
     },
     {
       "condition": "You stay unverified (pilot with a few users)",
@@ -149,8 +343,14 @@
       "evidence": {
         "level": "sourced",
         "sources": [
-          { "url": "https://support.google.com/cloud/answer/7454865", "title": "Google: Unverified apps" },
-          { "url": "https://developers.google.com/identity/protocols/oauth2/production-readiness/restricted-scope-verification", "title": "Google: Restricted scope verification" }
+          {
+            "url": "https://support.google.com/cloud/answer/7454865",
+            "title": "Google: Unverified apps"
+          },
+          {
+            "url": "https://developers.google.com/identity/protocols/oauth2/production-readiness/restricted-scope-verification",
+            "title": "Google: Restricted scope verification"
+          }
         ],
         "note": "Google says Testing-mode refresh tokens have limited lifetimes. The commonly quoted 7 days was not re-checked."
       }
@@ -161,29 +361,156 @@
       "title": "Ask for the narrowest Gmail permission",
       "detail": "gmail.readonly, gmail.modify, gmail.compose, gmail.metadata and full mail access are all restricted. gmail.send is only sensitive. Google asks you to justify why a narrower permission won't work.",
       "ifStuck": "If your agent only drafts or sends, drop the reading permissions to skip the security assessment.",
-      "evidence": { "level": "sourced", "sources": [{ "url": "https://developers.google.com/workspace/gmail/api/auth/scopes", "title": "Gmail API scopes" }] }
+      "evidence": {
+        "level": "sourced",
+        "sources": [
+          {
+            "url": "https://developers.google.com/workspace/gmail/api/auth/scopes",
+            "title": "Gmail API scopes"
+          }
+        ]
+      }
     },
     {
       "title": "Re-verification every year",
       "detail": "Restricted-scope apps must be reassessed at least every 12 months, and adding a new restricted permission can trigger a new assessment.",
       "ifStuck": "Put the renewal in the calendar the day your approval letter arrives.",
-      "evidence": { "level": "sourced", "sources": [{ "url": "https://developers.google.com/identity/protocols/oauth2/production-readiness/restricted-scope-verification", "title": "Google: Restricted scope verification" }] }
+      "evidence": {
+        "level": "sourced",
+        "sources": [
+          {
+            "url": "https://developers.google.com/identity/protocols/oauth2/production-readiness/restricted-scope-verification",
+            "title": "Google: Restricted scope verification"
+          }
+        ]
+      }
     },
     {
       "title": "Unverified while you wait",
       "detail": "Until approval, you are limited to listed test users or 100 new users behind a warning screen.",
       "ifStuck": "Run pilots with Composio's managed Gmail app (it shows 'Composio' on the consent screen) while your own app is in review.",
-      "evidence": { "level": "sourced", "sources": [{ "url": "https://docs.composio.dev/docs/authentication/custom-app-vs-managed-app", "title": "Composio: Managed vs custom auth" }] }
+      "evidence": {
+        "level": "sourced",
+        "sources": [
+          {
+            "url": "https://docs.composio.dev/docs/authentication/custom-app-vs-managed-app",
+            "title": "Composio: Managed vs custom auth"
+          }
+        ]
+      }
     }
   ],
   "config": {
     "consoleUrl": "https://console.cloud.google.com/auth/overview",
     "redirectUriNote": "Use the redirect URI shown in your Composio auth config.",
     "scopes": [
-      { "name": "https://www.googleapis.com/auth/gmail.readonly", "plain": "Read all email and settings.", "sensitivity": "restricted" },
-      { "name": "https://www.googleapis.com/auth/gmail.modify", "plain": "Read, change and delete email (not permanent deletion).", "sensitivity": "restricted" },
-      { "name": "https://www.googleapis.com/auth/gmail.send", "plain": "Send email only.", "sensitivity": "sensitive" },
-      { "name": "https://www.googleapis.com/auth/gmail.labels", "plain": "Manage labels only.", "sensitivity": "basic" }
+      {
+        "name": "https://www.googleapis.com/auth/gmail.readonly",
+        "plain": "Read all email and settings.",
+        "sensitivity": "restricted"
+      },
+      {
+        "name": "https://www.googleapis.com/auth/gmail.modify",
+        "plain": "Read, change and delete email (not permanent deletion).",
+        "sensitivity": "restricted"
+      },
+      {
+        "name": "https://www.googleapis.com/auth/gmail.send",
+        "plain": "Send email only.",
+        "sensitivity": "sensitive"
+      },
+      {
+        "name": "https://www.googleapis.com/auth/gmail.labels",
+        "plain": "Manage labels only.",
+        "sensitivity": "basic"
+      }
     ]
-  }
+  },
+  "useCases": [
+    {
+      "id": "read",
+      "label": "Read, sort or draft replies to email",
+      "difficulty": "hard",
+      "handsOnMinutes": {
+        "min": 90,
+        "max": 240
+      },
+      "waitDays": {
+        "min": 14,
+        "max": 60
+      },
+      "summary": "Restricted access: Google verification plus a yearly third-party security assessment.",
+      "scopes": [
+        "gmail.readonly",
+        "gmail.modify",
+        "gmail.compose"
+      ],
+      "evidence": {
+        "level": "sourced",
+        "sources": [
+          {
+            "url": "https://developers.google.com/workspace/gmail/api/auth/scopes",
+            "title": "Gmail API scopes"
+          },
+          {
+            "url": "https://developers.google.com/identity/protocols/oauth2/production-readiness/restricted-scope-verification",
+            "title": "Google: Restricted scope verification"
+          }
+        ]
+      }
+    },
+    {
+      "id": "send",
+      "label": "Send email only",
+      "difficulty": "moderate",
+      "handsOnMinutes": {
+        "min": 45,
+        "max": 120
+      },
+      "waitDays": {
+        "min": 3,
+        "max": 21
+      },
+      "summary": "gmail.send is sensitive, not restricted: Google verification but no security assessment.",
+      "scopes": [
+        "gmail.send"
+      ],
+      "evidence": {
+        "level": "uncertain",
+        "sources": [
+          {
+            "url": "https://developers.google.com/workspace/gmail/api/auth/scopes",
+            "title": "Gmail API scopes"
+          }
+        ],
+        "note": "The scope class is sourced. Google gives no duration for sensitive-scope verification, so the wait is our estimate."
+      }
+    },
+    {
+      "id": "internal",
+      "label": "Only people in your own Google Workspace",
+      "difficulty": "easy",
+      "handsOnMinutes": {
+        "min": 15,
+        "max": 30
+      },
+      "waitDays": {
+        "min": 0,
+        "max": 0
+      },
+      "summary": "Mark the app Internal. No verification needed.",
+      "scopes": [
+        "gmail.readonly"
+      ],
+      "evidence": {
+        "level": "sourced",
+        "sources": [
+          {
+            "url": "https://support.google.com/cloud/answer/7454865",
+            "title": "Google: Unverified apps"
+          }
+        ]
+      }
+    }
+  ]
 }

@@ -27,9 +27,31 @@ describe("library", () => {
     }
   });
 
-  test("difficulties across the library cover at least easy, hard and gated", () => {
-    const d = new Set(listLibraryGuides().map((g) => g.verdict.difficulty));
+  test("use-case difficulties across the library cover at least easy, hard and gated", () => {
+    const d = new Set(listLibraryGuides().flatMap((g) => g.useCases.map((u) => u.difficulty)));
     for (const want of ["easy", "hard", "gated"]) expect(d.has(want as never)).toBe(true);
+  });
+
+  test("every agent or human step has a direct link", () => {
+    for (const g of listLibraryGuides()) {
+      for (const s of g.steps.filter((x) => x.owner !== "waiting")) {
+        expect(s.link?.url, `${g.slug}/${s.id}`).toMatch(/^https:\/\//);
+      }
+    }
+  });
+
+  test("the headline verdict matches one of the guide's use cases", () => {
+    for (const g of listLibraryGuides()) {
+      expect(g.useCases.map((u) => u.difficulty)).toContain(g.verdict.difficulty);
+    }
+  });
+
+  test("slack's create-app link is a pre-filled manifest with Composio's redirect URI", () => {
+    const step = getLibraryGuide("slack")!.steps.find((s) => s.link?.prefilled)!;
+    const url = new URL(step.link!.url);
+    expect(url.origin + url.pathname).toBe("https://api.slack.com/apps");
+    const manifest = JSON.parse(url.searchParams.get("manifest_json")!);
+    expect(manifest.oauth_config.redirect_urls).toContain("https://backend.composio.dev/api/v3/toolkits/auth/callback");
   });
 
   test("unknown slug returns null", () => {

@@ -27,4 +27,13 @@ describe("guideToMarkdown", () => {
     expect(md).toContain("2026-10-28");
     expect(md).toContain("https://example.test/guides/gmail");
   });
+
+  test("lists each use case with its difficulty", () => {
+    for (const u of gmail.useCases) expect(md).toContain(`${u.label}: ${u.difficulty}`);
+  });
+
+  test("prints direct links and marks pre-filled ones", () => {
+    const slack = guideToMarkdown(getLibraryGuide("slack")!, "https://example.test");
+    expect(slack).toContain("(pre-filled)");
+  });
 });
