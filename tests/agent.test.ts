@@ -113,3 +113,28 @@ describe("toStrictSchema", () => {
     walk(s);
   });
 });
+
+describe("citation checking", () => {
+  const fetched = { type: "web_fetch_tool_result", tool_use_id: "f1", content: { type: "web_fetch_result", url: "https://docs.acme.example/oauth/" } };
+  const searched = { type: "web_search_tool_result", tool_use_id: "s1", content: [{ type: "web_search_result", url: "https://acme.example/review", title: "Review" }] };
+
+  test("keeps sources the agent opened or saw in search results, ignoring trailing slashes and fragments", async () => {
+    const g = minimalGuide();
+    g.steps[0].evidence = { level: "sourced", sources: [{ url: "https://docs.acme.example/oauth#scopes", title: "OAuth" }, { url: "https://acme.example/review", title: "Review" }] };
+    const call = scripted([msg([fetched, searched, submit(g)])]);
+    const out = await runGuideAgent("Acme", () => {}, { call, today: "2026-10-29" });
+    expect(out.steps[0].evidence.sources.length).toBe(2);
+    expect(out.steps[0].evidence.level).toBe("sourced");
+  });
+
+  test("drops a cited page the agent never opened and downgrades to uncertain when none remain", async () => {
+    const g = minimalGuide();
+    g.steps[0].evidence = { level: "sourced", sources: [{ url: "https://godocs.acme.example/made-up", title: "Invented" }] };
+    const call = scripted([msg([fetched, submit(g)])]);
+    const out = await runGuideAgent("Acme", () => {}, { call, today: "2026-10-29" });
+    expect(out.steps[0].evidence.sources).toEqual([]);
+    expect(out.steps[0].evidence.level).toBe("uncertain");
+    expect(out.steps[0].evidence.note).toContain("did not open");
+  });
+});
+
