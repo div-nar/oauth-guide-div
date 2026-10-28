@@ -1,7 +1,7 @@
 import type { ChatMessage, ChatResult, SearchResult } from "@/lib/agent/run";
 
 const BASE = "https://openrouter.ai/api/v1/chat/completions";
-export const AGENT_MODEL = process.env.AGENT_MODEL ?? "openai/gpt-5.6-luna";
+export const AGENT_MODEL = process.env.AGENT_MODEL ?? "openai/gpt-5.6-terra";
 const SEARCH_MODEL = process.env.SEARCH_MODEL ?? "openai/gpt-5.6-luna";
 
 async function post(body: Record<string, unknown>) {
