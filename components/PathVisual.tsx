@@ -16,12 +16,13 @@ function weight(s: Step): number {
 export function PathVisual({ guide }: { guide: Guide }) {
   const weights = guide.steps.map(weight);
   const total = weights.reduce((a, b) => a + b, 0) || 1;
-  let acc = 0;
-  const placed = guide.steps.map((s, i) => {
-    const left = (acc / total) * 100;
-    acc += weights[i];
-    return { s, i, left, width: (weights[i] / total) * 100 };
-  });
+  const starts = weights.map((_, i) => weights.slice(0, i).reduce((a, b) => a + b, 0));
+  const placed = guide.steps.map((s, i) => ({
+    s,
+    i,
+    left: (starts[i] / total) * 100,
+    width: (weights[i] / total) * 100,
+  }));
   const hasWait = guide.steps.some((s) => s.owner === "waiting");
   return (
     <figure className="path" aria-label="Who does each step, in order">
