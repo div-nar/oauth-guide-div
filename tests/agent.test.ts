@@ -1,99 +1,133 @@
 import { describe, expect, test } from "bun:test";
+import { z } from "zod";
 import { minimalGuide } from "./fixtures";
-import { toAgentEvent } from "@/lib/agent/events";
-import { runGuideAgent, type ModelCall } from "@/lib/agent/run";
+import { type AgentDeps, type ChatMessage, runGuideAgent } from "@/lib/agent/run";
 import { toStrictSchema } from "@/lib/agent/strict-schema";
 import { GuideSchema } from "@/lib/guide-schema";
-import { z } from "zod";
 
-type Block = Record<string, unknown>;
-const msg = (content: Block[], stop_reason = "tool_use") => ({ content, stop_reason }) as never;
-const submit = (input: unknown, id = "t1") => ({ type: "tool_use", id, name: "submit_guide", input });
+type ToolCall = { name: string; args: unknown; id?: string };
+const turn = (calls: ToolCall[], finish = "tool_calls", content = "") => ({
+  finish_reason: finish,
+  message: {
+    role: "assistant" as const,
+    content,
+    tool_calls: calls.map((c, i) => ({
+      id: c.id ?? `call_${i}`,
+      type: "function" as const,
+      function: { name: c.name, arguments: JSON.stringify(c.args) },
+    })),
+  },
+});
 
-function scripted(responses: ReturnType<typeof msg>[]): ModelCall & { calls: number } {
-  const fn = (async (_params: unknown, onBlock: (b: unknown) => void) => {
-    const r = responses[Math.min(fn.calls, responses.length - 1)] as { content: Block[] };
-    fn.calls++;
-    for (const b of r.content) onBlock(b as never);
-    return r as never;
-  }) as unknown as ModelCall & { calls: number };
-  fn.calls = 0;
-  return fn;
+function deps(turns: ReturnType<typeof turn>[], extra: Partial<AgentDeps> = {}) {
+  let n = 0;
+  const bodies: ChatMessage[][] = [];
+  const d = {
+    chat: async (messages: ChatMessage[]) => {
+      bodies.push([...messages]);
+      return turns[Math.min(n++, turns.length - 1)];
+    },
+    search: async () => [{ url: "https://acme.example/docs", title: "Acme docs", snippet: "OAuth apps" }],
+    fetchPage: async (url: string) => ({ url, text: "Acme OAuth docs page" }),
+    today: "2026-10-29",
+    ...extra,
+    calls: () => n,
+    bodies,
+  };
+  return d as AgentDeps & { calls: () => number; bodies: ChatMessage[][] };
 }
 
-describe("toAgentEvent", () => {
-  test("maps a web_search server_tool_use block to a search event", () => {
-    expect(toAgentEvent({ type: "server_tool_use", name: "web_search", input: { query: "zoom oauth app" } } as never)).toEqual({
-      type: "search",
-      query: "zoom oauth app",
-    });
-  });
-
-  test("maps a web_fetch block to a read event", () => {
-    expect(toAgentEvent({ type: "server_tool_use", name: "web_fetch", input: { url: "https://x.test" } } as never)).toEqual({
-      type: "read",
-      url: "https://x.test",
-    });
-  });
-
-  test("ignores thinking and tool result blocks", () => {
-    expect(toAgentEvent({ type: "thinking", thinking: "" } as never)).toBeNull();
-    expect(toAgentEvent({ type: "web_search_tool_result" } as never)).toBeNull();
-  });
-});
+const submit = (g: unknown) => turn([{ name: "submit_guide", args: g }]);
 
 describe("runGuideAgent", () => {
   test("returns a parsed guide with our slug, date and generatedBy", async () => {
-    const call = scripted([msg([submit(minimalGuide({ slug: "whatever", generatedBy: "library" }))])]);
-    const g = await runGuideAgent("Acme", () => {}, { call, today: "2026-10-29" });
+    const g = await runGuideAgent("Acme", () => {}, deps([submit(minimalGuide({ slug: "whatever", generatedBy: "library" }))]));
     expect(g.slug).toBe("acme");
     expect(g.generatedBy).toBe("agent");
     expect(g.lastChecked).toBe("2026-10-29");
   });
 
-  test("downgrades any 'tested' evidence from the agent to 'sourced' or 'uncertain'", async () => {
-    const bad = minimalGuide();
-    bad.steps[0].evidence = { level: "tested", sources: [] } as never;
-    const call = scripted([msg([submit(bad)])]);
-    const g = await runGuideAgent("Acme", () => {}, { call, today: "2026-10-29" });
-    expect(g.steps[0].evidence.level).toBe("uncertain");
+  test("runs search and page tools, emits events, and feeds results back", async () => {
+    const d = deps([
+      turn([{ name: "web_search", args: { query: "acme oauth" } }]),
+      turn([{ name: "fetch_page", args: { url: "https://acme.example/docs" } }]),
+      submit(minimalGuide()),
+    ]);
+    const events: string[] = [];
+    await runGuideAgent("Acme", (e) => events.push(e.type), d);
+    expect(events).toContain("search");
+    expect(events).toContain("read");
+    expect(d.bodies[2].some((m) => m.role === "tool" && String(m.content).includes("Acme OAuth docs page"))).toBe(true);
   });
 
-  test("a submit_guide input failing the schema twice yields an error and no guide", async () => {
-    const call = scripted([msg([submit({ nope: true }, "a")]), msg([submit({ nope: true }, "b")])]);
-    const events: string[] = [];
-    await expect(runGuideAgent("Acme", (e) => events.push(e.type), { call, today: "2026-10-29" })).rejects.toThrow();
-    expect(call.calls).toBe(2);
+  test("a submit_guide input failing the schema twice yields an error", async () => {
+    const d = deps([submit({ nope: true })]);
+    await expect(runGuideAgent("Acme", () => {}, d)).rejects.toThrow(/structure/);
+    expect(d.calls()).toBe(2);
   });
 
   test("recovers when the first submission is invalid and the second is valid", async () => {
-    const call = scripted([msg([submit({ nope: true }, "a")]), msg([submit(minimalGuide(), "b")])]);
-    const g = await runGuideAgent("Acme", () => {}, { call, today: "2026-10-29" });
-    expect(g.app.name).toBe("Acme");
+    const d = deps([submit({ nope: true }), submit(minimalGuide())]);
+    expect((await runGuideAgent("Acme", () => {}, d)).app.name).toBe("Acme");
   });
 
-  test("resumes after pause_turn and gives up after too many", async () => {
-    const paused = msg([{ type: "server_tool_use", name: "web_search", input: { query: "q" } }], "pause_turn");
-    const call = scripted([paused]);
-    await expect(runGuideAgent("Acme", () => {}, { call, today: "2026-10-29" })).rejects.toThrow(/too long/);
-    expect(call.calls).toBe(5);
+  test("gives up after too many turns without submitting", async () => {
+    const d = deps([turn([{ name: "web_search", args: { query: "q" } }])]);
+    await expect(runGuideAgent("Acme", () => {}, d)).rejects.toThrow(/too long/);
   });
 
-  test("stops on a refusal", async () => {
-    const call = scripted([msg([], "refusal")]);
-    await expect(runGuideAgent("Acme", () => {}, { call, today: "2026-10-29" })).rejects.toThrow(/declined/);
+  test("stops when the response is cut off or filtered", async () => {
+    await expect(runGuideAgent("Acme", () => {}, deps([turn([], "length")]))).rejects.toThrow(/too long to finish/);
+    await expect(runGuideAgent("Acme", () => {}, deps([turn([], "content_filter")]))).rejects.toThrow(/declined/);
   });
 
-  test("emits search and read events as blocks arrive", async () => {
-    const call = scripted([
-      msg([
-        { type: "server_tool_use", name: "web_search", input: { query: "acme oauth" } },
-        submit(minimalGuide()),
+  test("a failing page read is reported to the model, not thrown", async () => {
+    const d = deps([turn([{ name: "fetch_page", args: { url: "https://acme.example/x" } }]), submit(minimalGuide())], {
+      fetchPage: async () => {
+        throw new Error("blocked address");
+      },
+    });
+    await runGuideAgent("Acme", () => {}, d);
+    expect(d.bodies[1].some((m) => m.role === "tool" && String(m.content).includes("blocked address"))).toBe(true);
+  });
+
+  test("never trusts 'tested' from the agent", async () => {
+    const bad = minimalGuide();
+    bad.steps[0].evidence = { level: "tested", sources: [] } as never;
+    const g = await runGuideAgent("Acme", () => {}, deps([submit(bad)]));
+    expect(g.steps[0].evidence.level).toBe("uncertain");
+  });
+});
+
+describe("citation checking", () => {
+  test("keeps sources the agent saw in search results or read, ignoring trailing slashes, www and fragments", async () => {
+    const g = minimalGuide();
+    g.steps[0].evidence = {
+      level: "sourced",
+      sources: [
+        { url: "https://acme.example/docs/#scopes", title: "Docs" },
+        { url: "https://www.acme.example/review", title: "Review" },
+      ],
+    };
+    const d = deps([
+      turn([
+        { name: "web_search", args: { query: "q" } },
+        { name: "fetch_page", args: { url: "https://acme.example/review" }, id: "c2" },
       ]),
+      submit(g),
     ]);
-    const events: string[] = [];
-    await runGuideAgent("Acme", (e) => events.push(e.type), { call, today: "2026-10-29" });
-    expect(events).toContain("search");
+    const out = await runGuideAgent("Acme", () => {}, d);
+    expect(out.steps[0].evidence.sources.length).toBe(2);
+    expect(out.steps[0].evidence.level).toBe("sourced");
+  });
+
+  test("drops a cited page the agent never saw and downgrades to uncertain when none remain", async () => {
+    const g = minimalGuide();
+    g.steps[0].evidence = { level: "sourced", sources: [{ url: "https://godocs.acme.example/made-up", title: "Invented" }] };
+    const out = await runGuideAgent("Acme", () => {}, deps([submit(g)]));
+    expect(out.steps[0].evidence.sources).toEqual([]);
+    expect(out.steps[0].evidence.level).toBe("uncertain");
+    expect(out.steps[0].evidence.note).toContain("did not open");
   });
 });
 
@@ -113,28 +147,3 @@ describe("toStrictSchema", () => {
     walk(s);
   });
 });
-
-describe("citation checking", () => {
-  const fetched = { type: "web_fetch_tool_result", tool_use_id: "f1", content: { type: "web_fetch_result", url: "https://docs.acme.example/oauth/" } };
-  const searched = { type: "web_search_tool_result", tool_use_id: "s1", content: [{ type: "web_search_result", url: "https://acme.example/review", title: "Review" }] };
-
-  test("keeps sources the agent opened or saw in search results, ignoring trailing slashes and fragments", async () => {
-    const g = minimalGuide();
-    g.steps[0].evidence = { level: "sourced", sources: [{ url: "https://docs.acme.example/oauth#scopes", title: "OAuth" }, { url: "https://acme.example/review", title: "Review" }] };
-    const call = scripted([msg([fetched, searched, submit(g)])]);
-    const out = await runGuideAgent("Acme", () => {}, { call, today: "2026-10-29" });
-    expect(out.steps[0].evidence.sources.length).toBe(2);
-    expect(out.steps[0].evidence.level).toBe("sourced");
-  });
-
-  test("drops a cited page the agent never opened and downgrades to uncertain when none remain", async () => {
-    const g = minimalGuide();
-    g.steps[0].evidence = { level: "sourced", sources: [{ url: "https://godocs.acme.example/made-up", title: "Invented" }] };
-    const call = scripted([msg([fetched, submit(g)])]);
-    const out = await runGuideAgent("Acme", () => {}, { call, today: "2026-10-29" });
-    expect(out.steps[0].evidence.sources).toEqual([]);
-    expect(out.steps[0].evidence.level).toBe("uncertain");
-    expect(out.steps[0].evidence.note).toContain("did not open");
-  });
-});
-
