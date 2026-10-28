@@ -1,6 +1,6 @@
 import { AgentLaunchers } from "@/components/AgentLaunchers";
 import { ViewToggle } from "@/components/ViewToggle";
-import { CopyButton } from "@/components/CopyButton";
+import { CopyLine } from "@/components/CopyLine";
 import { GRADE_WORD } from "@/components/GradeMark";
 import { type GuideRow, GuideTable } from "@/components/GuideTable";
 import { getBaseUrl } from "@/lib/base-url";
@@ -58,14 +58,13 @@ export default async function Home() {
         <div className="handoff-head">
           <div>
             <h2 className="handoff-title">Hand it to your agent</h2>
-            <p>Agents read the plain-text version of every guide. Start with this prompt, or pick your agent.</p>
+            <p>Agents read the plain-text version of every guide. Click the prompt to copy it, or pick your agent.</p>
           </div>
           <div className="handoff-actions">
             <AgentLaunchers prompt={prompt} />
-            <CopyButton text={prompt} label="Copy prompt" className="copy-btn" />
           </div>
         </div>
-        <code className="prompt-line">{prompt}</code>
+        <CopyLine text={prompt} />
       </section>
 
       <GuideTable rows={rows} />

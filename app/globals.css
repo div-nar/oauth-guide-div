@@ -279,3 +279,8 @@ details.tech div { margin-top: 6px; padding: 10px 12px; background: var(--card);
 .launcher:hover, .launcher:focus-visible { transform: none; }
 .handoff-head { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 20px; }
 @media (max-width: 760px) { .handoff-head { grid-template-columns: minmax(0, 1fr); } }
+.copy-line { display: flex; align-items: center; gap: 12px; width: 100%; margin-top: 14px; padding: 10px 12px; background: #000; border: 1px solid var(--border); border-radius: 6px; color: var(--muted); font: inherit; text-align: left; cursor: pointer; transition: border-color 120ms, color 120ms; }
+.copy-line code { flex: 1; background: none; border: 0; padding: 0; margin: 0; font-size: 12.5px; color: inherit; }
+.copy-line:hover { border-color: var(--border-strong); color: var(--ink); }
+.copy-icon { display: inline-grid; place-items: center; flex: none; color: var(--faint); }
+.copy-line:hover .copy-icon { color: var(--ink); }

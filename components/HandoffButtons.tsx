@@ -1,5 +1,5 @@
 import { AgentLaunchers } from "@/components/AgentLaunchers";
-import { CopyButton } from "@/components/CopyButton";
+import { CopyLine } from "@/components/CopyLine";
 import type { Guide } from "@/lib/guide-schema";
 import { handoffPrompt } from "@/lib/handoff";
 
@@ -16,9 +16,9 @@ export function HandoffButtons({ guide, baseUrl }: { guide: Guide; baseUrl: stri
         </div>
         <div className="handoff-actions">
           <AgentLaunchers prompt={prompt} />
-          <CopyButton text={prompt} label="Copy prompt" className="copy-btn" />
         </div>
       </div>
+      <CopyLine text={prompt} />
     </section>
   );
 }
