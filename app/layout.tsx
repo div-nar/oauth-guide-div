@@ -1,11 +1,9 @@
 import type { Metadata } from "next";
-import { Bricolage_Grotesque, JetBrains_Mono, Public_Sans } from "next/font/google";
+import { Geist_Mono } from "next/font/google";
 import Link from "next/link";
 import "./globals.css";
 
-const display = Bricolage_Grotesque({ variable: "--font-display", subsets: ["latin"] });
-const body = Public_Sans({ variable: "--font-body", subsets: ["latin"] });
-const mono = JetBrains_Mono({ variable: "--font-mono", subsets: ["latin"] });
+const mono = Geist_Mono({ variable: "--font-mono", subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: "OAuth App Guides",
@@ -15,13 +13,18 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="en" className={`${display.variable} ${body.variable} ${mono.variable}`}>
+    <html lang="en" className={mono.variable}>
       <body>
         <header className="site-header">
           <Link href="/" className="wordmark">
-            OAuth App Guides
+            <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden>
+              <path d="M12 1 L23 12 L12 23 L1 12 Z" fill="currentColor" />
+            </svg>
+            <span className="slash" aria-hidden>/</span>
+            OAuth Guides
           </Link>
           <nav>
+            <Link href="/">Guides</Link>
             <Link href="/evidence">How we checked</Link>
             <a href="/llms.txt">For agents</a>
           </nav>

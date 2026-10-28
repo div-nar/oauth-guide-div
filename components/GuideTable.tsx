@@ -5,7 +5,6 @@ import { useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
 import { AppLogo } from "@/components/AppLogo";
 import { GRADE_WORD, GradeMark } from "@/components/GradeMark";
-import { TimeBar } from "@/components/TimeBar";
 import type { Difficulty } from "@/lib/guide-schema";
 
 export type GuideRow = {
@@ -14,6 +13,7 @@ export type GuideRow = {
   website: string;
   logoUrl?: string | null;
   difficulty: Difficulty;
+  summary: string;
   handsOn: string;
   waiting: string;
   handsOnMax: number;
@@ -47,7 +47,7 @@ export function GuideTable({ rows }: { rows: GuideRow[] }) {
   const count = (id: string) => (id === "all" ? rows.length : rows.filter((r) => r.source === id).length);
 
   return (
-    <section className="board">
+    <section>
       <form
         className="board-search"
         onSubmit={(e) => {
@@ -59,59 +59,48 @@ export function GuideTable({ rows }: { rows: GuideRow[] }) {
         }}
       >
         <label htmlFor="q" className="sr-only">Search guides or add any app</label>
-        <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden><circle cx="11" cy="11" r="7" fill="none" stroke="currentColor" strokeWidth="2" /><path d="M20 20l-4-4" stroke="currentColor" strokeWidth="2" /></svg>
-        <input id="q" value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search, or type any app to research it" autoComplete="off" maxLength={200} />
-        {q.trim() && shown.length === 0 && <button className="btn small-btn" type="submit">Research {q.trim()}</button>}
+        <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden><circle cx="11" cy="11" r="7" fill="none" stroke="currentColor" strokeWidth="2" /><path d="M20 20l-4-4" stroke="currentColor" strokeWidth="2" /></svg>
+        <input id="q" value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search guides, or type any app to research it..." autoComplete="off" maxLength={200} />
+        {q.trim() && shown.length === 0 ? (
+          <button className="btn small-btn" type="submit">Research {q.trim()}</button>
+        ) : (
+          <kbd>/</kbd>
+        )}
       </form>
 
       <div className="board-tabs" role="tablist">
         {TABS.map((t) => (
           <button key={t.id} role="tab" aria-selected={tab === t.id} onClick={() => setTab(t.id)} type="button">
-            {t.label} <span className="muted">({count(t.id)})</span>
+            {t.label} ({count(t.id)})
           </button>
         ))}
       </div>
 
-      <table className="board-table">
-        <thead>
-          <tr>
-            <th className="num">#</th>
-            <th>App</th>
-            <th>Difficulty</th>
-            <th className="hide-sm">Your time</th>
-            <th>Waiting</th>
-            <th className="hide-sm bar-col">Time to approval</th>
-          </tr>
-        </thead>
-        <tbody>
-          {shown.map((r, i) => (
-            <tr key={r.slug} onClick={() => router.push(`/guides/${r.slug}`)}>
-              <td className="num muted">{i + 1}</td>
-              <td>
-                <Link href={`/guides/${r.slug}`} className="app-cell">
-                  <AppLogo name={r.name} website={r.website} logoUrl={r.logoUrl} size={30} />
-                  <span>
-                    <span className="app-name">{r.name}</span> <span className="muted small">{domain(r.website)}</span>
-                    {r.easier && <span className="easier small">{r.easier}</span>}
-                  </span>
-                </Link>
-              </td>
-              <td className="nowrap"><GradeMark difficulty={r.difficulty} size={13} /> {GRADE_WORD[r.difficulty]}</td>
-              <td className="hide-sm nowrap">{r.handsOn}</td>
-              <td className="nowrap">{r.waiting}</td>
-              <td className="hide-sm bar-col"><TimeBar minutes={r.handsOnMax} waitDays={r.waitMax} difficulty={r.difficulty} /></td>
-            </tr>
-          ))}
-          {shown.length === 0 && (
-            <tr className="empty">
-              <td colSpan={6}>
-                No guide for &ldquo;{q.trim()}&rdquo; yet. Press Enter and the research agent will write one from the
-                official docs in about two minutes.
-              </td>
-            </tr>
-          )}
-        </tbody>
-      </table>
+      <div className="card-grid">
+        {shown.map((r) => (
+          <Link key={r.slug} href={`/guides/${r.slug}`} className="card">
+            <div className="card-title">
+              <AppLogo name={r.name} website={r.website} logoUrl={r.logoUrl} size={24} />
+              <h3>{r.name}</h3>
+              <span className="card-grade">
+                <GradeMark difficulty={r.difficulty} size={11} /> {GRADE_WORD[r.difficulty]}
+              </span>
+            </div>
+            <p className="card-desc">{r.summary}</p>
+            {r.easier && <p className="card-easier">{r.easier}</p>}
+            <p className="card-meta">
+              {r.handsOn} of work{r.waitMax ? `, ${r.waiting} waiting` : ", no waiting"}
+              {r.source === "agent" && <span className="card-agent">agent-researched</span>}
+            </p>
+          </Link>
+        ))}
+      </div>
+      {shown.length === 0 && (
+        <p className="empty">
+          No guide for &ldquo;{q.trim()}&rdquo; yet. Press Enter and the research agent writes one from the official
+          docs in about two minutes.
+        </p>
+      )}
     </section>
   );
 }

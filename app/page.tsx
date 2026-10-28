@@ -21,6 +21,7 @@ function toRow(g: Guide): GuideRow {
     website: g.app.website,
     logoUrl: g.app.logoUrl,
     difficulty: v.difficulty,
+    summary: v.summary,
     handsOn: formatHandsOn(v.handsOnMinutes),
     waiting: formatWait(v.waitDays),
     handsOnMax: v.handsOnMinutes.max,
@@ -41,17 +42,18 @@ export default async function Home() {
 
   return (
     <main className="page wide">
+      <nav className="crumbs small" aria-label="Breadcrumb">guides</nav>
       <section className="home-hero">
-        <div>
-          <h1 className="home-title">OAuth app guides</h1>
-          <p className="home-kicker">How long until your agent can connect to any app</p>
-        </div>
-        <p className="home-lede">
-          Before your agent can act in someone&apos;s Gmail, Slack or HubSpot, you need your own app with that
-          provider. Some take five minutes. Some take weeks of review. Here&apos;s which, what blocks you, and
-          which steps your coding agent can do for you.
+        <h1>OAuth app guides</h1>
+        <p className="lede">
+          Before your agent can act in someone&apos;s Gmail, Slack or HubSpot, you need your own OAuth app with
+          that provider. Some take five minutes, some take weeks of review. Pick the app, see what blocks you,
+          and hand the setup to your coding agent.
         </p>
       </section>
+
+
+      <GuideTable rows={rows} />
 
       <section className="home-try">
         <div>
@@ -66,9 +68,6 @@ export default async function Home() {
           <AgentLogos />
         </div>
       </section>
-
-      <h2 className="label board-label">Guides</h2>
-      <GuideTable rows={rows} />
     </main>
   );
 }
