@@ -1,69 +1,61 @@
-import Image from "next/image";
+import Link from "next/link";
+import { GRADE_MEANING, GRADE_WORD, GradeMark } from "@/components/GradeMark";
+import { formatHandsOn, formatWait } from "@/lib/format";
+import type { Difficulty } from "@/lib/guide-schema";
+import { listLibraryGuides } from "@/lib/library";
+
+const ORDER: Difficulty[] = ["easy", "moderate", "hard", "gated"];
 
 export default function Home() {
+  const guides = [...listLibraryGuides()].sort(
+    (a, b) => ORDER.indexOf(a.verdict.difficulty) - ORDER.indexOf(b.verdict.difficulty),
+  );
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert h-5 w-[100px]"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the{" "}
-            <code className="rounded bg-black/[.06] px-1.5 py-0.5 font-mono text-[0.9em] dark:bg-white/[.08]">
-              page.tsx
-            </code>{" "}
-            file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+    <main className="page">
+      <section className="ask">
+        <h1>Which app do your users need to connect?</h1>
+        <p>
+          Before your agent can act in someone&apos;s Gmail, Slack or HubSpot, you need your own OAuth app with
+          that provider. Some take five minutes. Some take weeks of review. Find out which, and hand the
+          setup to your agent.
+        </p>
+        <form action="/generate" method="get">
+          <label htmlFor="q" className="sr-only">App name or website</label>
+          <input id="q" name="q" placeholder="App name or website, e.g. Zoom or calendly.com" required maxLength={200} />
+          <button className="btn" type="submit">Get the guide</button>
+        </form>
+        <p className="small muted" style={{ margin: "10px 0 0" }}>
+          Apps we haven&apos;t covered yet are researched live by an agent. It takes about a minute.
+        </p>
+      </section>
+
+      <section className="library">
+        <h2>Checked guides</h2>
+        <p className="small muted" style={{ margin: 0 }}>Researched from official docs, with every claim linked.</p>
+        <div>
+          {guides.map((g) => (
+            <Link key={g.slug} href={`/guides/${g.slug}`} className="library-row">
+              <GradeMark difficulty={g.verdict.difficulty} />
+              <div>
+                <div className="name">{g.app.name}</div>
+                <div className="small muted">{GRADE_WORD[g.verdict.difficulty]}</div>
+              </div>
+              <div className="row-facts">
+                Hands-on {formatHandsOn(g.verdict.handsOnMinutes)}
+                <br />
+                Waiting: {formatWait(g.verdict.waitDays)}
+              </div>
+            </Link>
+          ))}
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert h-[14px] w-4"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={14}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+        <div className="legend">
+          {ORDER.map((d) => (
+            <span key={d}>
+              <GradeMark difficulty={d} size={14} /> {GRADE_WORD[d]}: {GRADE_MEANING[d].toLowerCase()}
+            </span>
+          ))}
         </div>
-      </main>
-    </div>
+      </section>
+    </main>
   );
 }
