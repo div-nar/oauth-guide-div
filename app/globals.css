@@ -322,3 +322,8 @@ details.tech div { margin-top: 6px; padding: 10px 12px; background: var(--card);
 
 .modal { margin: auto; inset: 0; }
 .modal[open] { animation: none; }
+
+.hint { text-transform: none; letter-spacing: 0; color: var(--faint); font-family: var(--font); margin-left: 8px; }
+.modal-option { grid-template-columns: 16px 14px minmax(0, 1fr) auto; }
+.tick { width: 16px; height: 16px; border: 1px solid var(--border-strong); border-radius: 4px; display: grid; place-items: center; font-size: 11px; color: var(--bg); }
+.modal-option[aria-checked="true"] .tick { background: var(--ink); border-color: var(--ink); }

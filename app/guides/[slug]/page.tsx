@@ -42,8 +42,9 @@ export default async function GuidePage({ params, searchParams }: PageProps<"/gu
     );
   }
   const baseUrl = await getBaseUrl();
-  const picked = typeof sp.access === "string" ? g.useCases.find((u) => u.id === sp.access) : undefined;
-  const headline = picked ?? g.useCases.find((u) => u.difficulty === g.verdict.difficulty) ?? g.useCases[0];
+  const picked = typeof sp.access === "string" ? sp.access.split(",").filter((id) => g.useCases.some((u) => u.id === id)) : [];
+  const headline = g.useCases.find((u) => u.difficulty === g.verdict.difficulty) ?? g.useCases[0];
+  const initialIds = picked.length ? picked : headline ? [headline.id] : [];
 
   const faqs: Faq[] = [
     ...g.forks.map((f) => ({ q: `What if ${f.condition.charAt(0).toLowerCase() + f.condition.slice(1)}?`, a: f.effect, evidence: f.evidence })),
@@ -76,7 +77,7 @@ export default async function GuidePage({ params, searchParams }: PageProps<"/gu
       <HandoffButtons guide={g} baseUrl={baseUrl} />
 
       {g.oauth.supported && headline ? (
-        <GuideBody guide={g} defaultId={headline.id} initialExisting={sp.existing === "1"} />
+        <GuideBody guide={g} initialIds={initialIds} initialExisting={sp.existing === "1"} />
       ) : (
         <>
           <p className="verdict-summary">{g.verdict.summary} {g.oauth.notes}</p>

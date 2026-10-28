@@ -9,16 +9,17 @@ import { PathVisual } from "@/components/PathVisual";
 import { StepTable } from "@/components/StepTable";
 import { formatHandsOn, formatWait } from "@/lib/format";
 import type { Guide } from "@/lib/guide-schema";
-import { stepsFor } from "@/lib/paths";
+import { combine } from "@/lib/paths";
 
 // The two questions that decide the path: what access, and whether you already have an app.
-export function GuideBody({ guide: g, defaultId, initialExisting = false }: { guide: Guide; defaultId: string; initialExisting?: boolean }) {
+export function GuideBody({ guide: g, initialIds, initialExisting = false }: { guide: Guide; initialIds: string[]; initialExisting?: boolean }) {
   const router = useRouter();
-  const [id, setId] = useState(defaultId);
+  const [ids, setIds] = useState<string[]>(initialIds);
   const [existing, setExisting] = useState(initialExisting && !!g.existingApp);
   const [editing, setEditing] = useState(false);
-  const u = g.useCases.find((x) => x.id === id) ?? g.useCases[0];
-  const steps = stepsFor(g, u.id);
+  const u = combine(g, ids);
+  const steps = u.steps;
+  const parallelNote = u.ids.length > 1 && g.useCases.filter((x) => u.ids.includes(x.id) && x.waitDays.max > 0).length > 1;
   const ex = g.existingApp;
 
   return (
@@ -26,7 +27,7 @@ export function GuideBody({ guide: g, defaultId, initialExisting = false }: { gu
       <section className="picker" aria-label="Your situation">
         <div className="choice-bar">
           <span className="choice-text">
-            <span className="muted">Access:</span> {u.label}
+            <span className="muted">Access:</span> {u.labels.join(" + ")}
             {ex && <><span className="choice-sep" aria-hidden>/</span><span className="muted">{existing ? "Reusing your existing app" : "New app"}</span></>}
           </span>
           {(g.useCases.length > 1 || ex) && (
@@ -44,11 +45,14 @@ export function GuideBody({ guide: g, defaultId, initialExisting = false }: { gu
           {!existing && (
             <dl className="verdict-facts">
               <div><dt>Your time</dt><dd>{formatHandsOn(u.handsOnMinutes)}</dd></div>
-              <div><dt>Waiting on {g.app.name}</dt><dd>{formatWait(u.waitDays)}</dd></div>
+              <div><dt>Waiting on {g.app.name}{parallelNote ? " (longest)" : ""}</dt><dd>{formatWait(u.waitDays)}</dd></div>
               <div><dt>Steps</dt><dd>{steps.length}</dd></div>
             </dl>
           )}
           <p className="verdict-summary">{existing && ex ? ex.summary : u.summary}</p>
+          {parallelNote && !existing && (
+            <p className="small muted">Waiting shows the longest single review, assuming separate reviews can run at the same time. We have not confirmed that for every provider.</p>
+          )}
           {u.scopes.length > 0 && (
             <p className="small muted">Permissions: {u.scopes.map((s) => <code key={s}>{s}</code>)}</p>
           )}
@@ -67,14 +71,14 @@ export function GuideBody({ guide: g, defaultId, initialExisting = false }: { gu
           app={g.app}
           options={g.useCases.map((x) => ({ id: x.id, label: x.label, difficulty: x.difficulty }))}
           hasExisting={!!ex}
-          initial={{ access: u.id, existing }}
+          initial={{ access: u.ids, existing }}
           confirmLabel="Update the guide"
           onClose={() => setEditing(false)}
           onConfirm={(access, isExisting) => {
-            setId(access);
+            setIds(access);
             setExisting(isExisting);
             setEditing(false);
-            router.replace(`/guides/${g.slug}?access=${access}${isExisting ? "&existing=1" : ""}`, { scroll: false });
+            router.replace(`/guides/${g.slug}?access=${access.join(",")}${isExisting ? "&existing=1" : ""}`, { scroll: false });
           }}
         />
       )}

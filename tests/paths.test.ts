@@ -2,7 +2,7 @@ import { describe, expect, test } from "bun:test";
 import { minimalGuide } from "./fixtures";
 import { parseGuide } from "@/lib/guide-schema";
 import { listLibraryGuides } from "@/lib/library";
-import { stepsFor } from "@/lib/paths";
+import { combine, stepsFor } from "@/lib/paths";
 
 const twoStep = () => {
   const g = minimalGuide();
@@ -59,5 +59,54 @@ describe("library paths and edge cases", () => {
       expect(g.existingApp!.reReviewTriggers.length, g.slug).toBeGreaterThan(0);
       expect(g.composio?.managedApp, g.slug).toBeDefined();
     }
+  });
+});
+
+describe("combine (multi-select access)", () => {
+  const build = () => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const g = minimalGuide() as any;
+    g.steps[0].minutes = { min: 5, max: 10 } as never;
+    g.steps.push({ ...g.steps[0], id: "apply", minutes: { min: 20, max: 40 } } as never);
+    g.steps.push({ ...g.steps[0], id: "review", owner: "waiting", minutes: undefined, waitDays: { min: 7, max: 30 } } as never);
+    g.useCases[0] = { ...g.useCases[0], id: "basic", difficulty: "easy", stepIds: ["create-app"], scopes: ["a"], waitDays: { min: 0, max: 0 } };
+    g.useCases.push({ ...g.useCases[0], id: "partner", difficulty: "gated", stepIds: ["create-app", "apply", "review"], scopes: ["a", "b"], waitDays: { min: 7, max: 30 } });
+    g.useCases.push({ ...g.useCases[0], id: "mid", difficulty: "hard", stepIds: ["create-app", "review"], scopes: ["c"], waitDays: { min: 3, max: 10 } });
+    return parseGuide(g);
+  };
+
+  test("unions steps in guide order without duplicates", () => {
+    expect(combine(build(), ["mid", "basic"]).steps.map((s) => s.id)).toEqual(["create-app", "review"]);
+  });
+
+  test("takes the hardest difficulty and the longest single wait", () => {
+    const c = combine(build(), ["basic", "partner", "mid"]);
+    expect(c.difficulty).toBe("gated");
+    expect(c.waitDays).toEqual({ min: 7, max: 30 });
+  });
+
+  test("adds hands-on time from the combined steps, counting shared steps once", () => {
+    expect(combine(build(), ["basic", "partner"]).handsOnMinutes).toEqual({ min: 25, max: 50 });
+  });
+
+  test("never reports less hands-on time than any single selected access", () => {
+    const g = build();
+    g.useCases[1].handsOnMinutes = { min: 60, max: 120 };
+    expect(combine(g, ["basic", "partner"]).handsOnMinutes).toEqual({ min: 60, max: 120 });
+  });
+
+  test("merges scopes without duplicates", () => {
+    expect(combine(build(), ["basic", "partner", "mid"]).scopes).toEqual(["a", "b", "c"]);
+  });
+
+  test("one selection returns that use case's own figures", () => {
+    const g = build();
+    const c = combine(g, ["partner"]);
+    expect(c.handsOnMinutes).toEqual(g.useCases[1].handsOnMinutes);
+    expect(c.summary).toBe(g.useCases[1].summary);
+  });
+
+  test("ignores unknown ids and falls back to the first use case when none are valid", () => {
+    expect(combine(build(), ["ghost"]).ids).toEqual(["basic"]);
   });
 });

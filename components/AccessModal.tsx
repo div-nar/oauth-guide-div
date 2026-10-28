@@ -19,12 +19,15 @@ export function AccessModal({
   app: { name: string; website: string; logoUrl?: string | null };
   options: AccessOption[];
   hasExisting: boolean;
-  initial: { access: string; existing: boolean };
+  initial: { access: string[]; existing: boolean };
   confirmLabel?: string;
-  onConfirm: (access: string, existing: boolean) => void;
+  onConfirm: (access: string[], existing: boolean) => void;
   onClose: () => void;
 }) {
-  const [access, setAccess] = useState(initial.access);
+  const [access, setAccess] = useState<string[]>(initial.access);
+  // Multi-select, but never empty: unticking the last option is ignored.
+  const toggle = (id: string) =>
+    setAccess((a) => (a.includes(id) ? (a.length > 1 ? a.filter((x) => x !== id) : a) : [...a, id]));
   const [existing, setExisting] = useState(initial.existing);
   const ref = useRef<HTMLDialogElement>(null);
 
@@ -59,10 +62,11 @@ export function AccessModal({
           <button type="button" className="modal-x" aria-label="Close" onClick={onClose}>×</button>
         </header>
 
-        <h3 className="picker-q">What access do you need?</h3>
-        <div className="modal-options" role="radiogroup">
+        <h3 className="picker-q">What access do you need? <span className="hint">Pick all that apply</span></h3>
+        <div className="modal-options" role="group">
           {options.map((o) => (
-            <button key={o.id} type="button" role="radio" aria-checked={access === o.id} className="modal-option" onClick={() => setAccess(o.id)}>
+            <button key={o.id} type="button" role="checkbox" aria-checked={access.includes(o.id)} className="modal-option" onClick={() => toggle(o.id)}>
+              <span className="tick" aria-hidden>{access.includes(o.id) ? "✓" : ""}</span>
               <GradeMark difficulty={o.difficulty} size={12} />
               <span className="modal-option-label">{o.label}</span>
               <span className="modal-option-grade">{GRADE_WORD[o.difficulty]}</span>

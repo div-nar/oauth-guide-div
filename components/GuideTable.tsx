@@ -114,9 +114,9 @@ export function GuideTable({ rows }: { rows: GuideRow[] }) {
           app={{ name: open.name, website: open.website, logoUrl: open.logoUrl }}
           options={open.options}
           hasExisting={open.hasExisting}
-          initial={{ access: open.defaultAccess ?? open.options[0]?.id ?? "", existing: false }}
+          initial={{ access: [open.defaultAccess ?? open.options[0]?.id ?? ""], existing: false }}
           onClose={() => setOpen(null)}
-          onConfirm={(access, existing) => router.push(`/guides/${open.slug}?access=${access}${existing ? "&existing=1" : ""}`)}
+          onConfirm={(access, existing) => router.push(`/guides/${open.slug}?access=${access.join(",")}${existing ? "&existing=1" : ""}`)}
         />
       )}
       {shown.length === 0 && (
