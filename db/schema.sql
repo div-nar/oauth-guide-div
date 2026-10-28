@@ -15,3 +15,9 @@ CREATE TABLE IF NOT EXISTS generations (
 
 CREATE INDEX IF NOT EXISTS generations_ip_created ON generations (ip, created_at);
 CREATE INDEX IF NOT EXISTS generations_created ON generations (created_at);
+
+-- Background research jobs: progress events are appended as the agent works.
+ALTER TABLE generations ADD COLUMN IF NOT EXISTS slug text;
+ALTER TABLE generations ADD COLUMN IF NOT EXISTS events jsonb NOT NULL DEFAULT '[]'::jsonb;
+ALTER TABLE generations ADD COLUMN IF NOT EXISTS finished_at timestamptz;
+CREATE INDEX IF NOT EXISTS generations_slug_status ON generations (slug, status);

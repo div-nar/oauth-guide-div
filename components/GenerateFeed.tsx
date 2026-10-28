@@ -3,86 +3,93 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
-import type { AgentEvent } from "@/lib/agent/events";
+import type { TimedEvent } from "@/lib/jobs";
+import { trackJob } from "@/lib/research-store";
+import { mmss, useElapsed, useJob } from "@/lib/use-job";
 
-const LABEL = { status: "Note", search: "Searching", read: "Reading" } as const;
+const LABEL: Record<TimedEvent["type"], string> = {
+  status: "Note",
+  search: "Searched",
+  read: "Read",
+  done: "Guide ready",
+  error: "Stopped",
+};
 
-export function GenerateFeed({ query }: { query: string }) {
+function Detail({ e }: { e: TimedEvent }) {
+  if (e.type === "search") return <span>{e.query}</span>;
+  if (e.type === "read") return <a href={e.url} target="_blank" rel="noreferrer">{e.url}</a>;
+  if (e.type === "status") return <span>{e.text}</span>;
+  if (e.type === "error") return <span>{e.message}</span>;
+  return <Link href={`/guides/${e.slug}`}>Open the guide</Link>;
+}
+
+export function GenerateFeed({ query, jobId }: { query: string; jobId: number | null }) {
   const router = useRouter();
-  const [events, setEvents] = useState<AgentEvent[]>([]);
-  const [error, setError] = useState<string | null>(null);
-  const [seconds, setSeconds] = useState(0);
-  const started = useRef(false);
+  const [id, setId] = useState<number | null>(jobId);
+  const [startError, setStartError] = useState<string | null>(null);
+  const requested = useRef(false);
+
+  // Start (or reuse) a background job once; the URL then carries the job id so a
+  // refresh or a later visit picks up the same run instead of starting a new one.
+  useEffect(() => {
+    if (id != null || !query || requested.current) return;
+    requested.current = true;
+    (async () => {
+      const res = await fetch("/api/generate", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ query }),
+      });
+      const j = await res.json().catch(() => ({}));
+      if (!res.ok) return setStartError(j.error ?? "The request failed. Try again.");
+      if (j.status === "done") return router.replace(`/guides/${j.slug}`);
+      trackJob({ id: j.jobId, query, slug: j.slug });
+      setId(j.jobId);
+      router.replace(`/generate?q=${encodeURIComponent(query)}&job=${j.jobId}`);
+    })();
+  }, [id, query, router]);
+
+  const job = useJob(id);
+  const running = !job || job.status === "started";
+  const elapsed = useElapsed(job?.startedAt, running);
+  const done = job?.events.find((e) => e.type === "done");
 
   useEffect(() => {
-    if (started.current) return;
-    started.current = true;
-    const t0 = Date.now();
-    const tick = setInterval(() => setSeconds(Math.round((Date.now() - t0) / 1000)), 1000);
+    if (done && done.type === "done") {
+      const t = setTimeout(() => router.push(`/guides/${done.slug}`), 1200);
+      return () => clearTimeout(t);
+    }
+  }, [done, router]);
 
-    (async () => {
-      try {
-        const res = await fetch("/api/generate", {
-          method: "POST",
-          headers: { "content-type": "application/json" },
-          body: JSON.stringify({ query }),
-        });
-        if (!res.ok || !res.body) {
-          const j = await res.json().catch(() => ({}));
-          throw new Error(j.error ?? "The request failed. Try again.");
-        }
-        const reader = res.body.getReader();
-        const dec = new TextDecoder();
-        let buf = "";
-        for (;;) {
-          const { value, done } = await reader.read();
-          if (done) break;
-          buf += dec.decode(value, { stream: true });
-          const parts = buf.split("\n\n");
-          buf = parts.pop() ?? "";
-          for (const p of parts) {
-            if (!p.startsWith("data: ")) continue;
-            const e = JSON.parse(p.slice(6)) as AgentEvent;
-            if (e.type === "done") router.replace(`/guides/${e.slug}`);
-            else if (e.type === "error") setError(e.message);
-            else setEvents((xs) => [...xs, e]);
-          }
-        }
-      } catch (err) {
-        setError(err instanceof Error ? err.message : "The request failed. Try again.");
-      } finally {
-        clearInterval(tick);
-      }
-    })();
-    return () => clearInterval(tick);
-  }, [query, router]);
+  if (!query && id == null) return <p className="error">Enter an app name on the home page to start.</p>;
+  if (startError) return <p className="error" role="alert">{startError} <Link href="/">Back to the guides</Link></p>;
 
-  if (!query) return <p className="error">Enter an app name on the home page to start.</p>;
-
+  const events = (job?.events ?? []).filter((e) => !(e.type === "status" && e.text.startsWith("Researching")));
   return (
     <div>
-      <p className="small muted" aria-live="polite">
-        {error ? "Stopped" : `Working for ${seconds}s. Most apps take 40 to 90 seconds.`}
+      <p className="research-meta" aria-live="polite">
+        {running ? `Working, ${mmss(elapsed)}. Most apps take about 2 minutes.` : job?.status === "done" ? `Finished in ${mmss(elapsed)}.` : "Stopped."}
+        {running && <span> You can keep browsing; progress follows you in the header.</span>}
       </p>
-      {error && (
-        <p className="error" role="alert">
-          {error} <Link href="/">Back to the guides</Link>
-        </p>
-      )}
-      <ul className="feed">
-        {events.map((e, i) =>
-          e.type === "done" || e.type === "error" ? null : (
-            <li key={i}>
-              <span className="k">{LABEL[e.type]}</span>
-              {e.type === "search" && e.query}
-              {e.type === "read" && (
-                <a href={e.url} target="_blank" rel="noreferrer">{e.url}</a>
-              )}
-              {e.type === "status" && e.text}
-            </li>
-          ),
+      <ol className="timeline">
+        {events.map((e, i) => (
+          <li key={i} className={`tl tl-${e.type}`}>
+            <span className="tl-time">{mmss(Math.round(e.t / 1000))}</span>
+            <span className="tl-dot" aria-hidden />
+            <div className="tl-body">
+              <span className="tl-label">{LABEL[e.type]}</span>
+              <Detail e={e} />
+            </div>
+          </li>
+        ))}
+        {running && (
+          <li className="tl tl-pending">
+            <span className="tl-time">{mmss(elapsed)}</span>
+            <span className="tl-dot" aria-hidden />
+            <div className="tl-body"><span className="tl-label">Working</span><span>Reading docs and writing the guide</span></div>
+          </li>
         )}
-      </ul>
+      </ol>
     </div>
   );
 }

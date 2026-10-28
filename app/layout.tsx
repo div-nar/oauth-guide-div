@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist_Mono } from "next/font/google";
 import Link from "next/link";
+import { ResearchPill } from "@/components/ResearchPill";
 import "./globals.css";
 
 const mono = Geist_Mono({ variable: "--font-mono", subsets: ["latin"] });
@@ -23,6 +24,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
             <span className="slash" aria-hidden>/</span>
             OAuth Guides
           </Link>
+          <ResearchPill />
           <nav>
             <Link href="/">Guides</Link>
             <Link href="/evidence">How we checked</Link>

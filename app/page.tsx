@@ -1,4 +1,5 @@
-import { AgentLogos } from "@/components/AgentLogos";
+import { AgentLaunchers } from "@/components/AgentLaunchers";
+import { ViewToggle } from "@/components/ViewToggle";
 import { CopyButton } from "@/components/CopyButton";
 import { GRADE_WORD } from "@/components/GradeMark";
 import { type GuideRow, GuideTable } from "@/components/GuideTable";
@@ -53,21 +54,20 @@ export default async function Home() {
       </section>
 
 
-      <GuideTable rows={rows} />
-
-      <section className="home-try">
-        <div>
-          <h2 className="label">Try it with your agent</h2>
-          <div className="command">
-            <code>{prompt}</code>
-            <CopyButton text={prompt} label="Copy" className="copy-btn" />
+      <section className="handoff home-handoff" aria-label="Use with your agent">
+        <div className="handoff-head">
+          <div>
+            <h2 className="handoff-title">Hand it to your agent</h2>
+            <p>Agents read the plain-text version of every guide. Start with this prompt, or pick your agent.</p>
           </div>
+          <CopyButton text={prompt} label="Copy prompt" className="copy-btn" />
         </div>
-        <div>
-          <h2 className="label">Works with these agents</h2>
-          <AgentLogos />
-        </div>
+        <code className="prompt-line">{prompt}</code>
+        <AgentLaunchers prompt={prompt} />
       </section>
+
+      <GuideTable rows={rows} />
+      <ViewToggle human="/" machine="/ai" current="human" />
     </main>
   );
 }

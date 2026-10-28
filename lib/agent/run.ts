@@ -76,8 +76,22 @@ function sanitizeEvidence(e: Evidence, seen: Set<string>): Evidence {
   return { ...e, sources, level, note: level === "uncertain" && !note ? "No source given." : note };
 }
 
+// Fix what strict tool schemas cannot express (refinements), rather than reject the guide.
+function repair(node: unknown): unknown {
+  if (Array.isArray(node)) return node.map(repair);
+  if (!node || typeof node !== "object") return node;
+  const o = Object.fromEntries(Object.entries(node).map(([k, v]) => [k, repair(v)])) as Record<string, unknown>;
+  if (typeof o.min === "number" && typeof o.max === "number" && o.min > o.max) [o.min, o.max] = [o.max, o.min];
+  if (o.level === "sourced" && Array.isArray(o.sources) && o.sources.length === 0) {
+    o.level = "uncertain";
+    o.note ??= "No source given.";
+  }
+  return o;
+}
+
 function finalize(raw: unknown, query: string, today: string, seen: Set<string>): Guide {
-  const g = GuideSchema.parse({ ...(raw as object), slug: resolveSlug(query), generatedBy: "agent", lastChecked: today });
+  const fixed = repair(raw) as object;
+  const g = GuideSchema.parse({ ...fixed, slug: resolveSlug(query), generatedBy: "agent", lastChecked: today });
   const fix = <T extends { evidence: Evidence }>(xs: T[]) => xs.map((x) => ({ ...x, evidence: sanitizeEvidence(x.evidence, seen) }));
   return { ...g, useCases: fix(g.useCases), steps: fix(g.steps), forks: fix(g.forks), nuances: fix(g.nuances) };
 }
@@ -158,6 +172,7 @@ export async function runGuideAgent(query: string, emit: (e: AgentEvent) => void
         } catch (err) {
           if (++invalid >= MAX_INVALID) throw new Error("The agent's guide did not match the required structure twice.");
           const detail = err instanceof z.ZodError ? z.prettifyError(err).slice(0, 1500) : String(err);
+          console.warn("submit_guide rejected:", detail);
           reply(`Invalid guide. Fix and call submit_guide again:\n${detail}`);
         }
       } else {

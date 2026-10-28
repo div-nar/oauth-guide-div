@@ -99,6 +99,17 @@ describe("runGuideAgent", () => {
   });
 });
 
+describe("repairs the model cannot see in the schema", () => {
+  test("swaps reversed ranges and downgrades sourced claims with no sources instead of rejecting", async () => {
+    const g = minimalGuide();
+    (g.verdict as { handsOnMinutes: { min: number; max: number } }).handsOnMinutes = { min: 30, max: 10 };
+    g.steps[0].evidence = { level: "sourced", sources: [] };
+    const out = await runGuideAgent("Acme", () => {}, deps([submit(g)]));
+    expect(out.verdict.handsOnMinutes).toEqual({ min: 10, max: 30 });
+    expect(out.steps[0].evidence.level).toBe("uncertain");
+  });
+});
+
 describe("citation checking", () => {
   test("keeps sources the agent saw in search results or read, ignoring trailing slashes, www and fragments", async () => {
     const g = minimalGuide();

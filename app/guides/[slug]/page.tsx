@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { AccessPicker } from "@/components/AccessPicker";
-import { AgentLogos } from "@/components/AgentLogos";
 import { AppLogo } from "@/components/AppLogo";
 import { EvidenceBadge } from "@/components/EvidenceBadge";
 import { HandoffButtons } from "@/components/HandoffButtons";
@@ -30,7 +29,18 @@ export async function generateMetadata({ params }: PageProps<"/guides/[slug]">):
 export default async function GuidePage({ params }: PageProps<"/guides/[slug]">) {
   const { slug } = await params;
   const g = await getGuide(slug);
-  if (!g) notFound();
+  if (!g) {
+    if (!/^[a-z0-9-]{1,80}$/.test(slug)) notFound();
+    const name = slug.split("-").map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join(" ");
+    return (
+      <main className="page">
+        <nav className="crumbs small" aria-label="Breadcrumb"><Link href="/">guides</Link> <span aria-hidden>/</span> <span>{name}</span></nav>
+        <h1 className="research-title">No guide for {name} yet</h1>
+        <p className="lede">An agent can research it from the official developer docs now. It takes about two minutes, and you can keep browsing while it works.</p>
+        <p><Link className="btn" href={`/generate?q=${encodeURIComponent(name)}`}>Research {name}</Link></p>
+      </main>
+    );
+  }
   const baseUrl = await getBaseUrl();
   const headline = g.useCases.find((u) => u.difficulty === g.verdict.difficulty) ?? g.useCases[0];
 
@@ -59,6 +69,8 @@ export default async function GuidePage({ params }: PageProps<"/guides/[slug]">)
           </p>
         </div>
       </header>
+
+      <HandoffButtons guide={g} baseUrl={baseUrl} />
 
       {g.oauth.supported && headline ? (
         <AccessPicker useCases={g.useCases} defaultId={headline.id} appName={g.app.name} />
@@ -91,15 +103,6 @@ export default async function GuidePage({ params }: PageProps<"/guides/[slug]">)
         </section>
       )}
 
-      <section className="block">
-        <h2 className="label">Works with your agent</h2>
-        <p className="muted">
-          Every guide has a plain-text version at <a href={`/guides/${g.slug}.md`}>/guides/{g.slug}.md</a> that
-          coding agents read directly. Hand it over and your agent does its steps, then stops for yours.
-        </p>
-        <AgentLogos size={28} />
-        <HandoffButtons guide={g} baseUrl={baseUrl} />
-      </section>
 
       {faqs.length > 0 && (
         <section className="block">
@@ -119,7 +122,7 @@ export default async function GuidePage({ params }: PageProps<"/guides/[slug]">)
         </section>
       )}
 
-      <ViewToggle slug={g.slug} current="human" />
+      <ViewToggle human={`/guides/${g.slug}`} machine={`/guides/${g.slug}/ai`} current="human" />
     </main>
   );
 }

@@ -21,7 +21,7 @@ export default async function MachinePage({ params }: PageProps<"/guides/[slug]/
         <CopyButton text={md} label="Copy all" />
       </div>
       <pre className="machine">{md}</pre>
-      <ViewToggle slug={g.slug} current="machine" />
+      <ViewToggle human={`/guides/${g.slug}`} machine={`/guides/${g.slug}/ai`} current="machine" />
     </main>
   );
 }
