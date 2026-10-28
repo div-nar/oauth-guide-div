@@ -1,0 +1,106 @@
+{
+  "slug": "slack",
+  "app": { "name": "Slack", "website": "https://slack.com" },
+  "lastChecked": "2026-10-28",
+  "generatedBy": "library",
+  "oauth": { "supported": true },
+  "verdict": {
+    "difficulty": "easy",
+    "handsOnMinutes": { "min": 15, "max": 30 },
+    "waitDays": { "min": 0, "max": 0 },
+    "summary": "Create the app and switch on public distribution, with no review. A Slack Marketplace listing is optional and slow (10+ installs first, then up to about 10 weeks)."
+  },
+  "whoYouNeed": [
+    { "role": "A member of a Slack workspace you control", "why": "Every Slack app is created inside one workspace, and you test it there first." }
+  ],
+  "steps": [
+    {
+      "id": "sign-in",
+      "owner": "human",
+      "title": "Sign in to Slack's app dashboard",
+      "plain": "Log in at api.slack.com/apps with the workspace that will own the app.",
+      "whyHuman": "Signing in is yours to do.",
+      "minutes": { "min": 1, "max": 2 },
+      "url": "https://api.slack.com/apps",
+      "evidence": { "level": "sourced", "sources": [{ "url": "https://docs.slack.dev/authentication/installing-with-oauth", "title": "Slack: Installing with OAuth" }] }
+    },
+    {
+      "id": "create-app",
+      "owner": "agent",
+      "title": "Create the app",
+      "plain": "Click Create New App, choose 'From scratch', give it a name and pick the workspace that owns it.",
+      "minutes": { "min": 2, "max": 4 },
+      "url": "https://api.slack.com/apps",
+      "evidence": { "level": "uncertain", "sources": [{ "url": "https://docs.slack.dev/authentication/installing-with-oauth", "title": "Slack: Installing with OAuth" }], "note": "The exact button labels come from Slack's dashboard, not the page cited. Not checked by hand yet." }
+    },
+    {
+      "id": "redirect-scopes",
+      "owner": "agent",
+      "title": "Add the redirect address and the permissions",
+      "plain": "Under OAuth & Permissions, paste the redirect address from your Composio Slack auth config, then add the permissions your agent needs.",
+      "technical": "Redirect URLs must use HTTPS and cannot contain '#'. Bot scopes and user scopes are listed separately. Composio's auth config lists the scopes it requests.",
+      "minutes": { "min": 3, "max": 8 },
+      "evidence": { "level": "sourced", "sources": [{ "url": "https://docs.slack.dev/authentication/installing-with-oauth", "title": "Slack: Installing with OAuth" }] }
+    },
+    {
+      "id": "distribute",
+      "owner": "agent",
+      "title": "Switch on public distribution",
+      "plain": "Without this, only your own workspace can install the app. Open Manage Distribution, tick off Slack's checklist, and click Activate Public Distribution.",
+      "technical": "Checklist requires OAuth handling and HTTPS on every request URL. No review happens at this step.",
+      "minutes": { "min": 3, "max": 8 },
+      "evidence": { "level": "sourced", "sources": [{ "url": "https://docs.slack.dev/distribution/", "title": "Slack: Distributing your app" }] }
+    },
+    {
+      "id": "credentials",
+      "owner": "human",
+      "title": "Copy the client ID and secret into Composio",
+      "plain": "From Basic Information, copy the client ID and client secret into your Composio Slack auth config.",
+      "whyHuman": "The secret is a password for your app. Pasting it yourself keeps it out of any agent's chat history.",
+      "minutes": { "min": 1, "max": 2 },
+      "evidence": { "level": "sourced", "sources": [{ "url": "https://docs.composio.dev/docs/authentication/custom-app-vs-managed-app", "title": "Composio: Managed vs custom auth" }] }
+    },
+    {
+      "id": "test",
+      "owner": "agent",
+      "title": "Install in a second workspace to test",
+      "plain": "Connect a different workspace through Composio to confirm other teams can install it.",
+      "minutes": { "min": 2, "max": 5 },
+      "evidence": { "level": "sourced", "sources": [{ "url": "https://docs.slack.dev/slack-marketplace/slack-marketplace-review-guide", "title": "Slack Marketplace review guide" }], "note": "Slack asks Marketplace applicants to test outside the development workspace. We apply the same advice here." }
+    }
+  ],
+  "forks": [
+    {
+      "condition": "You want a listing in the Slack Marketplace",
+      "effect": "You first need 10 or more active workspace installs. Then a preliminary review (up to 10 business days) and a functional review (up to 10 weeks for new apps), with a demo video and test credentials.",
+      "evidence": { "level": "sourced", "sources": [{ "url": "https://docs.slack.dev/slack-marketplace/slack-marketplace-review-guide", "title": "Slack Marketplace review guide" }] }
+    },
+    {
+      "condition": "Your customer's workspace requires admin approval for apps",
+      "effect": "The user who connects can only request the app. Their workspace admin must approve it, so expect a short wait on the customer side.",
+      "evidence": { "level": "sourced", "sources": [{ "url": "https://docs.slack.dev/distribution/", "title": "Slack: Distributing your app" }] }
+    }
+  ],
+  "nuances": [
+    {
+      "title": "The redirect address must be HTTPS",
+      "detail": "Slack rejects plain http:// redirect addresses, including for local testing.",
+      "ifStuck": "Use Composio's HTTPS redirect address, or a tunnel such as ngrok for local work.",
+      "evidence": { "level": "sourced", "sources": [{ "url": "https://docs.slack.dev/authentication/installing-with-oauth", "title": "Slack: Installing with OAuth" }] }
+    },
+    {
+      "title": "Ask for fewer permissions",
+      "detail": "Workspace admins weigh the permissions you request when deciding whether to approve your app.",
+      "ifStuck": "Remove scopes your agent does not use yet. You can add them later.",
+      "evidence": { "level": "sourced", "sources": [{ "url": "https://docs.slack.dev/distribution/", "title": "Slack: Distributing your app" }] }
+    }
+  ],
+  "config": {
+    "consoleUrl": "https://api.slack.com/apps",
+    "redirectUriNote": "Use the HTTPS redirect URI shown in your Composio auth config.",
+    "scopes": [
+      { "name": "chat:write", "plain": "Post messages as the app.", "sensitivity": "basic" },
+      { "name": "channels:history", "plain": "Read messages in public channels the app is in.", "sensitivity": "basic" }
+    ]
+  }
+}
