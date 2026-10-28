@@ -1,0 +1,52 @@
+import { EvidenceBadge } from "@/components/EvidenceBadge";
+import type { Guide } from "@/lib/guide-schema";
+import { appliesTo } from "@/lib/paths";
+
+const GLOSSARY: [string, string][] = [
+  ["What is an OAuth app?", "Your app's registration with the provider. It sets the name users see on the 'Allow?' screen and what you may ask for."],
+  ["What are the client ID and secret?", "Your app's username and password. The ID is public. Keep the secret private, and paste it into Composio yourself."],
+  ["What is a redirect address (redirect URI)?", "Where the provider sends people after they click Allow. With Composio, you copy it from your auth config."],
+  ["What are scopes?", "The specific permissions you ask for, such as 'read email'. More powerful scopes mean more review."],
+];
+
+// People and questions that apply to the selected access (all of them when ids is null).
+export function WhoList({ guide: g, ids }: { guide: Guide; ids: string[] | null }) {
+  const who = g.whoYouNeed.filter((w) => !ids || appliesTo(w.useCaseIds, ids));
+  if (!who.length) return null;
+  return (
+    <section className="block">
+      <h2 className="label">Who you&apos;ll need</h2>
+      <ul className="who-list">
+        {who.map((w) => (
+          <li key={w.role}><strong>{w.role}</strong><span className="muted">{w.why}</span></li>
+        ))}
+      </ul>
+    </section>
+  );
+}
+
+export function FaqList({ guide: g, ids }: { guide: Guide; ids: string[] | null }) {
+  const keep = (x: { useCaseIds?: string[] | null }) => !ids || appliesTo(x.useCaseIds, ids);
+  const faqs = [
+    ...g.forks.filter(keep).map((f) => ({ q: `What if ${f.condition.charAt(0).toLowerCase() + f.condition.slice(1)}?`, a: f.effect, extra: null as string | null, evidence: f.evidence })),
+    ...g.nuances.filter(keep).map((n) => ({ q: n.title, a: n.detail, extra: `If you're stuck: ${n.ifStuck}`, evidence: n.evidence })),
+    ...GLOSSARY.map(([q, a]) => ({ q, a, extra: null, evidence: null })),
+  ];
+  return (
+    <section className="block">
+      <h2 className="label">Questions</h2>
+      <div className="faq">
+        {faqs.map((f) => (
+          <details key={f.q}>
+            <summary>{f.q}</summary>
+            <div className="faq-body">
+              <p>{f.a}</p>
+              {f.extra && <p>{f.extra}</p>}
+              {f.evidence && <EvidenceBadge evidence={f.evidence} />}
+            </div>
+          </details>
+        ))}
+      </div>
+    </section>
+  );
+}

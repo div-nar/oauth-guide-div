@@ -2,7 +2,10 @@ import { describe, expect, test } from "bun:test";
 import { minimalGuide } from "./fixtures";
 import { parseGuide } from "@/lib/guide-schema";
 import { listLibraryGuides } from "@/lib/library";
-import { combine, stepsFor } from "@/lib/paths";
+import { appliesTo, combine, stepsFor } from "@/lib/paths";
+import { getLibraryGuide as getLib } from "@/lib/library";
+import { guideToMarkdown } from "@/lib/render-markdown";
+import { handoffPrompt } from "@/lib/handoff";
 
 const twoStep = () => {
   const g = minimalGuide();
@@ -108,5 +111,39 @@ describe("combine (multi-select access)", () => {
 
   test("ignores unknown ids and falls back to the first use case when none are valid", () => {
     expect(combine(build(), ["ghost"]).ids).toEqual(["basic"]);
+  });
+});
+
+describe("filtering by selected access", () => {
+  test("an item with no use case ids applies to every path", () => {
+    expect(appliesTo([], ["a"])).toBe(true);
+  });
+  test("an item applies when any selected access matches", () => {
+    expect(appliesTo(["a", "b"], ["c", "b"])).toBe(true);
+    expect(appliesTo(["a"], ["c"])).toBe(false);
+  });
+});
+
+const getLibraryGuide = getLib;
+
+describe("selection-aware markdown and hand-off", () => {
+  test("markdown for a selection lists only that path's steps and people", () => {
+    const g = getLibraryGuide("slack")!;
+    const md = guideToMarkdown(g, "https://x.test", { ids: ["post"], existing: false });
+    expect(md).toContain("Access: Post messages and replies");
+    expect(md).not.toContain("Submit to the Slack Marketplace");
+    expect(md).not.toContain("10 or more real customer workspaces");
+    expect(guideToMarkdown(g, "https://x.test")).toContain("Submit to the Slack Marketplace");
+  });
+
+  test("markdown for an existing app lists re-review triggers instead of setup steps", () => {
+    const md = guideToMarkdown(getLibraryGuide("gmail")!, "https://x.test", { ids: ["read"], existing: true });
+    expect(md).toContain("What could send you back to review");
+    expect(md).not.toContain("Create the OAuth client");
+  });
+
+  test("the hand-off prompt points the agent at the selected path", () => {
+    const p = handoffPrompt(getLibraryGuide("linkedin")!, "https://x.test", { ids: ["member"], existing: false });
+    expect(p).toContain("https://x.test/guides/linkedin.md?access=member");
   });
 });

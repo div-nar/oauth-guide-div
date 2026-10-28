@@ -3,22 +3,14 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { GuideBody } from "@/components/GuideBody";
 import { AppLogo } from "@/components/AppLogo";
-import { EvidenceBadge } from "@/components/EvidenceBadge";
+import { FaqList, WhoList } from "@/components/GuideExtras";
 import { HandoffButtons } from "@/components/HandoffButtons";
 import { StepTable } from "@/components/StepTable";
 import { ViewToggle } from "@/components/ViewToggle";
 import { getBaseUrl } from "@/lib/base-url";
-import type { Evidence } from "@/lib/guide-schema";
 import { getGuide } from "@/lib/guides";
 
-const GLOSSARY: [string, string][] = [
-  ["What is an OAuth app?", "Your app's registration with the provider. It sets the name users see on the 'Allow?' screen and what you may ask for."],
-  ["What are the client ID and secret?", "Your app's username and password. The ID is public. Keep the secret private, and paste it into Composio yourself."],
-  ["What is a redirect address (redirect URI)?", "Where the provider sends people after they click Allow. With Composio, you copy it from your auth config."],
-  ["What are scopes?", "The specific permissions you ask for, such as 'read email'. More powerful scopes mean more review."],
-];
 
-type Faq = { q: string; a: string; extra?: string; evidence?: Evidence };
 
 export async function generateMetadata({ params }: PageProps<"/guides/[slug]">): Promise<Metadata> {
   const g = await getGuide((await params).slug);
@@ -46,11 +38,6 @@ export default async function GuidePage({ params, searchParams }: PageProps<"/gu
   const headline = g.useCases.find((u) => u.difficulty === g.verdict.difficulty) ?? g.useCases[0];
   const initialIds = picked.length ? picked : headline ? [headline.id] : [];
 
-  const faqs: Faq[] = [
-    ...g.forks.map((f) => ({ q: `What if ${f.condition.charAt(0).toLowerCase() + f.condition.slice(1)}?`, a: f.effect, evidence: f.evidence })),
-    ...g.nuances.map((n) => ({ q: n.title, a: n.detail, extra: `If you're stuck: ${n.ifStuck}`, evidence: n.evidence })),
-    ...GLOSSARY.map(([q, a]) => ({ q, a })),
-  ];
 
   return (
     <main className="page">
@@ -74,55 +61,24 @@ export default async function GuidePage({ params, searchParams }: PageProps<"/gu
         </div>
       </header>
 
-      <HandoffButtons guide={g} baseUrl={baseUrl} />
-
       {g.oauth.supported && headline ? (
-        <GuideBody guide={g} initialIds={initialIds} initialExisting={sp.existing === "1"} />
+        <GuideBody guide={g} initialIds={initialIds} initialExisting={sp.existing === "1"} baseUrl={baseUrl} />
       ) : (
         <>
+          <HandoffButtons guide={g} baseUrl={baseUrl} />
           <p className="verdict-summary">{g.verdict.summary} {g.oauth.notes}</p>
+          <WhoList guide={g} ids={null} />
           {g.steps.length > 0 && (
             <section className="block">
               <h2 className="label">Steps</h2>
               <StepTable steps={g.steps} />
             </section>
           )}
+          <FaqList guide={g} ids={null} />
         </>
       )}
 
-
-      {g.whoYouNeed.length > 0 && (
-        <section className="block">
-          <h2 className="label">Who you&apos;ll need</h2>
-          <ul className="who-list">
-            {g.whoYouNeed.map((w) => (
-              <li key={w.role}><strong>{w.role}</strong><span className="muted">{w.why}</span></li>
-            ))}
-          </ul>
-        </section>
-      )}
-
-
-
-      {faqs.length > 0 && (
-        <section className="block">
-          <h2 className="label">Questions</h2>
-          <div className="faq">
-            {faqs.map((f) => (
-              <details key={f.q}>
-                <summary>{f.q}</summary>
-                <div className="faq-body">
-                  <p>{f.a}</p>
-                  {f.extra && <p>{f.extra}</p>}
-                  {f.evidence && <EvidenceBadge evidence={f.evidence} />}
-                </div>
-              </details>
-            ))}
-          </div>
-        </section>
-      )}
-
-      <ViewToggle human={`/guides/${g.slug}`} machine={`/guides/${g.slug}/ai`} current="human" />
+      {!(g.oauth.supported && headline) && <ViewToggle human={`/guides/${g.slug}`} machine={`/guides/${g.slug}/ai`} current="human" />}
     </main>
   );
 }

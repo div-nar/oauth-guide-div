@@ -28,7 +28,10 @@
     },
     {
       "role": "10 or more real customer workspaces (for reading messages)",
-      "why": "Slack only reviews Marketplace apps that already have 10 active installs."
+      "why": "Slack only reviews Marketplace apps that already have 10 active installs.",
+      "useCaseIds": [
+        "read"
+      ]
     }
   ],
   "steps": [
@@ -269,7 +272,11 @@
             "title": "Slack changelog: rate limits for non-Marketplace apps"
           }
         ]
-      }
+      },
+      "useCaseIds": [
+        "post",
+        "read"
+      ]
     },
     {
       "condition": "Your customer's workspace requires admin approval for apps",
@@ -282,7 +289,11 @@
             "title": "Slack: Distributing your app"
           }
         ]
-      }
+      },
+      "useCaseIds": [
+        "post",
+        "read"
+      ]
     }
   ],
   "nuances": [
@@ -299,7 +310,10 @@
           }
         ],
         "note": "Slack's changelog exempts existing installs of older apps. Slack's FAQ reportedly extends the limits to existing installs from March 3, 2026; we have not confirmed that on Slack's own page."
-      }
+      },
+      "useCaseIds": [
+        "read"
+      ]
     },
     {
       "title": "The redirect address must be HTTPS",

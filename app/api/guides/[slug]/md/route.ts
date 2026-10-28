@@ -12,7 +12,12 @@ export async function GET(req: Request, ctx: RouteContext<"/api/guides/[slug]/md
   const slug = (await ctx.params).slug;
   const base = await getBaseUrl();
   const g = await getGuide(slug);
-  if (g) return new Response(guideToMarkdown(g, base), { headers: { "content-type": "text/markdown; charset=utf-8" } });
+  if (g) {
+    const sp = new URL(req.url).searchParams;
+    const ids = (sp.get("access") ?? "").split(",").filter((id) => g.useCases.some((u) => u.id === id));
+    const sel = ids.length || sp.get("existing") === "1" ? { ids, existing: sp.get("existing") === "1" } : undefined;
+    return new Response(guideToMarkdown(g, base, sel), { headers: { "content-type": "text/markdown; charset=utf-8" } });
+  }
 
   const name = slug.split("-").map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join(" ");
   const r = await startResearch(name, clientIp(req));

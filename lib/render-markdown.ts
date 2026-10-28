@@ -1,4 +1,5 @@
 import type { Evidence, Guide, Step } from "@/lib/guide-schema";
+import { appliesTo, combine, type Selection } from "@/lib/paths";
 
 export const OWNER_TAG: Record<Step["owner"], string> = {
   agent: "[AGENT]",
@@ -14,8 +15,12 @@ function evidenceLine(e: Evidence): string {
   return `Evidence: ${e.level}${src ? ` (${src})` : ""}${e.note ? `. Note: ${e.note}` : ""}`;
 }
 
-export function guideToMarkdown(g: Guide, baseUrl: string): string {
-  const v = g.verdict;
+export function guideToMarkdown(g: Guide, baseUrl: string, sel?: Selection): string {
+  const c = sel && g.useCases.length ? combine(g, sel.ids) : null;
+  const picked = c?.ids ?? g.useCases.map((u) => u.id);
+  const existing = !!(sel?.existing && g.existingApp);
+  const v = c ? { ...g.verdict, difficulty: c.difficulty, handsOnMinutes: c.handsOnMinutes, waitDays: c.waitDays, summary: c.summary } : g.verdict;
+  const steps = c ? c.steps : g.steps;
   const out: string[] = [
     `# OAuth app setup: ${g.app.name}`,
     "",
@@ -27,8 +32,11 @@ export function guideToMarkdown(g: Guide, baseUrl: string): string {
     "",
     "Step tags: [AGENT] an agent can do this in your signed-in browser or CLI. [YOU] a person must do this. [WAIT] waiting on the provider.",
   ];
+  if (c) {
+    out.splice(2, 0, `Access: ${c.labels.join(" + ")}${existing ? " | Reusing an existing app" : ""}`, "");
+  }
   if (g.oauth.notes) out.push("", `Note: ${g.oauth.notes}`);
-  if (g.useCases.length) {
+  if (g.useCases.length && !c) {
     out.push("", "## Difficulty depends on what access you need");
     for (const u of g.useCases) {
       out.push(
@@ -36,12 +44,16 @@ export function guideToMarkdown(g: Guide, baseUrl: string): string {
       );
     }
   }
-  if (g.whoYouNeed.length) {
+  if (g.whoYouNeed.some((x) => appliesTo(x.useCaseIds, picked))) {
     out.push("", "## Who you need");
-    for (const w of g.whoYouNeed) out.push(`- ${w.role}: ${w.why}`);
+    for (const w of g.whoYouNeed.filter((x) => appliesTo(x.useCaseIds, picked))) out.push(`- ${w.role}: ${w.why}`);
   }
-  out.push("", "## Steps");
-  g.steps.forEach((s, i) => {
+  if (existing && g.existingApp) {
+    out.push("", "## You already have an app", g.existingApp.summary, "", "## What could send you back to review");
+    for (const t of g.existingApp.reReviewTriggers) out.push(`- ${t.trigger}: ${t.effect} ${evidenceLine(t.evidence)}`);
+  }
+  if (!existing) out.push("", "## Steps");
+  (existing ? [] : steps).forEach((s, i) => {
     const time = range(s.minutes, "min") ?? range(s.waitDays, "days");
     out.push("", `${i + 1}. ${OWNER_TAG[s.owner]} ${s.title}${time ? ` (${time})` : ""}`, `   ${s.plain}`, `   Permalink: ${baseUrl}/guides/${g.slug}#step-${s.id}`);
     if (s.technical) out.push(`   Technical: ${s.technical}`);
@@ -51,11 +63,11 @@ export function guideToMarkdown(g: Guide, baseUrl: string): string {
   });
   if (g.forks.length) {
     out.push("", "## When it gets harder or easier");
-    for (const f of g.forks) out.push(`- If ${f.condition}: ${f.effect} ${evidenceLine(f.evidence)}`);
+    for (const f of g.forks.filter((x) => appliesTo(x.useCaseIds, picked))) out.push(`- If ${f.condition}: ${f.effect} ${evidenceLine(f.evidence)}`);
   }
   if (g.nuances.length) {
     out.push("", "## Nuances and blockers");
-    for (const n of g.nuances) out.push(`- ${n.title}: ${n.detail} If stuck: ${n.ifStuck} ${evidenceLine(n.evidence)}`);
+    for (const n of g.nuances.filter((x) => appliesTo(x.useCaseIds, picked))) out.push(`- ${n.title}: ${n.detail} If stuck: ${n.ifStuck} ${evidenceLine(n.evidence)}`);
   }
   out.push("", "## Configuration");
   if (g.config.consoleUrl) out.push(`- Console: ${g.config.consoleUrl}`);

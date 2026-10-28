@@ -52,3 +52,13 @@ export function combine(g: Guide, ids: string[]): Combined {
     steps,
   };
 }
+
+export function appliesTo(itemIds: string[] | null | undefined, selected: string[]): boolean {
+  return !itemIds?.length || itemIds.some((id) => selected.includes(id));
+}
+
+export type Selection = { ids: string[]; existing: boolean };
+
+export function selectionQuery(sel: Selection): string {
+  return `?access=${sel.ids.join(",")}${sel.existing ? "&existing=1" : ""}`;
+}

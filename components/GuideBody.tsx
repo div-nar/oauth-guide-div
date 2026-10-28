@@ -4,15 +4,18 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { AccessModal } from "@/components/AccessModal";
 import { EvidenceBadge } from "@/components/EvidenceBadge";
+import { FaqList, WhoList } from "@/components/GuideExtras";
+import { HandoffButtons } from "@/components/HandoffButtons";
 import { GRADE_MEANING, GRADE_WORD, GradeMark } from "@/components/GradeMark";
 import { PathVisual } from "@/components/PathVisual";
 import { StepTable } from "@/components/StepTable";
 import { formatHandsOn, formatWait } from "@/lib/format";
 import type { Guide } from "@/lib/guide-schema";
-import { combine } from "@/lib/paths";
+import { combine, selectionQuery } from "@/lib/paths";
+import { ViewToggle } from "@/components/ViewToggle";
 
 // The two questions that decide the path: what access, and whether you already have an app.
-export function GuideBody({ guide: g, initialIds, initialExisting = false }: { guide: Guide; initialIds: string[]; initialExisting?: boolean }) {
+export function GuideBody({ guide: g, initialIds, initialExisting = false, baseUrl }: { guide: Guide; initialIds: string[]; initialExisting?: boolean; baseUrl: string }) {
   const router = useRouter();
   const [ids, setIds] = useState<string[]>(initialIds);
   const [existing, setExisting] = useState(initialExisting && !!g.existingApp);
@@ -22,8 +25,11 @@ export function GuideBody({ guide: g, initialIds, initialExisting = false }: { g
   const parallelNote = u.ids.length > 1 && g.useCases.filter((x) => u.ids.includes(x.id) && x.waitDays.max > 0).length > 1;
   const ex = g.existingApp;
 
+  const sel = { ids: u.ids, existing: existing && !!ex };
   return (
     <>
+      <HandoffButtons guide={g} baseUrl={baseUrl} sel={sel} steps={existing && ex ? ex.steps : steps} />
+
       <section className="picker" aria-label="Your situation">
         <div className="choice-bar">
           <span className="choice-text">
@@ -113,6 +119,9 @@ export function GuideBody({ guide: g, initialIds, initialExisting = false }: { g
           </section>
         </>
       )}
+      <WhoList guide={g} ids={u.ids} />
+      <FaqList guide={g} ids={u.ids} />
+      <ViewToggle human={`/guides/${g.slug}${selectionQuery(sel)}`} machine={`/guides/${g.slug}/ai${selectionQuery(sel)}`} current="human" />
     </>
   );
 }

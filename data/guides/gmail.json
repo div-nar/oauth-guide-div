@@ -25,15 +25,26 @@
   "whoYouNeed": [
     {
       "role": "Someone who can edit DNS for your company domain",
-      "why": "Google requires proof that you own the domain on your homepage and privacy policy."
+      "why": "Google requires proof that you own the domain on your homepage and privacy policy.",
+      "useCaseIds": [
+        "read",
+        "send"
+      ]
     },
     {
       "role": "Someone who can approve spend",
-      "why": "The yearly security assessment is done by a third-party assessor. Google does not publish a price."
+      "why": "The yearly security assessment is done by a third-party assessor. Google does not publish a price.",
+      "useCaseIds": [
+        "read"
+      ]
     },
     {
       "role": "A person to record a demo video",
-      "why": "Google wants a video of the sign-in flow and of each restricted permission in use."
+      "why": "Google wants a video of the sign-in flow and of each restricted permission in use.",
+      "useCaseIds": [
+        "read",
+        "send"
+      ]
     }
   ],
   "steps": [
@@ -383,7 +394,10 @@
             "title": "Google: Restricted scope verification"
           }
         ]
-      }
+      },
+      "useCaseIds": [
+        "read"
+      ]
     },
     {
       "title": "Unverified while you wait",
@@ -397,7 +411,11 @@
             "title": "Composio: Managed vs custom auth"
           }
         ]
-      }
+      },
+      "useCaseIds": [
+        "read",
+        "send"
+      ]
     }
   ],
   "config": {

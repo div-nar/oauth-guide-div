@@ -28,7 +28,11 @@
     },
     {
       "role": "Someone who can describe your business use case",
-      "why": "Partner programs ask what you will build, and the higher tier needs a screen recording."
+      "why": "Partner programs ask what you will build, and the higher tier needs a screen recording.",
+      "useCaseIds": [
+        "pages",
+        "partners"
+      ]
     }
   ],
   "steps": [
@@ -281,7 +285,11 @@
             "title": "LinkedIn: Getting access"
           }
         ]
-      }
+      },
+      "useCaseIds": [
+        "partners",
+        "member"
+      ]
     },
     {
       "condition": "Your agent needs to read a member's own posts (r_member_social)",
@@ -294,7 +302,11 @@
             "title": "LinkedIn: Community Management overview"
           }
         ]
-      }
+      },
+      "useCaseIds": [
+        "member-read",
+        "member"
+      ]
     }
   ],
   "nuances": [
@@ -310,7 +322,10 @@
             "title": "LinkedIn: Community Management overview"
           }
         ]
-      }
+      },
+      "useCaseIds": [
+        "pages"
+      ]
     },
     {
       "title": "Development tier limits",
@@ -324,7 +339,10 @@
             "title": "LinkedIn: Community Management overview"
           }
         ]
-      }
+      },
+      "useCaseIds": [
+        "pages"
+      ]
     },
     {
       "title": "API versions expire",
@@ -338,7 +356,11 @@
             "title": "LinkedIn: Community Management overview"
           }
         ]
-      }
+      },
+      "useCaseIds": [
+        "pages",
+        "partners"
+      ]
     }
   ],
   "config": {

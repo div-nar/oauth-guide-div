@@ -7,7 +7,7 @@ const prompt = handoffPrompt(github, "https://example.test");
 
 describe("handoff", () => {
   test("prompt points the agent at the markdown guide", () => {
-    expect(prompt).toContain("curl -s https://example.test/guides/github.md");
+    expect(prompt).toContain(`curl -s "https://example.test/guides/github.md"`);
   });
 
   test("prompt tells the agent to stop at [YOU] steps and do [AGENT] steps", () => {

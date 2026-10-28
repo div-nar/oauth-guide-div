@@ -61,11 +61,20 @@ export const GuideSchema = z
   }),
   // What the agent will do decides difficulty; verdict is the most common agent case.
   useCases: z.array(UseCaseSchema),
-  whoYouNeed: z.array(z.object({ role: z.string(), why: z.string() })),
+  // useCaseIds on people, forks and gotchas: which paths they belong to (empty or null = all).
+  whoYouNeed: z.array(z.object({ role: z.string(), why: z.string(), useCaseIds: z.array(z.string()).nullish() })),
   steps: z.array(StepSchema),
-  forks: z.array(z.object({ condition: z.string(), effect: z.string(), evidence: EvidenceSchema })),
+  forks: z.array(
+    z.object({ condition: z.string(), effect: z.string(), evidence: EvidenceSchema, useCaseIds: z.array(z.string()).nullish() }),
+  ),
   nuances: z.array(
-    z.object({ title: z.string(), detail: z.string(), ifStuck: z.string(), evidence: EvidenceSchema }),
+    z.object({
+      title: z.string(),
+      detail: z.string(),
+      ifStuck: z.string(),
+      evidence: EvidenceSchema,
+      useCaseIds: z.array(z.string()).nullish(),
+    }),
   ),
   config: z.object({
     consoleUrl: z.string().nullish(),

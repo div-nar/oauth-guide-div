@@ -29,7 +29,10 @@
     },
     {
       "role": "A Super Admin in each customer's HubSpot account",
-      "why": "HubSpot only lets Super Admins install apps."
+      "why": "HubSpot only lets Super Admins install apps.",
+      "useCaseIds": [
+        "customers"
+      ]
     }
   ],
   "steps": [
@@ -228,7 +231,10 @@
             "title": "HubSpot: Marketplace listing requirements"
           }
         ]
-      }
+      },
+      "useCaseIds": [
+        "customers"
+      ]
     },
     {
       "condition": "Only your own company's HubSpot account will connect",
@@ -257,7 +263,10 @@
             "title": "HubSpot: OAuth quickstart"
           }
         ]
-      }
+      },
+      "useCaseIds": [
+        "customers"
+      ]
     },
     {
       "title": "Is there a cap on installs before listing?",
@@ -272,7 +281,10 @@
           }
         ],
         "note": "Not stated on current pages. Not tested."
-      }
+      },
+      "useCaseIds": [
+        "customers"
+      ]
     },
     {
       "title": "Access tokens last 30 minutes",
@@ -286,7 +298,10 @@
             "title": "HubSpot: OAuth quickstart"
           }
         ]
-      }
+      },
+      "useCaseIds": [
+        "customers"
+      ]
     }
   ],
   "config": {
