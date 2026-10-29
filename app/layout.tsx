@@ -8,7 +8,7 @@ const mono = Geist_Mono({ variable: "--font-mono", subsets: ["latin"] });
 
 export const metadata: Metadata = {
   metadataBase: process.env.SITE_URL ? new URL(process.env.SITE_URL) : undefined,
-  title: "OAuth App Guides",
+  title: "OAuth Guide",
   alternates: { types: { "text/plain": "/llms.txt" } },
   description:
     "How hard it is to get your own OAuth app approved, how long it takes, and which steps your agent can do for you.",
@@ -24,7 +24,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
               <path d="M12 1 L23 12 L12 23 L1 12 Z" fill="currentColor" />
             </svg>
             <span className="slash" aria-hidden>/</span>
-            OAuth Guides
+            OAuth Guide
           </Link>
           <ResearchPill />
           <nav>

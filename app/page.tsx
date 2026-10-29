@@ -1,6 +1,5 @@
 import { AgentLaunchers } from "@/components/AgentLaunchers";
 import { ViewToggle } from "@/components/ViewToggle";
-import { CopyLine } from "@/components/CopyLine";
 import { GRADE_WORD } from "@/components/GradeMark";
 import { type GuideRow, GuideTable } from "@/components/GuideTable";
 import { getBaseUrl } from "@/lib/base-url";
@@ -48,7 +47,7 @@ export default async function Home() {
     <main className="page wide">
       <nav className="crumbs small" aria-label="Breadcrumb">guides</nav>
       <section className="home-hero">
-        <h1>OAuth app guides</h1>
+        <h1>OAuth Guide</h1>
         <p className="lede">
           Before your agent can act in someone&apos;s Gmail, Slack or HubSpot, you need your own OAuth app with
           that provider. Some take five minutes, some take weeks of review. Pick the app, see what blocks you,
@@ -61,13 +60,12 @@ export default async function Home() {
         <div className="handoff-head">
           <div>
             <h2 className="handoff-title">Hand it to your agent</h2>
-            <p>Agents read the plain-text version of every guide. Click the prompt to copy it, or pick your agent.</p>
+            <p>Agents read the plain-text version of every guide. Copy the setup prompt and paste it into your agent.</p>
           </div>
           <div className="handoff-actions">
             <AgentLaunchers prompt={prompt} />
           </div>
         </div>
-        <CopyLine text={prompt} />
       </section>
 
       <GuideTable rows={rows} />

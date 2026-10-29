@@ -3,9 +3,9 @@
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { AccessModal } from "@/components/AccessModal";
-import { EvidenceBadge } from "@/components/EvidenceBadge";
+import { EndpointCheck, EvidenceBadge } from "@/components/EvidenceBadge";
 import { AppLogo } from "@/components/AppLogo";
-import { BlockedList, CheckedList, FaqList, WhoList } from "@/components/GuideExtras";
+import { BlockedList, FaqList, WhoList } from "@/components/GuideExtras";
 import { HandoffButtons } from "@/components/HandoffButtons";
 import { GRADE_MEANING, GRADE_WORD, GradeMark } from "@/components/GradeMark";
 import { StepScroller } from "@/components/StepScroller";
@@ -25,6 +25,7 @@ export function GuideBody({ guide: g, initialIds, initialExisting = false, baseU
   const steps = u.steps;
   const parallelNote = u.ids.length > 1 && g.useCases.filter((x) => u.ids.includes(x.id) && x.waitDays.max > 0).length > 1;
   const ex = g.existingApp;
+  const picked = g.useCases.filter((x) => u.ids.includes(x.id));
 
   const sel = { ids: u.ids, existing: existing && !!ex };
   const composioRuledOut = (g.composio?.limits ?? []).some(
@@ -37,7 +38,7 @@ export function GuideBody({ guide: g, initialIds, initialExisting = false, baseU
       <section className="picker" aria-label="Your situation">
         <div className="choice-bar">
           <span className="choice-text">
-            <span className="muted">Access:</span> {u.labels.join(" + ")}
+            {u.labels.length ? <><span className="muted">Access:</span> {u.labels.join(" + ")}</> : <span className="muted">No OAuth app needed. {g.app.name} uses an API key.</span>}
             {ex && <><span className="choice-sep" aria-hidden>/</span><span className="muted">{existing ? "Reusing your existing app" : "New app"}</span></>}
           </span>
           {(g.useCases.length > 1 || ex) && (
@@ -48,7 +49,7 @@ export function GuideBody({ guide: g, initialIds, initialExisting = false, baseU
           <div className="verdict-grade">
             <GradeMark difficulty={u.difficulty} size={44} />
             <div>
-              <div className="verdict-word">{GRADE_WORD[u.difficulty]}</div>
+              <div className="verdict-word">{GRADE_WORD[u.difficulty]}<EndpointCheck checks={g.checks} /></div>
               <div className="small muted">{GRADE_MEANING[u.difficulty]}</div>
             </div>
           </div>
@@ -59,7 +60,26 @@ export function GuideBody({ guide: g, initialIds, initialExisting = false, baseU
               <div><dt>Steps</dt><dd>{steps.length}</dd></div>
             </dl>
           )}
-          <p className="verdict-summary">{existing && ex ? ex.summary : u.summary}</p>
+          {!existing && picked.length > 1 ? (
+            // Several kinds of access: one short row each, so the verdicts don't run together.
+            <ul className="verdict-paths">
+              {picked.map((x) => (
+                <li key={x.id}>
+                  <GradeMark difficulty={x.difficulty} size={12} />
+                  <p className="verdict-path-label">{x.label} <span>{GRADE_WORD[x.difficulty]}</span></p>
+                  <p className="verdict-path-summary">{x.summary}</p>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p className="verdict-summary">{existing && ex ? ex.summary : u.summary}</p>
+          )}
+          {!g.oauth.supported && g.oauth.notes && (
+            <details className="verdict-more">
+              <summary>Why there is no OAuth app</summary>
+              <p className="small muted">{g.oauth.notes}</p>
+            </details>
+          )}
           {parallelNote && !existing && (
             <p className="small muted">Waiting shows the longest single review, assuming separate reviews can run at the same time. We have not confirmed that for every provider.</p>
           )}
@@ -122,7 +142,6 @@ export function GuideBody({ guide: g, initialIds, initialExisting = false, baseU
         </>
       )}
       <BlockedList guide={g} ids={u.ids} />
-      <CheckedList guide={g} />
       <FaqList guide={g} ids={u.ids} />
       <ViewToggle human={`/guides/${g.slug}${selectionQuery(sel)}`} machine={`/guides/${g.slug}/ai${selectionQuery(sel)}`} current="human" />
     </>

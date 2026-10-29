@@ -27,6 +27,11 @@ export type Combined = {
 // order), the hardest difficulty, the longest single wait (reviews assumed to run
 // in parallel), and hands-on time added up from the combined steps.
 export function combine(g: Guide, ids: string[]): Combined {
+  // No kinds of access to choose from (an app without OAuth): the guide-level verdict and every step.
+  if (!g.useCases.length) {
+    const v = g.verdict;
+    return { ids: [], labels: [], difficulty: v.difficulty, handsOnMinutes: v.handsOnMinutes, waitDays: v.waitDays, summary: v.summary, scopes: [], steps: g.steps };
+  }
   let picked = g.useCases.filter((u) => ids.includes(u.id));
   if (!picked.length) picked = g.useCases.slice(0, 1);
   if (picked.length === 1) {
@@ -60,5 +65,6 @@ export function appliesTo(itemIds: string[] | null | undefined, selected: string
 export type Selection = { ids: string[]; existing: boolean };
 
 export function selectionQuery(sel: Selection): string {
+  if (!sel.ids.length && !sel.existing) return "";
   return `?access=${sel.ids.join(",")}${sel.existing ? "&existing=1" : ""}`;
 }

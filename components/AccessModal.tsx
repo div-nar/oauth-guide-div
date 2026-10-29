@@ -25,6 +25,7 @@ export function AccessModal({
   onClose: () => void;
 }) {
   const [access, setAccess] = useState<string[]>(initial.access);
+  const allPicked = options.every((o) => access.includes(o.id));
   // Multi-select, but never empty: unticking the last option is ignored.
   const toggle = (id: string) =>
     setAccess((a) => (a.includes(id) ? (a.length > 1 ? a.filter((x) => x !== id) : a) : [...a, id]));
@@ -62,7 +63,14 @@ export function AccessModal({
           <button type="button" className="modal-x" aria-label="Close" onClick={onClose}>×</button>
         </header>
 
-        <h3 className="picker-q">What access do you need? <span className="hint">Pick all that apply</span></h3>
+        <h3 className="picker-q">
+          What access do you need? <span className="hint">Pick all that apply</span>
+          {options.length > 1 && (
+            <button type="button" className="select-all" onClick={() => setAccess(allPicked ? [options[0].id] : options.map((o) => o.id))}>
+              {allPicked ? "Clear" : "Select all"}
+            </button>
+          )}
+        </h3>
         <div className="modal-options" role="group">
           {options.map((o) => (
             <button key={o.id} type="button" role="checkbox" aria-checked={access.includes(o.id)} className="modal-option" onClick={() => toggle(o.id)}>

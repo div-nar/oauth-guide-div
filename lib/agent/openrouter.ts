@@ -9,7 +9,7 @@ async function post(body: Record<string, unknown>) {
   if (!key) throw new Error("The research agent is not configured (OPENROUTER_API_KEY is missing).");
   const res = await fetch(BASE, {
     method: "POST",
-    headers: { authorization: `Bearer ${key}`, "content-type": "application/json", "x-title": "OAuth App Guides" },
+    headers: { authorization: `Bearer ${key}`, "content-type": "application/json", "x-title": "OAuth Guide" },
     body: JSON.stringify(body),
     signal: AbortSignal.timeout(120_000),
   });

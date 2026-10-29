@@ -36,15 +36,17 @@ export function StepTable({ steps, checks }: { steps: Step[]; checks?: Checks | 
                 {s.whyHuman && <p className="why">{s.whyHuman}</p>}
                 {s.technical && <p className="tech-text">{s.technical}</p>}
                 <EvidenceBadge evidence={s.evidence} />
-                <StepCheck step={s} checks={checks} />
                 {time && <span className="show-sm muted small">{time}</span>}
               </div>
             </details>
             <span className="hide-sm muted small nowrap">{time}</span>
             {s.link ? (
-              <a className="step-link" href={s.link.url} target="_blank" rel="noreferrer" title={s.link.label} aria-label={s.link.label}>
-                <ExternalIcon />
-              </a>
+              <span className="step-link-cell">
+                <StepCheck step={s} checks={checks} />
+                <a className="step-link" href={s.link.url} target="_blank" rel="noreferrer" title={s.link.label} aria-label={s.link.label}>
+                  <ExternalIcon />
+                </a>
+              </span>
             ) : (
               <span />
             )}

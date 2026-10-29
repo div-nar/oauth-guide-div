@@ -105,16 +105,18 @@ export function StepScroller({ steps, checks }: { steps: Step[]; checks?: Checks
         <p>{s.plain}</p>
         {s.whyHuman && <p className="why">{s.whyHuman}</p>}
         {s.link && (
-          <a className="step-cta" href={s.link.url} target="_blank" rel="noreferrer">
-            {s.link.label}
-            {s.link.prefilled && <span className="prefilled">pre-filled</span>}
-            <ExternalIcon />
-          </a>
+          <div className="step-cta-row">
+            <a className="step-cta" href={s.link.url} target="_blank" rel="noreferrer">
+              {s.link.label}
+              {s.link.prefilled && <span className="prefilled">pre-filled</span>}
+              <ExternalIcon />
+            </a>
+            <StepCheck step={s} checks={checks} />
+          </div>
         )}
         {s.owner === "waiting" && !s.link && <p className="why">Nothing to do but wait. The next step starts when the provider replies.</p>}
         {s.technical && <p className="tech-text">{s.technical}</p>}
         <EvidenceBadge evidence={s.evidence} />
-        <StepCheck step={s} checks={checks} />
       </article>
       <div className="step-foot">
         <PathLegend steps={steps} />

@@ -2,7 +2,7 @@ import { describe, expect, test } from "bun:test";
 import { minimalGuide } from "./fixtures";
 import { parseGuide } from "@/lib/guide-schema";
 import { listLibraryGuides } from "@/lib/library";
-import { appliesTo, combine, stepsFor } from "@/lib/paths";
+import { appliesTo, combine, selectionQuery, stepsFor } from "@/lib/paths";
 import { getLibraryGuide as getLib } from "@/lib/library";
 import { guideToMarkdown } from "@/lib/render-markdown";
 import { handoffPrompt } from "@/lib/handoff";
@@ -145,5 +145,35 @@ describe("selection-aware markdown and hand-off", () => {
   test("the hand-off prompt points the agent at the selected path", () => {
     const p = handoffPrompt(getLibraryGuide("linkedin")!, "https://x.test", { ids: ["member"], existing: false });
     expect(p).toContain("https://x.test/guides/linkedin.md?access=member");
+  });
+});
+
+describe("apps without OAuth", () => {
+  const apiKeyGuide = () => {
+    const g = minimalGuide();
+    g.useCases = [];
+    g.oauth = { supported: false };
+    g.verdict = { ...g.verdict, difficulty: "not_applicable" };
+    return parseGuide(g);
+  };
+
+  test("combine falls back to the guide verdict and every step", () => {
+    const g = apiKeyGuide();
+    const u = combine(g, []);
+    expect(u.ids).toEqual([]);
+    expect(u.difficulty).toBe("not_applicable");
+    expect(u.summary).toBe(g.verdict.summary);
+    expect(u.steps.map((s) => s.id)).toEqual(g.steps.map((s) => s.id));
+  });
+
+  test("links carry no empty access query", () => {
+    expect(selectionQuery({ ids: [], existing: false })).toBe("");
+  });
+
+  test("the hand-off prompt does not call it an OAuth app", () => {
+    const p = handoffPrompt(apiKeyGuide(), "https://x.test", { ids: [], existing: false });
+    expect(p).not.toContain("OAuth app");
+    expect(p).toContain('curl -s "https://x.test/guides/');
+    expect(p).toContain('.md"');
   });
 });

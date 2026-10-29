@@ -1,4 +1,4 @@
-import { CheckLine, EvidenceBadge } from "@/components/EvidenceBadge";
+import { EvidenceBadge } from "@/components/EvidenceBadge";
 import type { Guide } from "@/lib/guide-schema";
 import { appliesTo } from "@/lib/paths";
 
@@ -9,73 +9,56 @@ const GLOSSARY: [string, string][] = [
   ["What are scopes?", "The specific permissions you ask for, such as 'read email'. More powerful scopes mean more review."],
 ];
 
+// "A Super Admin in each account" reads better as a list item without the article.
+function roleName(role: string): string {
+  const r = role.replace(/^(a|an|the)\s+/i, "");
+  return r.charAt(0).toUpperCase() + r.slice(1);
+}
+
 // People and questions that apply to the selected access (all of them when ids is null).
 export function WhoList({ guide: g, ids }: { guide: Guide; ids: string[] | null }) {
   const who = g.whoYouNeed.filter((w) => !ids || appliesTo(w.useCaseIds, ids));
   if (!who.length) return null;
   return (
     <section className="block">
-      <h2 className="label">Who you&apos;ll need</h2>
-      <ul className="who-list">
+      <h2 className="label">What you&apos;ll need</h2>
+      <ul className="need-list">
         {who.map((w) => (
-          <li key={w.role}><strong>{w.role}</strong><span className="muted">{w.why}</span></li>
+          <li key={w.role}>
+            <svg className="need-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" aria-hidden>
+              <circle cx="12" cy="8" r="3.5" />
+              <path d="M5 20c.8-3.6 3.6-5.5 7-5.5s6.2 1.9 7 5.5" />
+            </svg>
+            <p className="need-role">{roleName(w.role)}</p>
+            <p className="need-why">{w.why}</p>
+          </li>
         ))}
       </ul>
     </section>
   );
 }
 
-// Checks run by code without an account: they show the pages and the sign-in
-// endpoint are live, not that the whole setup works.
-export function CheckedList({ guide: g }: { guide: Guide }) {
-  const c = g.checks;
-  if (!c) return null;
-  const n = (o: string) => c.links.filter((l) => l.outcome === o).length;
-  const parts = [
-    n("ok") && `${n("ok")} load`,
-    n("sign_in") && `${n("sign_in")} load behind a sign-in`,
-    n("broken") && `${n("broken")} not found`,
-    n("inconclusive") && `${n("inconclusive")} gave no clear answer`,
-  ].filter(Boolean);
-  return (
-    <section className="block">
-      <h2 className="label">What the agent checked</h2>
-      <p className="muted small">
-        Without an account, so this shows the pages and the sign-in endpoint are live, not that the setup works end to end.
-      </p>
-      {c.links.length > 0 && (
-        <CheckLine
-          check={{ kind: "link", url: "", outcome: n("broken") ? "broken" : "ok", detail: `${c.links.length} step links: ${parts.join(", ")}` }}
-          date={c.date}
-        />
-      )}
-      {c.authorize && <CheckLine check={c.authorize} date={c.date} />}
-      {c.discovery && <CheckLine check={c.discovery} date={c.date} />}
-    </section>
-  );
-}
-
+// Where it failed, then the fix; the cause shows on hover.
 export function BlockedList({ guide: g, ids }: { guide: Guide; ids: string[] | null }) {
   const blockers = (g.blockers ?? []).filter((b) => !ids || appliesTo(b.useCaseIds, ids));
   if (!blockers.length) return null;
   return (
     <section className="block">
       <h2 className="label">Blocked or rejected?</h2>
-      <div className="faq">
+      <ul className="blockers">
         {blockers.map((b) => (
-          <details key={b.symptom}>
-            <summary>{b.symptom}</summary>
-            <div className="faq-body">
-              <p><strong>Why:</strong> {b.cause}</p>
-              <p><strong>What to do:</strong> {b.fix}</p>
+          <li key={b.symptom} className="blocker" title={`Why: ${b.cause}`}>
+            <span className="blocker-icon" aria-hidden>!</span>
+            <p className="blocker-where">{b.symptom.replace(/\.$/, "")}</p>
+            <p className="blocker-fix">
+              {b.fix}
               {b.escalate && (
-                <p><strong>Where to go:</strong> <a className="escalate-link" href={b.escalate.url} target="_blank" rel="noreferrer">{b.escalate.label}</a></p>
+                <> <a href={b.escalate.url} target="_blank" rel="noreferrer" title={b.escalate.label}>Help ↗</a></>
               )}
-              <EvidenceBadge evidence={b.evidence} />
-            </div>
-          </details>
+            </p>
+          </li>
         ))}
-      </div>
+      </ul>
     </section>
   );
 }
