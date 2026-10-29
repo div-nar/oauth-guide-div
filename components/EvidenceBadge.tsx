@@ -21,15 +21,23 @@ export function EvidenceBadge({ evidence }: { evidence: Evidence }) {
   );
 }
 
-// What code saw when it opened a link, without an account. Kept apart from the
-// evidence tag so it never reads as "Tested by hand".
-// A small mark that sits on the card; what was seen opens on hover or tap.
-const MARK = { ok: "✓", sign_in: "✓", broken: "!", differs: "!", inconclusive: "?" } as const;
+// What code saw without an account, kept apart from the evidence tags so it never
+// reads as "Tested by hand". The details open on hover or tap.
+function SealIcon({ ok }: { ok: boolean }) {
+  return (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden>
+      <path d="M12 2.5l2.2 1.6 2.7-.2.9 2.6 2.3 1.4-.6 2.6 1 2.5-2.1 1.7-.4 2.7-2.7.5-1.7 2.1L12 20.9l-2.6 1-1.7-2.1-2.7-.5-.4-2.7-2.1-1.7 1-2.5-.6-2.6 2.3-1.4.9-2.6 2.7.2z" fill="currentColor" opacity="0.18" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round" />
+      {ok ? <path d="M8.3 12.3l2.5 2.5 4.9-5.1" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" /> : <path d="M12 7.8v5M12 16.2v.1" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />}
+    </svg>
+  );
+}
 
 export function CheckMark({ check, date, label }: { check: Check; date: string; label: string }) {
+  const ok = check.outcome === "ok" || check.outcome === "sign_in";
   return (
-    <button type="button" className={`check-mark ${check.outcome}`} aria-label={`${label}: ${check.detail}`}>
-      <span aria-hidden>{MARK[check.outcome]}</span>
+    <button type="button" className={`check-badge ${ok ? "ok" : "bad"}`} aria-label={`${label}: ${check.detail}`}>
+      <SealIcon ok={ok} />
+      <span>{ok ? "Agent Certified" : "Check failed"}</span>
       <span className="check-tip" role="tooltip">
         <strong>{label}</strong> {date}, without an account: {check.detail}
       </span>

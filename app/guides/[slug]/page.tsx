@@ -51,7 +51,7 @@ export default async function GuidePage({ params, searchParams }: PageProps<"/gu
       <header className="guide-head">
         <AppLogo name={g.app.name} website={g.app.website} logoUrl={g.app.logoUrl} size={56} />
         <div>
-          <h1>{g.app.name}<GuideCheck checks={g.checks} /></h1>
+          <h1>{g.app.name}</h1>
           <p className="small muted">
             {g.generatedBy === "agent" ? "Researched by the agent from public docs" : "Researched by hand from official docs"},
             last checked {g.lastChecked}
@@ -63,6 +63,7 @@ export default async function GuidePage({ params, searchParams }: PageProps<"/gu
             )}
           </p>
         </div>
+        <GuideCheck checks={g.checks} />
       </header>
 
       {headline || !g.oauth.supported ? (
