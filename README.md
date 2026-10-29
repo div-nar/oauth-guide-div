@@ -1,4 +1,4 @@
-# OAuth App Guides
+# OAuth Guide
 
 Before an AI agent can act in someone's Gmail, Slack or HubSpot, the developer needs their own OAuth app with that provider. Some take five minutes. Some take weeks of review, a paid security audit, or a partner application. This site tells you which, before you start, and hands the setup to your coding agent.
 

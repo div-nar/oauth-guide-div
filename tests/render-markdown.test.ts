@@ -85,7 +85,7 @@ describe("composio managed app", () => {
 
 describe("agent structure", () => {
   test("sections follow the web page's order", () => {
-    const order = ["## Can't wait? Connect on Composio", "## Who you need", "## Steps", "## If you get blocked or rejected", "## Questions", "## Configuration"];
+    const order = ["## Can't wait? Connect on Composio", "## What you need", "## Steps", "## If you get blocked or rejected", "## Questions", "## Configuration"];
     const at = order.map((h) => md.indexOf(h));
     expect(at.every((i) => i >= 0)).toBe(true);
     expect([...at].sort((a, b) => a - b)).toEqual(at);

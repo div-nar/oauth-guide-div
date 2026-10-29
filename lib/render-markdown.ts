@@ -71,7 +71,7 @@ export function guideToMarkdown(g: Guide, baseUrl: string, sel?: Selection): str
   }
   for (const line of composioOffer(g, picked, v.waitDays.max > 0 && !existing)) out.push(line);
   if (g.whoYouNeed.some((x) => appliesTo(x.useCaseIds, picked))) {
-    out.push("", "## Who you need");
+    out.push("", "## What you need");
     for (const w of g.whoYouNeed.filter((x) => appliesTo(x.useCaseIds, picked))) out.push(`- ${w.role}: ${w.why}`);
   }  if (existing && g.existingApp) {
     out.push("", "## You already have an app", g.existingApp.summary, "", "## What could send you back to review");

@@ -2,51 +2,41 @@
 
 import { useState } from "react";
 import { AppLogo } from "@/components/AppLogo";
-import { claudeCodeLink, cursorLink } from "@/lib/handoff";
 
-type Agent = { name: string; site: string; action: string; href?: (p: string) => string };
-
-const AGENTS: Agent[] = [
-  { name: "Claude Code", site: "claude.ai", action: "Open in Claude Code", href: claudeCodeLink },
-  { name: "Cursor", site: "cursor.com", action: "Open in Cursor", href: cursorLink },
-  { name: "Codex", site: "openai.com", action: "Copy prompt for Codex" },
-  { name: "Gemini", site: "gemini.google.com", action: "Copy prompt for Gemini" },
-  { name: "Windsurf", site: "windsurf.com", action: "Copy prompt for Windsurf" },
+// The agents the prompt works with, shown as a small overlapping stack inside the pill.
+const AGENTS = [
+  { name: "Claude Code", site: "claude.ai" },
+  { name: "Cursor", site: "cursor.com" },
+  { name: "Codex", site: "openai.com" },
 ];
 
-export function AgentLaunchers({ prompt }: { prompt: string }) {
-  const [copied, setCopied] = useState<string | null>(null);
-  const copy = async (name: string) => {
+export function AgentLaunchers({ prompt, label = "Copy setup prompt" }: { prompt: string; label?: string }) {
+  const [copied, setCopied] = useState(false);
+  const copy = async () => {
     try {
       await navigator.clipboard.writeText(prompt);
-      setCopied(name);
-      setTimeout(() => setCopied(null), 1800);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1800);
     } catch {}
   };
   return (
-    <ul className="launchers">
-      {AGENTS.map((a) => {
-        const label = copied === a.name ? "Copied. Paste it into " + a.name : a.action;
-        const inner = (
-          <>
-            <AppLogo name={a.name} website={a.site} size={30} />
-            <span className="launcher-tip" role="tooltip">{label}</span>
-          </>
-        );
-        return (
-          <li key={a.name}>
-            {a.href ? (
-              <a className="launcher" href={a.href(prompt)} target={a.href(prompt).startsWith("http") ? "_blank" : undefined} rel="noreferrer" aria-label={a.action}>
-                {inner}
-              </a>
-            ) : (
-              <button type="button" className="launcher" onClick={() => copy(a.name)} aria-label={a.action}>
-                {inner}
-              </button>
-            )}
-          </li>
-        );
-      })}
-    </ul>
+    <button type="button" className="setup-pill" onClick={copy} aria-label={copied ? "Copied. Paste it into your agent" : label}>
+      <span className="setup-pill-logos" aria-hidden>
+        {AGENTS.map((a) => (
+          <AppLogo key={a.name} name={a.name} website={a.site} size={18} />
+        ))}
+      </span>
+      <span className="setup-pill-label" aria-live="polite">{copied ? "Copied. Paste into your agent" : label}</span>
+      <span className="setup-pill-icon" aria-hidden>
+        {copied ? (
+          <svg width="16" height="16" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="currentColor" strokeWidth="2" /></svg>
+        ) : (
+          <svg width="16" height="16" viewBox="0 0 24 24">
+            <rect x="8" y="8" width="12" height="12" rx="2" fill="none" stroke="currentColor" strokeWidth="1.8" />
+            <path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2" fill="none" stroke="currentColor" strokeWidth="1.8" />
+          </svg>
+        )}
+      </span>
+    </button>
   );
 }

@@ -27,6 +27,11 @@ export type Combined = {
 // order), the hardest difficulty, the longest single wait (reviews assumed to run
 // in parallel), and hands-on time added up from the combined steps.
 export function combine(g: Guide, ids: string[]): Combined {
+  // No kinds of access to choose from (an app without OAuth): the guide-level verdict and every step.
+  if (!g.useCases.length) {
+    const v = g.verdict;
+    return { ids: [], labels: [], difficulty: v.difficulty, handsOnMinutes: v.handsOnMinutes, waitDays: v.waitDays, summary: v.summary, scopes: [], steps: g.steps };
+  }
   let picked = g.useCases.filter((u) => ids.includes(u.id));
   if (!picked.length) picked = g.useCases.slice(0, 1);
   if (picked.length === 1) {
@@ -36,10 +41,16 @@ export function combine(g: Guide, ids: string[]): Combined {
   const stepIds = new Set(picked.flatMap((u) => stepsFor(g, u.id).map((s) => s.id)));
   const steps = g.steps.filter((s) => stepIds.has(s.id));
   const active = steps.filter((s) => s.owner !== "waiting" && s.minutes);
-  // Step times can undercount a use case's own estimate, so never go below the largest one.
-  const floor = { min: Math.max(...picked.map((u) => u.handsOnMinutes.min)), max: Math.max(...picked.map((u) => u.handsOnMinutes.max)) };
-  const summed = { min: active.reduce((a, s) => a + s.minutes!.min, 0), max: active.reduce((a, s) => a + s.minutes!.max, 0) };
-  const handsOnMinutes = { min: Math.max(floor.min, summed.min), max: Math.max(floor.max, summed.max) };
+  const sum = (xs: Step[]) => ({ min: xs.reduce((a, s) => a + s.minutes!.min, 0), max: xs.reduce((a, s) => a + s.minutes!.max, 0) });
+  // Step times can undercount a use case's own estimate, so each selected access gives
+  // a floor: its own estimate plus the steps only the others need. Take the highest.
+  const floors = picked.map((u) => {
+    const own = new Set(stepsFor(g, u.id).map((s) => s.id));
+    const extra = sum(active.filter((s) => !own.has(s.id)));
+    return { min: u.handsOnMinutes.min + extra.min, max: u.handsOnMinutes.max + extra.max };
+  });
+  const summed = sum(active);
+  const handsOnMinutes = { min: Math.max(summed.min, ...floors.map((f) => f.min)), max: Math.max(summed.max, ...floors.map((f) => f.max)) };
   const longest = picked.reduce((a, u) => (u.waitDays.max > a.max ? u.waitDays : a), picked[0].waitDays);
   return {
     ids: picked.map((u) => u.id),
@@ -60,5 +71,6 @@ export function appliesTo(itemIds: string[] | null | undefined, selected: string
 export type Selection = { ids: string[]; existing: boolean };
 
 export function selectionQuery(sel: Selection): string {
+  if (!sel.ids.length && !sel.existing) return "";
   return `?access=${sel.ids.join(",")}${sel.existing ? "&existing=1" : ""}`;
 }

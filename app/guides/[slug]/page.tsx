@@ -3,7 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { GuideBody } from "@/components/GuideBody";
 import { AppLogo } from "@/components/AppLogo";
-import { BlockedList, CheckedList, FaqList, WhoList } from "@/components/GuideExtras";
+import { BlockedList, FaqList, WhoList } from "@/components/GuideExtras";
 import { HandoffButtons } from "@/components/HandoffButtons";
 import { StepTable } from "@/components/StepTable";
 import { ViewToggle } from "@/components/ViewToggle";
@@ -16,7 +16,7 @@ export async function generateMetadata({ params }: PageProps<"/guides/[slug]">):
   const g = await getGuide((await params).slug);
   // Agents that land on the web page can find the Markdown version from here.
   return g
-    ? { title: `${g.app.name} OAuth app setup`, description: g.verdict.summary, alternates: { types: { "text/markdown": `/guides/${g.slug}.md` } } }
+    ? { title: `${g.app.name} ${g.oauth.supported ? "OAuth app" : "API access"} setup`, description: g.verdict.summary, alternates: { types: { "text/markdown": `/guides/${g.slug}.md` } } }
     : {};
 }
 
@@ -50,7 +50,7 @@ export default async function GuidePage({ params, searchParams }: PageProps<"/gu
       <header className="guide-head">
         <AppLogo name={g.app.name} website={g.app.website} logoUrl={g.app.logoUrl} size={56} />
         <div>
-          <h1>{g.app.name} OAuth app</h1>
+          <h1>{g.app.name}</h1>
           <p className="small muted">
             {g.generatedBy === "agent" ? "Researched by the agent from public docs" : "Researched by hand from official docs"},
             last checked {g.lastChecked}
@@ -64,7 +64,7 @@ export default async function GuidePage({ params, searchParams }: PageProps<"/gu
         </div>
       </header>
 
-      {g.oauth.supported && headline ? (
+      {headline || !g.oauth.supported ? (
         <GuideBody guide={g} initialIds={initialIds} initialExisting={sp.existing === "1"} baseUrl={baseUrl} />
       ) : (
         <>
@@ -78,12 +78,11 @@ export default async function GuidePage({ params, searchParams }: PageProps<"/gu
             </section>
           )}
           <BlockedList guide={g} ids={null} />
-          <CheckedList guide={g} />
           <FaqList guide={g} ids={null} />
         </>
       )}
 
-      {!(g.oauth.supported && headline) && <ViewToggle human={`/guides/${g.slug}`} machine={`/guides/${g.slug}/ai`} current="human" />}
+      {!(headline || !g.oauth.supported) && <ViewToggle human={`/guides/${g.slug}`} machine={`/guides/${g.slug}/ai`} current="human" />}
     </main>
   );
 }
