@@ -53,6 +53,8 @@ describe("library", () => {
     const manifest = JSON.parse(url.searchParams.get("manifest_json")!);
     expect(manifest.oauth_config.scopes.bot).toContain("chat:write");
     expect(manifest.oauth_config.redirect_urls).toBeUndefined();
+    // Slack rejects a manifest with bot scopes and no bot user (found by hand on 2026-10-29).
+    expect(manifest.features?.bot_user?.display_name).toBeTruthy();
   });
 
   test("Composio appears only in the managed-app offer, never in the setup", () => {

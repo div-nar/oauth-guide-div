@@ -5,7 +5,7 @@
     "website": "https://github.com",
     "canDo": "Read and change code, open and review pull requests, and manage issues in the repositories that users connect."
   },
-  "lastChecked": "2026-10-28",
+  "lastChecked": "2026-10-29",
   "generatedBy": "library",
   "oauth": {
     "supported": true,
@@ -45,13 +45,14 @@
         "max": 2
       },
       "evidence": {
-        "level": "sourced",
+        "level": "tested",
         "sources": [
           {
             "url": "https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/creating-an-oauth-app",
             "title": "GitHub Docs: Creating an OAuth app"
           }
-        ]
+        ],
+        "note": "Div did this by hand on 2026-10-29."
       },
       "link": {
         "url": "https://github.com/login",
@@ -95,13 +96,14 @@
         "max": 5
       },
       "evidence": {
-        "level": "sourced",
+        "level": "tested",
         "sources": [
           {
             "url": "https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/creating-an-oauth-app",
             "title": "GitHub Docs: Creating an OAuth app"
           }
-        ]
+        ],
+        "note": "Div did this by hand on 2026-10-29. The form and the secret took about 2 minutes."
       },
       "link": {
         "url": "https://github.com/settings/applications/new",
@@ -113,27 +115,32 @@
       "id": "secret",
       "owner": "human",
       "title": "Make a client secret and keep it in your app",
-      "plain": "On the page of the new app, generate a client secret. Keep the secret and the client ID in the secret store or environment variables of your app. Do not put them in your code.",
+      "plain": "On the page of the new app, generate a client secret. GitHub asks you to confirm that it is you first, with a one-time code, your password or a passkey. Keep the secret and the client ID in the secret store or environment variables of your app.",
       "whyHuman": "The secret is the password for your app. Paste it yourself. Then it does not go into the chat history of an agent.",
       "minutes": {
         "min": 1,
-        "max": 2
+        "max": 3
       },
       "evidence": {
-        "level": "sourced",
+        "level": "tested",
         "sources": [
           {
             "url": "https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/authorizing-oauth-apps",
             "title": "GitHub Docs: Authorizing OAuth apps"
+          },
+          {
+            "url": "https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/sudo-mode",
+            "title": "GitHub Docs: Sudo mode"
           }
         ],
-        "note": "This is our recommendation. It is not a GitHub rule."
+        "note": "Div did this by hand on 2026-10-29. GitHub asked for a one-time code before it made the secret. Keeping the secret out of agent chat is our recommendation, not a GitHub rule."
       },
       "link": {
         "url": "https://github.com/settings/developers",
         "label": "Open your GitHub OAuth apps",
         "prefilled": false
-      }
+      },
+      "technical": "GitHub calls the identity check sudo mode. It applies when you generate or remove a client secret, and then lasts two hours. The client ID starts with `Ov23li`. The client secret is 40 characters. Do not paste the secret where the client ID goes, and do not put either in your code."
     },
     {
       "id": "test",
@@ -145,13 +152,14 @@
         "max": 3
       },
       "evidence": {
-        "level": "sourced",
+        "level": "tested",
         "sources": [
           {
             "url": "https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/authorizing-oauth-apps",
             "title": "GitHub Docs: Authorizing OAuth apps"
           }
-        ]
+        ],
+        "note": "Div signed in through the new app by hand on 2026-10-29, and it worked. Our recording script was not running, so we have no log of the callback."
       },
       "link": {
         "url": "https://github.com/settings/applications",
@@ -162,6 +170,21 @@
   ],
   "forks": [],
   "nuances": [
+    {
+      "title": "GitHub asks for a one-time code before it makes the secret",
+      "detail": "When you generate a client secret, GitHub asks you to confirm that it is you, even when you are signed in. You use a one-time code, your password, a passkey or GitHub Mobile. An agent cannot do this for you.",
+      "ifStuck": "Keep your phone or authenticator app near you before you start. After you confirm, GitHub does not ask again for two hours.",
+      "evidence": {
+        "level": "tested",
+        "sources": [
+          {
+            "url": "https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/sudo-mode",
+            "title": "GitHub Docs: Sudo mode"
+          }
+        ],
+        "note": "Div saw this by hand on 2026-10-29."
+      }
+    },
     {
       "title": "All data on the form is public",
       "detail": "GitHub shows the app name, description and home page to users. Do not put internal URLs or private data on the form.",
