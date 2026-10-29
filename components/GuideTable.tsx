@@ -105,7 +105,7 @@ export function GuideTable({ rows }: { rows: GuideRow[] }) {
       {shown.length === 0 && (
         <p className="empty">
           There is no guide for &ldquo;{q.trim()}&rdquo; yet. Press Enter. The research agent then writes a guide from
-          the official docs in approximately two minutes.
+          the official docs in 60 to 90 seconds.
         </p>
       )}
     </section>
