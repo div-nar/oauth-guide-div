@@ -4,63 +4,59 @@ Live: https://oauth-guide-div.vercel.app · For agents: https://oauth-guide-div.
 
 Built for the Composio APM Integrations take-home.
 
-## 1. Problem
+## Different Developers
 
-Before an AI agent can act in someone's Gmail or Slack, the developer needs their own **OAuth app** with that provider: the registration that holds the name on the "Allow?" screen, the callback address and the permissions (scopes). Each of their users then connects through that one app. Getting it ready takes five minutes for GitHub and months for some apps (Gmail's restricted scopes need verification and a yearly security assessment). Developers find out by piecing docs together.
+Fundamentally, I needed to understand: **Who are developers?**
 
-I spoke to developers about their workflows and realised that they increasingly rely on AI agents to hand-hold them through the process. Rather than navigating documentation, developers rely on agents to find information, direct them to the right configuration dashboards, guide them step by step, and troubleshoot errors along the way. This led me to frame the problem as both an information discovery and navigation problem.
+**Humans.** At first glance, it would be software engineers, but through AI, anybody can build. This allows a designer to ship code to update Figma, a marketer to modify a query on Mixpanel through its MCP, and a Founder’s Office Associate to provision databases through Neon. Defining them as developers, I’ve built the website.
 
-**Scope** is the problem, not a list of apps: getting *your own* OAuth app created and approved, for any app, used from your own code. Five apps are curated because each shows a different challenge (self-serve, marketplace review, security audit, CLI setup, partner gate); any other app is researched live into the same structure. Difficulty is set per kind of access, because the same app can be both: Slack is Easy if your agent only posts and Hard if it reads messages.
+**Agents.** Each of these developers hands work to a coding agent, so the agent is a developer too, and often the first one to read the documentation.
 
-## 2. Who it's for
+## Developers Work Differently Now
 
-- **The developer** building the agent, deciding whether an integration is worth it.
-- **Their coding agent**, which does the setup and explains it back to them. It is the main reader.
-- **People pulled in**: a Workspace admin who approves, a domain owner, whoever pays for an assessment, a founder's-office person scoping the work.
-- **The end users** who click "Connect". They never see this site, but scopes and verification decide what their consent screen says.
+After developing a foundational understanding of how OAuth works, I wanted to understand how developers actually build applications that use OAuth. I spoke to developers about their workflows and realised that usage comes in two forms.
 
-Proficiency varies, so a guide asks what access you need, shows the verdict, then the steps, with jargon and technical detail one level down. The agent gets everything at once in Markdown.
+**Agents.** Rather than navigating documentation, developers rely on agents to find information, direct them to the right configuration dashboards, and guide them step by step.
 
-## 3. What did I build?
+**Humans.** Developers don’t 100% trust LLMs, and want a look at documentation that ideally provides: pitfalls to avoid, troubleshooting guidance and steps presented in a clear, concise manner.
 
-Much of this work is handled by agents, but the experience is fragmented. This realization led me to construct a two-faced website, with a default preference for servicing agents and a website for human fallback.
+## How It Works
 
-**For agents (the default).** Every guide is plain Markdown at a stable address, and `llms.txt` lists every guide, so an agent finds and reads the right one in a single fetch. A developer copies one prompt into their agent, and it points at the exact path for the access they picked. Each step is tagged as something the agent can do in the developer's signed-in browser or terminal, something only the developer can do (signing in, accepting terms, handling the client secret), or a wait on the provider. The agent does its steps, stops at every one that needs the developer, and never asks for a secret in chat. The prompt also tells it to ask for the exact callback URL first, read the provider's Protocol before it writes OAuth code, and use Troubleshooting when a step fails.
+With a note of the share of work handled by coding agents, OAuth integration is fragmented. This realization led me to construct a two-sided website, with a preference for serving agents and a website for human fallback.
 
-**For humans (the fallback).** The website shows the same guide for developers who want to read it themselves, share it, or check what their agent is doing. They pick the access their agent needs from a table, because that, not the app, decides how hard the setup is: Slack takes minutes if the agent only posts, and months if it reads messages. The table shows each option's time, wait and permissions side by side, so there is no pop-up to get through first. Below it: what to have ready, the steps (two points each, one open at a time), common pitfalls and troubleshooting side by side, and the provider's Protocol. An ask box answers questions about that app's setup from the guide alone.
+**Agents.** Every guide is a plain markdown file at a stable address, and a single `llms.txt` lists every guide, so an agent can find and read the right one in a single fetch. A developer can copy one prompt into their agent that points at the exact path for the app and the access they need.
 
-Both faces come from the same guide, so the developer and their agent never disagree about what to do next.
+Each step is tagged as something either the agent can do in the developer's signed-in browser or terminal, or something only the developer can do. The agent does its steps, stops at every one that needs the developer, and never asks for a secret in chat. In the event someone asks for an app with no guide, an agent reads that provider's own developer docs.
 
-**Any app, not just a list.** Five guides are curated by hand, each showing a different kind of challenge. For any other app, an agent reads the provider's own developer docs in real time and writes a guide in the same structure, usually in about two minutes. If it can't confirm the app exists, it says so rather than making one up.
+It searches the web, reads pages and submits a guide, in the same fixed structure as the curated ones. Progress streams to the page while it works, usually for 60 to 90 seconds. Every claim cites a provider page that the agent read, or is marked unconfirmed with the reason.
 
-**Evidence the developer can trust.** Every claim links to the provider page that supports it, or is marked as unconfirmed with the reason. Code, not the model, checks that the agent actually read what it cites, and that each step's link points at the provider's own site. After research, code also opens every step link and asks the provider's sign-in endpoint about a made-up app; that shows as **Agent checked**, apart from the evidence labels. Guides are labelled **Curated** or **Agentic Search** so readers know who wrote them.
+**Humans.** The website provides a high-level overview of an app’s OAuth setup, helping developers understand the process and give their agents visibility into what needs to happen. Each guide lays out the expected setup time, including any approval wait times, the permissions and scopes involved, how the app applies OAuth (the version, PKCE and callback rules), the people who need to be involved, and the steps required to get connected. It also highlights common blockers and how to resolve them. An ask box lets developers ask questions about an app’s setup and get answers grounded exclusively in that app’s guide.
 
-Next.js, Postgres, bun, OpenRouter. Composio appears once: "Can't wait?" offers its managed app during a review, read by code from Composio's toolkit page.
+## Iterating Development
 
-## 4. Try it, and edge cases
+Over successive iterations, I became increasingly convinced that the workflow was more agent-driven than human-driven.
 
-Type any app into the search box and watch it research (about 2 minutes), or have an agent fetch `/guides/<app>.md`.
+**Humans.** My initial version of the website prioritized visual polish, but when I shared it with developers, it failed to generate much interest. Their feedback was consistent: reduce friction. V2, which is the version of the site I submit, drastically cuts down on visual and navigational overhead, prioritizing direct access to high-level overviews for humans to index their understanding and evaluate their agent’s performance.
 
-- **Ambiguous name** ("Hinge", "Teams"): pick from options; agents get a `300`.
-- **A company that doesn't exist:** reported as not found, nothing saved, no repeat run for 24 hours.
-- **No OAuth at all** (OpenWeather): the API-key path in the same layout.
-- **Limits only unlisted apps hit:** the agent looks for them (Slack's 1 request a minute on history).
+**Agents.** I also explored whether agent-friendly documentation could reduce retrieval overhead. Comparing a guide’s web page with its Markdown version (listed in `llms.txt`), I observed an improvement of approximately 0.15 seconds in request time in one agent run. While modest per request, this could compound when agents repeatedly retrieve information from the same provider. The larger bottleneck was end-to-end research, which typically took 60–90 seconds per run. This was more a cost issue, so I split the workflow between two models: GPT-5.6 Luna for finding relevant documentation and GPT-5.6 Terra for consolidating it into a coherent setup guide.
 
-## 5. What I learnt
+I validated it with unit tests, local browser testing, stubbed API responses, database checks, and trial runs, finding three interesting features:
 
-- **The developer's agent is the real reader, and it explains the guide back to them anyway.** That made the Markdown the product and the website the fallback. The Markdown is about 16 KB against 52 KB for the page; in one run, a coding agent following a guide was about 0.15 s faster per fetch that way.
-- **An MCP server or an API isn't the answer to everything.** Setting up an OAuth app happens once per app, and the agent only needs to read. A plain URL plus `llms.txt` works with any agent, needs nothing installed, adds nothing to the agent's context, and a person can open the same link. An MCP server would earn its place if the agent had to act repeatedly, such as tracking a review across sessions.
-- **Updating an existing OAuth app is a different path from creating one.** Adding a callback is quick, but new scopes or branding changes can send an approved app back to review, and existing users must approve again. Guides have an "Already have an app?" path for this.
-- **OAuth is not one protocol in practice.** OAuth 1.0a, OAuth 2.0 and OAuth 2.1 differ, and providers apply 2.0 differently. GitHub supports PKCE with S256 only; Slack makes it opt-in and irreversible; LinkedIn allows it for native clients only. An agent cannot guess these, so every guide has a sourced Protocol section, and code reads the PKCE methods a provider publishes.
-- **Small details break the whole flow, and the rules differ.** Google, GitHub and LinkedIn need the callback to match: register `https://dognosis.tech/callback` while the app runs on `https://www.dognosis.tech` and sign-in fails with `redirect_uri_mismatch`. Slack accepts a subdirectory of the registered URL. I first wrote "exact match" for Slack too; reading its docs corrected me.
-- **Developers asked for less, not more.** A developer told me what he wanted: common pitfalls, troubleshooting, clear steps of no more than two points, and no pop-up asking about access before the guide. The page was rebuilt around exactly that.
-- **Difficulty belongs to the access, not the app.** My first Slack guide said Easy; Slack's changelog limits unlisted apps to 1 request a minute on history, so reading needs a Marketplace listing (10 installs, then up to 10 weeks of review).
-- **Some apps have no OAuth**, and agents invent things unless code stops them: the research agent cited pages it never opened and had no way to say an app didn't exist. Both are now checked in code.
+- **Application discovery:** App names could be ambiguous, nonexistent, or duplicated. I tested cases such as Hinge, ensuring the system distinguished between products.
+- **Integration paths:** Not every application requires OAuth. OpenWeather, for instance, used an API-key approach, while some applications lacked an accessible developer platform. The system needed to identify the appropriate authentication method or state clearly when a path couldn’t be found.
+- **Protocol differences:** I accounted for differences in how providers apply OAuth 2.0 and the stricter OAuth 2.1 rules, such as PKCE and exact callback matching, ensuring the guides reflected the relevant protocol requirements and setup steps rather than treating all OAuth implementations identically.
 
-**Not verified:** no step is `Tested by hand` yet; creating a GitHub app on a free account is next. Google publishes no price or duration for its security assessment, and few providers publish review times, so wait ranges are marked as estimates. Details are in `docs/evidence-log.md`.
+## How We Should Work
+
+Building this changed how I think about development from here on out.
+
+**Agents.** While I stuck first to building for humans, post-GPT, the primary reader of documentation is an agent, and not a person, so the Markdown became the product and the website became a layer for oversight. Designing for agents also meant designing for their weaknesses: they invent citations and guess at details, so checks had to be placed at every layer, with honesty being rewarded. And most crucially for me, I realised, not all agent-driven development is an MCP server; for a task an agent reads once, a plain URL and an `llms.txt` were enough.
+
+**Humans.** Less was more. My first version's polish didn't land; cutting friction did. What mattered was a high-level overview for decision-making: before committing to an integration, a developer needs to know whether it is worth it, which access they need, how long approval takes, and who must be involved. An agent is prone to make small mistakes. But these small details decide success, such as a callback that differs only by "www" which delays response time by 5 minutes or not enforcing PKCE rules that change from one provider to the next.
 
 ## Limitations
 
+- Not verified: no step is `Tested by hand` yet. Few providers publish review times, so wait ranges are marked as estimates. Details are in `docs/evidence-log.md`.
 - Five curated guides; the rest are agent-researched and not reviewed by a person.
 - Agent checks show pages and endpoints are live, not that a setup works end to end.
 - Self-hosted or regional instances (Salesforce custom domains, Jira Server) are only described when the agent finds them.
