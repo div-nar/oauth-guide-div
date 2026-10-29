@@ -107,6 +107,7 @@ section.block > h2.label { margin-bottom: 16px; }
 
 /* guide page */
 .guide-head { display: flex; gap: 16px; align-items: center; margin: 16px 0 28px; }
+.guide-head > div { flex: 1; min-width: 0; }
 .guide-head h1 { font-size: 36px; font-weight: 700; letter-spacing: -0.02em; }
 
 .picker { background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 20px; }
@@ -376,15 +377,14 @@ html { overflow-anchor: none; overflow-x: clip; }
 .verdict-more summary { cursor: pointer; color: var(--muted); font-size: 14px; }
 .verdict-more p { margin: 8px 0 0; }
 
-/* agent checks: one mark beside the guide title, details on hover or tap */
-.guide-head h1 .check-mark { margin-left: 12px; vertical-align: 6px; width: 22px; height: 22px; font-size: 12px; letter-spacing: 0; }
-.guide-head h1 .check-tip { bottom: auto; top: calc(100% + 8px); left: 0; transform: none; }
-.check-mark { position: relative; display: inline-grid; place-items: center; width: 20px; height: 20px; padding: 0; border-radius: 50%; border: 1px solid color-mix(in srgb, var(--easy) 45%, transparent); background: color-mix(in srgb, var(--easy) 12%, transparent); color: var(--easy); font-size: 11px; font-weight: 700; line-height: 1; cursor: help; vertical-align: middle; }
-.check-mark.broken, .check-mark.differs { border-color: color-mix(in srgb, var(--gated) 50%, transparent); background: color-mix(in srgb, var(--gated) 12%, transparent); color: var(--gated); }
-.check-mark.inconclusive { border-color: var(--border-strong); background: #141414; color: var(--muted); }
-.check-tip { position: absolute; bottom: calc(100% + 8px); left: 50%; transform: translateX(-50%); width: max-content; max-width: min(320px, 80vw); padding: 8px 10px; border-radius: 7px; border: 1px solid var(--border-strong); background: #111; color: var(--muted); font-size: 12.5px; font-weight: 400; line-height: 1.45; text-align: left; white-space: normal; overflow-wrap: anywhere; opacity: 0; pointer-events: none; transition: opacity 120ms; z-index: 10; }
+/* agent checks: one badge at the far right of the title row, details on hover or tap */
+.check-badge { position: relative; margin-left: auto; align-self: flex-start; margin-top: 10px; display: inline-flex; align-items: center; gap: 7px; padding: 5px 11px 5px 8px; border-radius: 99px; border: 1px solid color-mix(in srgb, var(--easy) 30%, var(--border)); background: color-mix(in srgb, var(--easy) 7%, transparent); color: var(--easy); font: inherit; font-family: var(--font-mono), monospace; font-size: 12px; white-space: nowrap; cursor: help; transition: border-color 120ms; }
+.check-badge:hover, .check-badge:focus-visible { border-color: color-mix(in srgb, var(--easy) 60%, var(--border)); }
+.check-badge.bad { color: var(--gated); border-color: color-mix(in srgb, var(--gated) 35%, var(--border)); background: color-mix(in srgb, var(--gated) 8%, transparent); }
+.check-tip { position: absolute; top: calc(100% + 8px); right: 0; width: max-content; max-width: min(320px, 80vw); padding: 8px 10px; border-radius: 7px; border: 1px solid var(--border-strong); background: #111; color: var(--muted); font-family: var(--font); font-size: 12.5px; line-height: 1.45; text-align: left; white-space: normal; overflow-wrap: anywhere; opacity: 0; pointer-events: none; transition: opacity 120ms; z-index: 10; }
 .check-tip strong { display: block; color: var(--ink); font-family: var(--font-mono), monospace; font-size: 11.5px; font-weight: 500; margin-bottom: 2px; }
-.check-mark:hover .check-tip, .check-mark:focus-visible .check-tip, .check-mark:focus .check-tip { opacity: 1; }
+.check-badge:hover .check-tip, .check-badge:focus-visible .check-tip, .check-badge:focus .check-tip { opacity: 1; }
+@media (max-width: 600px) { .check-badge span:not(.check-tip) { display: none; } .check-badge { padding: 5px; } }
 
 /* blocked or rejected: where it failed, then the fix */
 .blockers { list-style: none; margin: 0; padding: 0; }
