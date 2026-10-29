@@ -9,11 +9,11 @@ export const GRADE_WORD: Record<Difficulty, string> = {
 };
 
 export const GRADE_MEANING: Record<Difficulty, string> = {
-  easy: "Self-serve, no review",
-  moderate: "Some setup friction, no required review",
-  hard: "Provider review that takes weeks",
-  gated: "Needs the provider's approval as a partner",
-  not_applicable: "Uses API keys or similar instead",
+  easy: "You do it yourself. No review.",
+  moderate: "More setup work. No review.",
+  hard: "The provider reviews the app. This takes weeks.",
+  gated: "The provider must approve you as a partner.",
+  not_applicable: "Uses API keys, not OAuth.",
 };
 
 // Trail-style marks: circle, square, diamond, octagon.

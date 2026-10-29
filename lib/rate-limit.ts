@@ -30,10 +30,10 @@ export async function checkRateLimit(
 ): Promise<{ allowed: boolean; reason?: string }> {
   const c = await counts(ip, now);
   if (c.day >= caps.daily) {
-    return { allowed: false, reason: "The live agent has reached its limit for today. The checked guides still work." };
+    return { allowed: false, reason: "The live agent made its maximum number of guides for today. The checked guides continue to work." };
   }
   if (c.ipHour >= caps.perIpHourly) {
-    return { allowed: false, reason: `You can generate ${caps.perIpHourly} new guides per hour. Try again later.` };
+    return { allowed: false, reason: `You can make ${caps.perIpHourly} new guides each hour. Try again later.` };
   }
   return { allowed: true };
 }

@@ -8,7 +8,7 @@
   "generatedBy": "library",
   "oauth": {
     "supported": true,
-    "notes": "GitHub offers OAuth apps and GitHub Apps. This guide covers OAuth apps, which is what Composio's GitHub auth config uses."
+    "notes": "GitHub has two types of app: OAuth apps and GitHub Apps. Composio's GitHub auth config uses an OAuth app. This guide is about OAuth apps."
   },
   "verdict": {
     "difficulty": "easy",
@@ -20,16 +20,16 @@
       "min": 0,
       "max": 0
     },
-    "summary": "A self-serve form with no review. The only surprise comes later: organisations block new OAuth apps by default, so an owner must approve yours."
+    "summary": "You fill in a short form. GitHub does not review the app. Later, an organisation owner must approve your app, because new organisations block OAuth apps by default."
   },
   "whoYouNeed": [
     {
       "role": "Anyone with a GitHub account",
-      "why": "To register the app under a personal account."
+      "why": "This person registers the app with a personal account."
     },
     {
       "role": "An owner or admin of your GitHub organisation (optional)",
-      "why": "Only if the app should belong to the company's organisation rather than a person."
+      "why": "You need this person only if the company organisation must own the app."
     }
   ],
   "steps": [
@@ -37,8 +37,8 @@
       "id": "sign-in",
       "owner": "human",
       "title": "Sign in to GitHub",
-      "plain": "Log in to the GitHub account (or organisation) that should own the app.",
-      "whyHuman": "Signing in is yours to do. An agent can carry on once you are signed in.",
+      "plain": "Sign in to the GitHub account or organisation that will own the app.",
+      "whyHuman": "You must sign in yourself. After you sign in, an agent can do the next steps.",
       "minutes": {
         "min": 1,
         "max": 2
@@ -62,8 +62,8 @@
       "id": "get-redirect",
       "owner": "agent",
       "title": "Copy the redirect address from Composio",
-      "plain": "In the Composio dashboard, create a GitHub auth config and copy the redirect address it shows. GitHub needs this address so it knows where to send users back after they click Allow.",
-      "technical": "Dashboard > Auth Configs > Create Auth Config > GitHub > OAuth2 > Use your own developer credentials. Composio's docs currently give https://backend.composio.dev/api/v3/toolkits/auth/callback, but always use the value the dashboard shows.",
+      "plain": "In the Composio dashboard, create a GitHub auth config. Copy the redirect address that it shows. GitHub uses this address to send users back after they click Allow.",
+      "technical": "Go to Dashboard > Auth Configs > Create Auth Config > GitHub > OAuth2 > Use your own developer credentials. The Composio docs give the address https://backend.composio.dev/api/v3/toolkits/auth/callback. Always use the address that the dashboard shows.",
       "minutes": {
         "min": 1,
         "max": 3
@@ -80,7 +80,7 @@
             "title": "Composio: GitHub OAuth guide"
           }
         ],
-        "note": "Composio's older Google guide still shows the v1 address (/api/v1/auth-apps/add). The dashboard value wins."
+        "note": "An older Composio guide for Google shows the v1 address (/api/v1/auth-apps/add). Use the address in the dashboard."
       },
       "link": {
         "url": "https://dashboard.composio.dev/~/project/auth-configs",
@@ -92,8 +92,8 @@
       "id": "register-app",
       "owner": "agent",
       "title": "Register the OAuth app",
-      "plain": "Fill in GitHub's short form: the app's name, your website, and the redirect address from Composio.",
-      "technical": "Profile picture > Settings > Developer settings > OAuth apps > New OAuth App. Fields: Application name, Homepage URL, Application description (optional), Authorization callback URL (up to 10). Leave Enable Device Flow off unless you need a CLI flow. 'Expire user access tokens' is on by default. For an organisation-owned app use https://github.com/organizations/YOUR-ORG/settings/applications/new.",
+      "plain": "Fill in the short GitHub form. Give the app name, your website and the redirect address from Composio.",
+      "technical": "Go to Profile picture > Settings > Developer settings > OAuth apps > New OAuth App. Fill in Application name, Homepage URL and Authorization callback URL. Application description is optional. Keep Enable Device Flow off. You need it only for a command-line sign-in. 'Expire user access tokens' is on by default. For an app that an organisation owns, use https://github.com/organizations/YOUR-ORG/settings/applications/new.",
       "minutes": {
         "min": 2,
         "max": 5
@@ -116,9 +116,9 @@
     {
       "id": "secret",
       "owner": "human",
-      "title": "Generate the client secret and paste it into Composio",
-      "plain": "On the new app's page, click to generate a client secret, then paste it, with the client ID, into the Composio auth config.",
-      "whyHuman": "The secret is a password for your app. Pasting it yourself keeps it out of any agent's chat history.",
+      "title": "Make a client secret and paste it into Composio",
+      "plain": "On the page of the new app, generate a client secret. Paste the secret and the client ID into the Composio auth config.",
+      "whyHuman": "The secret is the password for your app. Paste it yourself. Then it does not go into the chat history of an agent.",
       "minutes": {
         "min": 1,
         "max": 2
@@ -131,7 +131,7 @@
             "title": "Composio: GitHub OAuth guide"
           }
         ],
-        "note": "Keeping secrets out of the agent's context is our recommendation, not a GitHub rule."
+        "note": "This is our recommendation. It is not a GitHub rule."
       },
       "link": {
         "url": "https://github.com/settings/developers",
@@ -143,7 +143,7 @@
       "id": "test",
       "owner": "agent",
       "title": "Test a connection",
-      "plain": "Connect a test GitHub account through Composio. The approval screen should now show your app's name instead of Composio's.",
+      "plain": "Connect a test GitHub account through Composio. Make sure that the approval screen shows the name of your app, not 'Composio'.",
       "minutes": {
         "min": 1,
         "max": 3
@@ -167,9 +167,9 @@
   "forks": [],
   "nuances": [
     {
-      "title": "Everything on the form is public",
-      "detail": "GitHub shows the app's name, description and homepage to users. Do not put internal URLs or other private details there.",
-      "ifStuck": "Edit the app under Developer settings at any time.",
+      "title": "All data on the form is public",
+      "detail": "GitHub shows the app name, description and home page to users. Do not put internal URLs or private data on the form.",
+      "ifStuck": "You can change the app in Developer settings at any time.",
       "evidence": {
         "level": "sourced",
         "sources": [
@@ -181,9 +181,9 @@
       }
     },
     {
-      "title": "A user says the app can't see their company's repositories",
-      "detail": "Their organisation has OAuth app restrictions on, which is the default for new organisations.",
-      "ifStuck": "Ask the user to request access from their organisation owner during the connection, or the owner can approve the app in the organisation's settings.",
+      "title": "A user cannot see the repositories of their company",
+      "detail": "The organisation of the user has OAuth app restrictions on. New organisations have this setting by default.",
+      "ifStuck": "Tell the user to request access from the organisation owner when they connect. Or, the owner can approve the app in the organisation settings.",
       "evidence": {
         "level": "sourced",
         "sources": [
@@ -196,8 +196,8 @@
     },
     {
       "title": "Limits",
-      "detail": "One account or organisation can own up to 100 OAuth apps, and each app can have up to 10 redirect addresses.",
-      "ifStuck": "Reuse one app per environment rather than one per customer.",
+      "detail": "One account or organisation can own a maximum of 100 OAuth apps. Each app can have a maximum of 10 redirect addresses.",
+      "ifStuck": "Use one app for each environment. Do not make one app for each customer.",
       "evidence": {
         "level": "sourced",
         "sources": [
@@ -211,11 +211,11 @@
   ],
   "config": {
     "consoleUrl": "https://github.com/settings/developers",
-    "redirectUriNote": "Use the redirect URI shown in your Composio auth config (documented as https://backend.composio.dev/api/v3/toolkits/auth/callback).",
+    "redirectUriNote": "Use the redirect address in your Composio auth config. The Composio docs give https://backend.composio.dev/api/v3/toolkits/auth/callback.",
     "scopes": [
       {
         "name": "repo",
-        "plain": "Read and write all repositories the user can access, including private ones.",
+        "plain": "Read and write all repositories that the user can access, private repositories included.",
         "sensitivity": "basic"
       },
       {
@@ -238,7 +238,7 @@
         "min": 0,
         "max": 0
       },
-      "summary": "No review. Users in organisations may need their org owner to approve your app.",
+      "summary": "GitHub does not review the app. Users in an organisation can need approval from the organisation owner.",
       "scopes": [
         "repo",
         "read:user"
@@ -257,7 +257,7 @@
   ],
   "composio": {
     "managedApp": "yes",
-    "note": "You can connect users today with Composio's own GitHub app while yours is set up or in review. Users see 'Composio' on the consent screen, rate limits are shared with other Composio customers, and polling triggers run at most every 15 minutes. Switch to your own app when it is ready.",
+    "note": "Users can connect today through the Composio GitHub app. Use it while you set up your own app. Users see 'Composio' on the approval screen. Other Composio customers share the same rate limits. Polling triggers run a maximum of one time in 15 minutes. Change to your own app when it is ready.",
     "evidence": {
       "level": "sourced",
       "sources": [
@@ -273,12 +273,12 @@
     }
   },
   "existingApp": {
-    "summary": "Reuse it. Add Composio's redirect address as an extra callback URL (an OAuth app can have up to 10), then paste the client ID and a client secret into Composio. Generate a separate secret for Composio so you can revoke it without touching your product.",
+    "summary": "Use your existing app. Add the Composio redirect address as one more callback URL. An OAuth app can have a maximum of 10. Paste the client ID and a client secret into Composio. Make a new secret only for Composio. Then you can cancel it and not change your product.",
     "steps": [],
     "reReviewTriggers": [
       {
         "trigger": "Your callback list is full",
-        "effect": "An OAuth app holds at most 10 callback URLs. Remove an unused one or register a second app.",
+        "effect": "An OAuth app can have a maximum of 10 callback URLs. Remove a callback URL that you do not use, or register a second app.",
         "evidence": {
           "level": "sourced",
           "sources": [
@@ -291,29 +291,29 @@
       },
       {
         "trigger": "You want a separate secret for Composio",
-        "effect": "GitHub lets you generate another client secret on the app's page; the existing one keeps working until you delete it.",
+        "effect": "On the page of the app, you can generate one more client secret. The old secret continues to work until you delete it.",
         "evidence": {
           "level": "uncertain",
           "sources": [],
-          "note": "From GitHub's app settings screen; not confirmed on a docs page we read."
+          "note": "This comes from the GitHub app settings screen. We did not find it on a GitHub docs page."
         }
       },
       {
         "trigger": "You need more permissions",
-        "effect": "No review. GitHub OAuth apps ask for scopes when the user connects, so users just see a new approval screen.",
+        "effect": "GitHub does not review the app again. Users give permissions when they connect. They see a new approval screen.",
         "evidence": {
           "level": "uncertain",
           "sources": [],
-          "note": "GitHub's scope docs were not part of this check."
+          "note": "We did not read the GitHub scope docs for this check."
         }
       }
     ]
   },
   "blockers": [
     {
-      "symptom": "Your app only sees an organisation's public repositories",
-      "cause": "New GitHub organisations turn on OAuth app access restrictions by default. Until an owner approves your app, members cannot grant it access to the organisation's private data.",
-      "fix": "Each user requests approval for your app when they authorise it. An organisation owner approves it under the organisation's Third-party access settings. Tell users this before they connect.",
+      "symptom": "Your app sees only the public repositories of an organisation",
+      "cause": "New GitHub organisations block OAuth apps by default. Members cannot give your app access to private data until an owner approves the app.",
+      "fix": "Tell users about this before they connect. When a user connects, the user requests approval for your app. An organisation owner approves the app in the Third-party access settings of the organisation.",
       "escalate": {
         "url": "https://docs.github.com/en/organizations/managing-oauth-access-to-your-organizations-data/approving-oauth-apps-for-your-organization",
         "label": "GitHub: how owners approve an OAuth app"
@@ -335,8 +335,8 @@
     },
     {
       "symptom": "Sign-in fails with redirect_uri_mismatch",
-      "cause": "The redirect address sent during sign-in does not match the callback URL registered on your OAuth app.",
-      "fix": "Copy the redirect URI from your Composio auth config into the app's Authorization callback URL field exactly, then try again.",
+      "cause": "The redirect address in the sign-in request is different from the callback URL on your OAuth app.",
+      "fix": "Copy the redirect address from your Composio auth config. Paste it exactly into the Authorization callback URL field of the app. Then try again.",
       "escalate": {
         "url": "https://docs.github.com/en/apps/oauth-apps/maintaining-oauth-apps/troubleshooting-authorization-request-errors",
         "label": "GitHub: authorization request errors"

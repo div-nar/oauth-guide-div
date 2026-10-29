@@ -50,18 +50,18 @@ export default async function Home() {
       <section className="home-hero">
         <h1>OAuth app guides</h1>
         <p className="lede">
-          Before your agent can act in someone&apos;s Gmail, Slack or HubSpot, you need your own OAuth app with
-          that provider. Some take five minutes, some take weeks of review. Pick the app, see what blocks you,
-          and hand the setup to your coding agent.
+          Your agent needs your own OAuth app to work in the Gmail, Slack or HubSpot account of a user. Some apps
+          take five minutes to set up. Others need weeks of review. Select an app to see the steps and the
+          problems. Then give the setup to your coding agent.
         </p>
       </section>
 
 
-      <section className="handoff home-handoff" aria-label="Use with your agent">
+      <section className="handoff home-handoff" aria-label="Give it to your agent">
         <div className="handoff-head">
           <div>
-            <h2 className="handoff-title">Hand it to your agent</h2>
-            <p>Agents read the plain-text version of every guide. Click the prompt to copy it, or pick your agent.</p>
+            <h2 className="handoff-title">Give it to your agent</h2>
+            <p>Agents read the plain-text version of each guide. Click the prompt to copy it. Or, select your agent.</p>
           </div>
           <div className="handoff-actions">
             <AgentLaunchers prompt={prompt} />

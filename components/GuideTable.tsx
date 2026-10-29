@@ -121,8 +121,8 @@ export function GuideTable({ rows }: { rows: GuideRow[] }) {
       )}
       {shown.length === 0 && (
         <p className="empty">
-          No guide for &ldquo;{q.trim()}&rdquo; yet. Press Enter and the research agent writes one from the official
-          docs in about two minutes.
+          There is no guide for &ldquo;{q.trim()}&rdquo; yet. Press Enter. The research agent then writes a guide from
+          the official docs in approximately two minutes.
         </p>
       )}
     </section>

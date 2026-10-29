@@ -19,16 +19,16 @@
       "min": 0,
       "max": 0
     },
-    "summary": "Signing people in and posting as them is self-serve once a company Page admin confirms your app. Company pages, ads, sales and recruiting need LinkedIn's partner approval."
+    "summary": "After an admin of your company Page confirms your app, you can sign people in and post for them without approval. For company pages, ads, sales and recruiting, LinkedIn must approve you as a partner."
   },
   "whoYouNeed": [
     {
-      "role": "An admin of your company's LinkedIn Page",
-      "why": "Every developer app is tied to a LinkedIn Page, and a Page admin must confirm that link."
+      "role": "An admin of the LinkedIn Page of your company",
+      "why": "Each developer app connects to a LinkedIn Page. A Page admin must confirm that connection."
     },
     {
-      "role": "Someone who can describe your business use case",
-      "why": "Partner programs ask what you will build, and the higher tier needs a screen recording.",
+      "role": "A person who can describe how your business will use the API",
+      "why": "Partner programs ask what you will build. The higher tier needs a screen recording.",
       "useCaseIds": [
         "pages",
         "partners"
@@ -40,8 +40,8 @@
       "id": "sign-in",
       "owner": "human",
       "title": "Sign in to the LinkedIn Developer Portal",
-      "plain": "Log in at linkedin.com/developers with your own LinkedIn account.",
-      "whyHuman": "Signing in and accepting LinkedIn's API terms are yours to do.",
+      "plain": "Sign in at linkedin.com/developers with your LinkedIn account.",
+      "whyHuman": "You must sign in yourself. You must also accept the LinkedIn API terms yourself.",
       "minutes": {
         "min": 1,
         "max": 3
@@ -64,8 +64,8 @@
     {
       "id": "create-app",
       "owner": "agent",
-      "title": "Create the app and link your company Page",
-      "plain": "Create a new app, give it a name and logo, and pick your company's LinkedIn Page.",
+      "title": "Create the app and connect your company Page",
+      "plain": "Create a new app. Give it a name and a logo. Select the LinkedIn Page of your company.",
       "minutes": {
         "min": 3,
         "max": 8
@@ -78,7 +78,7 @@
             "title": "Third-party guide: custom LinkedIn app"
           }
         ],
-        "note": "The Page requirement comes from third-party guides. LinkedIn's own docs we read do not spell it out."
+        "note": "Third-party guides give the Page requirement. The LinkedIn docs that we read do not say it clearly."
       },
       "link": {
         "url": "https://www.linkedin.com/developers/apps/new",
@@ -89,8 +89,8 @@
     {
       "id": "verify-page",
       "owner": "human",
-      "title": "Have a Page admin verify the link",
-      "plain": "In the app's Settings, click Verify next to the Page, generate a link, and send it to a Page admin to approve. The link lasts 30 days.",
+      "title": "Get a Page admin to verify the connection",
+      "plain": "In the Settings of the app, click Verify next to the Page. Generate a link. Send the link to a Page admin for approval. The link expires after 30 days.",
       "whyHuman": "Only an admin of the company Page can approve.",
       "minutes": {
         "min": 2,
@@ -104,7 +104,7 @@
             "title": "Third-party guide: custom LinkedIn app"
           }
         ],
-        "note": "Third-party sources differ on whether any Page admin or only a super admin can approve."
+        "note": "Third-party sources do not agree. Some say that each Page admin can approve. Others say that only a super admin can approve."
       },
       "link": {
         "url": "https://www.linkedin.com/developers/apps",
@@ -116,8 +116,8 @@
       "id": "open-products",
       "owner": "agent",
       "title": "Add the self-serve products",
-      "plain": "On the Products tab, add 'Sign in with LinkedIn using OpenID Connect' and 'Share on LinkedIn'. These need no approval.",
-      "technical": "Grants openid, profile, email and w_member_social (post, comment and react as the member).",
+      "plain": "On the Products tab, add 'Sign in with LinkedIn using OpenID Connect' and 'Share on LinkedIn'. These products need no approval.",
+      "technical": "These products give openid, profile, email and w_member_social. With w_member_social, the app can post, comment and react as the member.",
       "minutes": {
         "min": 2,
         "max": 5
@@ -141,8 +141,8 @@
       "id": "redirect-credentials",
       "owner": "human",
       "title": "Add the redirect address and copy the credentials",
-      "plain": "On the Auth tab, add the redirect address from your Composio LinkedIn auth config, then paste the client ID and secret into Composio.",
-      "whyHuman": "The secret is a password for your app. Pasting it yourself keeps it out of any agent's chat history.",
+      "plain": "On the Auth tab, add the redirect address from your Composio LinkedIn auth config. Then paste the client ID and secret into Composio.",
+      "whyHuman": "The secret is the password for your app. Paste it yourself. Then it does not go into the chat history of an agent.",
       "minutes": {
         "min": 2,
         "max": 5
@@ -166,8 +166,8 @@
       "id": "apply-cm",
       "owner": "human",
       "title": "Apply for Community Management API (only for company pages)",
-      "plain": "If your agent posts for, or reads analytics from, company pages, apply for the Community Management API. Start with the Development tier, then apply for Standard with a screen recording of each use case.",
-      "whyHuman": "The application describes your business and use case, and LinkedIn vets you.",
+      "plain": "Do this step if your agent posts for company pages or reads their analytics. Apply for the Community Management API. Start with the Development tier. Then apply for the Standard tier with a screen recording of each use case.",
+      "whyHuman": "The application describes your business and how you will use the API. LinkedIn then examines your company.",
       "minutes": {
         "min": 20,
         "max": 45
@@ -190,8 +190,8 @@
     {
       "id": "vetting",
       "owner": "waiting",
-      "title": "LinkedIn vets your application (company pages only)",
-      "plain": "LinkedIn reviews the Development tier request, then the Standard tier upgrade. LinkedIn does not publish how long either takes.",
+      "title": "LinkedIn examines your application (company pages only)",
+      "plain": "LinkedIn reviews the request for the Development tier. Then it reviews the upgrade to the Standard tier. LinkedIn does not publish how long the reviews take.",
       "waitDays": {
         "min": 7,
         "max": 60
@@ -204,15 +204,15 @@
             "title": "LinkedIn: Community Management overview"
           }
         ],
-        "note": "The two tiers and the vetting are sourced. The day range is our estimate. LinkedIn gives none."
+        "note": "LinkedIn gives the two tiers and the review. LinkedIn gives no time. The range of days is our estimate."
       }
     },
     {
       "id": "apply-partner",
       "owner": "human",
       "title": "Apply to the partner program (ads, sales or recruiting)",
-      "plain": "Each area is its own program: add the Advertising API product from your app's Products tab, or apply to Sales Navigator (SNAP) or the Talent partner programs.",
-      "whyHuman": "LinkedIn reviews your business and use case.",
+      "plain": "Each area has its own program. For ads, add the Advertising API product on the Products tab of your app. For sales or recruiting, apply to the Sales Navigator (SNAP) or Talent partner program.",
+      "whyHuman": "LinkedIn reviews your business and how you will use the API.",
       "minutes": {
         "min": 30,
         "max": 90
@@ -249,14 +249,14 @@
             "title": "LinkedIn: Getting access"
           }
         ],
-        "note": "The programs are sourced; the wait is our estimate."
+        "note": "LinkedIn gives the programs. The wait is our estimate."
       }
     },
     {
       "id": "closed-permission",
       "owner": "human",
-      "title": "Reading a person's own posts is closed",
-      "plain": "LinkedIn is not accepting requests for r_member_social. There is no path to this access today; design around it.",
+      "title": "You cannot read the posts of a person",
+      "plain": "LinkedIn does not accept requests for r_member_social now. You cannot get this access. Design your agent so that it does not need it.",
       "link": {
         "url": "https://learn.microsoft.com/en-us/linkedin/marketing/community-management/community-management-overview",
         "label": "Read LinkedIn's note on r_member_social",
@@ -276,7 +276,7 @@
   "forks": [
     {
       "condition": "Your agent works with ads, Sales Navigator or recruiting",
-      "effect": "Each is a separate partner program with its own application (Advertising API, SNAP, Talent). Expect a business review, not a form.",
+      "effect": "Each area is a different partner program with its own application: Advertising API, SNAP or Talent. LinkedIn reviews your business. A form is not sufficient.",
       "evidence": {
         "level": "sourced",
         "sources": [
@@ -292,8 +292,8 @@
       ]
     },
     {
-      "condition": "Your agent needs to read a member's own posts (r_member_social)",
-      "effect": "Closed. LinkedIn is not accepting requests for this permission.",
+      "condition": "Your agent must read the posts of a member (r_member_social)",
+      "effect": "This is closed. LinkedIn does not accept requests for this permission.",
       "evidence": {
         "level": "sourced",
         "sources": [
@@ -311,9 +311,9 @@
   ],
   "nuances": [
     {
-      "title": "Community Management needs a fresh app",
-      "detail": "You can only request Community Management Development tier on a new app that has no other API products. If the request button is greyed out, that's why.",
-      "ifStuck": "Create a second app tied to the same Page just for the application.",
+      "title": "Community Management needs a new app",
+      "detail": "You can request the Community Management Development tier only on a new app. The app must have no other API products. This is why the request button can be gray.",
+      "ifStuck": "Create a second app for the application. Connect it to the same Page.",
       "evidence": {
         "level": "sourced",
         "sources": [
@@ -329,8 +329,8 @@
     },
     {
       "title": "Development tier limits",
-      "detail": "Development tier allows 500 requests per app and 100 per member (LinkedIn does not say over what period on this page).",
-      "ifStuck": "Plan for Standard tier before a real launch.",
+      "detail": "The Development tier allows 500 requests for each app and 100 for each member. This page does not give the time period.",
+      "ifStuck": "Get the Standard tier before you launch to real users.",
       "evidence": {
         "level": "sourced",
         "sources": [
@@ -346,8 +346,8 @@
     },
     {
       "title": "API versions expire",
-      "detail": "LinkedIn's marketing APIs are versioned monthly and old versions are sunset (for example, November 2025 ends on November 16, 2026).",
-      "ifStuck": "Check the version Composio uses if calls start failing after a sunset date.",
+      "detail": "LinkedIn publishes a new version of its marketing APIs each month. Old versions stop on a set date. For example, the November 2025 version stops on November 16, 2026.",
+      "ifStuck": "If calls fail after an end date, find the version that Composio uses.",
       "evidence": {
         "level": "sourced",
         "sources": [
@@ -365,11 +365,11 @@
   ],
   "config": {
     "consoleUrl": "https://www.linkedin.com/developers/apps",
-    "redirectUriNote": "Add the redirect URI shown in your Composio auth config on the app's Auth tab.",
+    "redirectUriNote": "On the Auth tab of the app, add the redirect address from your Composio auth config.",
     "scopes": [
       {
         "name": "openid profile email",
-        "plain": "Sign the person in and read their name, photo and email.",
+        "plain": "Sign the person in. Read their name, photo and email.",
         "sensitivity": "basic"
       },
       {
@@ -379,7 +379,7 @@
       },
       {
         "name": "w_organization_social",
-        "plain": "Post as a company page (needs Community Management approval).",
+        "plain": "Post as a company page. This needs Community Management approval.",
         "sensitivity": "restricted"
       }
     ]
@@ -397,7 +397,7 @@
         "min": 0,
         "max": 0
       },
-      "summary": "Self-serve products. Steps 1 to 5.",
+      "summary": "These products need no approval. Do steps 1 to 5.",
       "scopes": [
         "openid",
         "profile",
@@ -423,7 +423,7 @@
     },
     {
       "id": "pages",
-      "label": "Post for, or read analytics from, company pages",
+      "label": "Post for company pages, or read their analytics",
       "difficulty": "gated",
       "handsOnMinutes": {
         "min": 45,
@@ -433,7 +433,7 @@
         "min": 7,
         "max": 60
       },
-      "summary": "Community Management API: vetted Development tier, then Standard tier with a screen recording.",
+      "summary": "Community Management API. LinkedIn examines you for the Development tier. Then you need a screen recording for the Standard tier.",
       "scopes": [
         "w_organization_social",
         "r_organization_social"
@@ -469,7 +469,7 @@
         "min": 14,
         "max": 90
       },
-      "summary": "Separate partner programs, each with a business review.",
+      "summary": "Each area is a different partner program. LinkedIn reviews your business for each.",
       "scopes": [],
       "evidence": {
         "level": "uncertain",
@@ -479,7 +479,7 @@
             "title": "LinkedIn: Getting access"
           }
         ],
-        "note": "Programs are sourced. LinkedIn publishes no timelines; the wait is our estimate."
+        "note": "LinkedIn gives the programs. LinkedIn publishes no times. The wait is our estimate."
       },
       "stepIds": [
         "sign-in",
@@ -492,7 +492,7 @@
     },
     {
       "id": "member-read",
-      "label": "Read a person's own posts",
+      "label": "Read the posts of a person",
       "difficulty": "gated",
       "handsOnMinutes": {
         "min": 0,
@@ -502,7 +502,7 @@
         "min": 0,
         "max": 0
       },
-      "summary": "Closed: LinkedIn is not accepting requests for r_member_social.",
+      "summary": "Closed. LinkedIn does not accept requests for r_member_social.",
       "scopes": [
         "r_member_social"
       ],
@@ -522,7 +522,7 @@
   ],
   "composio": {
     "managedApp": "yes",
-    "note": "You can connect users today with Composio's own LinkedIn app while yours is set up or in review. Users see 'Composio' on the consent screen, rate limits are shared with other Composio customers, and polling triggers run at most every 15 minutes. Switch to your own app when it is ready. LinkedIn Ads is a separate Composio toolkit that needs your own app.",
+    "note": "Users can connect today through the Composio LinkedIn app. Use it while you set up your own app or wait for the review. Users see 'Composio' on the approval screen. Other Composio customers share the same rate limits. Polling triggers run a maximum of one time in 15 minutes. Change to your own app when it is ready. LinkedIn Ads is a different Composio toolkit. It needs your own app.",
     "evidence": {
       "level": "sourced",
       "sources": [
@@ -542,7 +542,7 @@
           "pages",
           "partners"
         ],
-        "note": "Composio's LinkedIn docs list company-page actions but do not say whether its own app includes company-page permissions, and some permissions cannot be combined in one app. Check before relying on it for company pages or partner-only APIs.",
+        "note": "The Composio LinkedIn docs list actions for company pages. They do not say if the Composio app has the permissions for company pages. Also, you cannot put some permissions together in one app. Make sure before you use it for company pages or partner APIs.",
         "evidence": {
           "level": "uncertain",
           "sources": [
@@ -551,18 +551,18 @@
               "title": "Composio: LinkedIn toolkit"
             }
           ],
-          "note": "The toolkit page confirms a managed app but not its permissions."
+          "note": "The toolkit page shows that Composio has its own app. It does not show the permissions of that app."
         }
       }
     ]
   },
   "existingApp": {
-    "summary": "Add Composio's redirect address on your app's Auth tab and paste the client ID and secret into Composio. Products you already have approved carry over.",
+    "summary": "Add the Composio redirect address on the Auth tab of your app. Paste the client ID and secret into Composio. The products that LinkedIn approved stay on the app.",
     "steps": [],
     "reReviewTriggers": [
       {
-        "trigger": "You want Community Management on an app that already has other products",
-        "effect": "LinkedIn only accepts Community Management requests from a new app with no other products. Create a second app tied to the same Page.",
+        "trigger": "You want Community Management on an app that has other products",
+        "effect": "LinkedIn accepts Community Management requests only from a new app with no other products. Create a second app. Connect it to the same Page.",
         "evidence": {
           "level": "sourced",
           "sources": [
@@ -575,7 +575,7 @@
       },
       {
         "trigger": "You need a new partner product (ads, sales, recruiting)",
-        "effect": "Each product needs its own application and approval, even on an approved app.",
+        "effect": "Each product needs its own application and approval. This is also true for an approved app.",
         "evidence": {
           "level": "sourced",
           "sources": [
@@ -590,9 +590,9 @@
   },
   "blockers": [
     {
-      "symptom": "Your Community Management access request is rejected",
-      "cause": "LinkedIn vets the use case, a verified business email (personal addresses fail), your organisation, its website and domain, and that a super admin of your company Page verified the app.",
-      "fix": "You cannot re-apply with the same app. Fix what failed, create a new app, and submit a new Development tier request.",
+      "symptom": "LinkedIn refuses your request for Community Management",
+      "cause": "LinkedIn examines these items: how you will use the API, a verified business email, your organisation, its website and domain. A super admin of your company Page must verify the app. Personal email addresses fail.",
+      "fix": "You cannot apply again with the same app. Correct the problem. Create a new app. Send a new request for the Development tier.",
       "escalate": {
         "url": "https://www.linkedin.com/help/linkedin/ask/dsapi",
         "label": "LinkedIn Developer Support"
@@ -611,9 +611,9 @@
       }
     },
     {
-      "symptom": "Your Standard tier upgrade is rejected",
-      "cause": "The screencast did not show every use case on your form, the privacy policy was missing or invalid, or the app breaks LinkedIn's data storage rules.",
-      "fix": "Record a high-resolution, narrated screencast of only your app showing each test case, then start again with a new app and a new Development tier request. The same app cannot re-apply.",
+      "symptom": "LinkedIn refuses your upgrade to the Standard tier",
+      "cause": "These are the usual causes: the screen recording did not show each use case on your form, the privacy policy was missing or not valid, or the app breaks the LinkedIn data storage rules.",
+      "fix": "Record a clear screen recording with a voice explanation. Show only your app and show each test case. Then create a new app and send a new request for the Development tier. You cannot apply again with the same app.",
       "escalate": {
         "url": "https://www.linkedin.com/help/linkedin/ask/dsapi",
         "label": "LinkedIn Developer Support"

@@ -14,8 +14,8 @@ export default async function GeneratePage({ searchParams }: PageProps<"/generat
       </nav>
       <h1 className="research-title">{refresh ? "Re-checking" : "Researching"} {q || "an app"}</h1>
       <p className="lede">
-        An agent is reading {q ? `${q}'s` : "the provider's"} official developer docs and writing the guide. Every
-        search and page it reads shows up below.
+        An agent reads the official developer docs of {q || "the provider"} and writes the guide. Each search and
+        each page that it reads shows below.
       </p>
       <GenerateFeed query={q} jobId={job} exact={exact} refresh={refresh} />
     </main>

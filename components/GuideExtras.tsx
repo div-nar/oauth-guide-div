@@ -3,10 +3,10 @@ import type { Guide } from "@/lib/guide-schema";
 import { appliesTo } from "@/lib/paths";
 
 const GLOSSARY: [string, string][] = [
-  ["What is an OAuth app?", "Your app's registration with the provider. It sets the name users see on the 'Allow?' screen and what you may ask for."],
-  ["What are the client ID and secret?", "Your app's username and password. The ID is public. Keep the secret private, and paste it into Composio yourself."],
-  ["What is a redirect address (redirect URI)?", "Where the provider sends people after they click Allow. With Composio, you copy it from your auth config."],
-  ["What are scopes?", "The specific permissions you ask for, such as 'read email'. More powerful scopes mean more review."],
+  ["What is an OAuth app?", "It is the record of your app at the provider. It sets the name that users see on the 'Allow?' screen. It also sets the permissions that you can ask for."],
+  ["What are the client ID and secret?", "They are the username and password of your app. The ID is public. Keep the secret private. Paste it into Composio yourself."],
+  ["What is a redirect address (redirect URI)?", "It is the address where the provider sends users after they click Allow. For Composio, copy it from your auth config."],
+  ["What are scopes?", "They are the permissions that you ask for, for example 'read email'. Stronger scopes need more review."],
 ];
 
 // People and questions that apply to the selected access (all of them when ids is null).
@@ -54,7 +54,7 @@ export function FaqList({ guide: g, ids }: { guide: Guide; ids: string[] | null 
   const keep = (x: { useCaseIds?: string[] | null }) => !ids || appliesTo(x.useCaseIds, ids);
   const faqs = [
     ...g.forks.filter(keep).map((f) => ({ q: `What if ${f.condition.charAt(0).toLowerCase() + f.condition.slice(1)}?`, a: f.effect, extra: null as string | null, evidence: f.evidence })),
-    ...g.nuances.filter(keep).map((n) => ({ q: n.title, a: n.detail, extra: `If you're stuck: ${n.ifStuck}`, evidence: n.evidence })),
+    ...g.nuances.filter(keep).map((n) => ({ q: n.title, a: n.detail, extra: `If you cannot continue: ${n.ifStuck}`, evidence: n.evidence })),
     ...GLOSSARY.map(([q, a]) => ({ q, a, extra: null, evidence: null })),
   ];
   return (

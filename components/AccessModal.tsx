@@ -62,7 +62,7 @@ export function AccessModal({
           <button type="button" className="modal-x" aria-label="Close" onClick={onClose}>×</button>
         </header>
 
-        <h3 className="picker-q">What access do you need? <span className="hint">Pick all that apply</span></h3>
+        <h3 className="picker-q">What access do you need? <span className="hint">Select all that apply</span></h3>
         <div className="modal-options" role="group">
           {options.map((o) => (
             <button key={o.id} type="button" role="checkbox" aria-checked={access.includes(o.id)} className="modal-option" onClick={() => toggle(o.id)}>
@@ -80,7 +80,7 @@ export function AccessModal({
             <div className="seg" role="radiogroup">
               {[false, true].map((v) => (
                 <button key={String(v)} type="button" role="radio" aria-checked={existing === v} onClick={() => setExisting(v)}>
-                  {v ? "Yes, reuse it" : "No, starting fresh"}
+                  {v ? "Yes, reuse it" : "No, make a new app"}
                 </button>
               ))}
             </div>

@@ -8,7 +8,7 @@
   "generatedBy": "library",
   "oauth": {
     "supported": true,
-    "notes": "HubSpot's current developer platform builds apps as 'projects' with the HubSpot CLI."
+    "notes": "On the current HubSpot developer platform, you build apps as 'projects' with the HubSpot CLI."
   },
   "verdict": {
     "difficulty": "moderate",
@@ -20,16 +20,16 @@
       "min": 0,
       "max": 0
     },
-    "summary": "No approval is needed to start, but the app is built with a command-line tool rather than a web form, and installers see an 'unverified app' checkbox until you are listed in HubSpot's Marketplace."
+    "summary": "You do not need approval to start. But you build the app with a command-line tool, not a web form. Until HubSpot lists your app on its Marketplace, users who install it must accept an 'unverified app' warning."
   },
   "whoYouNeed": [
     {
-      "role": "A HubSpot developer account holder",
-      "why": "Apps are created and uploaded from a developer account using the HubSpot CLI."
+      "role": "A person with a HubSpot developer account",
+      "why": "This person creates and uploads the app from the developer account with the HubSpot CLI."
     },
     {
-      "role": "A Super Admin in each customer's HubSpot account",
-      "why": "HubSpot only lets Super Admins install apps.",
+      "role": "A Super Admin in the HubSpot account of each customer",
+      "why": "In HubSpot, only Super Admins can install apps.",
       "useCaseIds": [
         "customers"
       ]
@@ -39,10 +39,10 @@
     {
       "id": "sign-in",
       "owner": "human",
-      "title": "Sign in to HubSpot's developer account and the CLI",
-      "plain": "Log in to your HubSpot developer account, then connect the HubSpot command-line tool to it.",
-      "technical": "Install @hubspot/cli (v7.6.0 or later), then run `hs account auth` and paste the personal access key when asked.",
-      "whyHuman": "Signing in and pasting the access key are yours to do.",
+      "title": "Sign in to the HubSpot developer account and the CLI",
+      "plain": "Sign in to your HubSpot developer account. Then connect the HubSpot command-line tool to the account.",
+      "technical": "Install @hubspot/cli, version 7.6.0 or later. Run `hs account auth`. When the tool asks, paste the personal access key.",
+      "whyHuman": "You must sign in yourself. You must also paste the access key yourself.",
       "minutes": {
         "min": 5,
         "max": 10
@@ -66,8 +66,8 @@
       "id": "create-project",
       "owner": "agent",
       "title": "Create the app project",
-      "plain": "The agent runs one command that creates the app's files, choosing OAuth so many HubSpot accounts can connect.",
-      "technical": "`hs project create` > App > distribution: marketplace, auth: oauth. Set a unique `uid` in app-hsmeta.json; changing it later creates a different app.",
+      "plain": "The agent runs one command. The command creates the files of the app. The agent selects OAuth, so that many HubSpot accounts can connect.",
+      "technical": "Run `hs project create` > App. Select distribution: marketplace and auth: oauth. Set a unique `uid` in app-hsmeta.json. If you change the uid later, HubSpot creates a different app.",
       "minutes": {
         "min": 3,
         "max": 8
@@ -91,8 +91,8 @@
       "id": "configure",
       "owner": "agent",
       "title": "Add the redirect address and permissions",
-      "plain": "In the app's settings file, add Composio's redirect address and the HubSpot permissions your agent needs.",
-      "technical": "app-hsmeta.json: `auth.type: \"oauth\"`, `auth.redirectUrls: [<Composio redirect URI>]`, `auth.requiredScopes: [\"crm.objects.contacts.read\", ...]`. Production redirect URLs must be https.",
+      "plain": "In the settings file of the app, add the Composio redirect address. Add the HubSpot permissions that your agent needs.",
+      "technical": "In app-hsmeta.json, set `auth.type: \"oauth\"`, `auth.redirectUrls: [<Composio redirect URI>]` and `auth.requiredScopes: [\"crm.objects.contacts.read\", ...]`. Production redirect URLs must use https.",
       "minutes": {
         "min": 5,
         "max": 10
@@ -120,7 +120,7 @@
       "id": "upload",
       "owner": "agent",
       "title": "Upload the app",
-      "plain": "The agent uploads the project, which builds the app in HubSpot.",
+      "plain": "The agent uploads the project. HubSpot then builds the app.",
       "technical": "`hs project upload`",
       "minutes": {
         "min": 2,
@@ -145,9 +145,9 @@
       "id": "credentials",
       "owner": "human",
       "title": "Copy the client ID and secret into Composio",
-      "plain": "Open the app in HubSpot, go to the Auth tab, and paste the client ID and secret into your Composio HubSpot auth config.",
-      "technical": "`hs project open` > Project Components > your app > Auth > Client credentials.",
-      "whyHuman": "The secret is a password for your app. Pasting it yourself keeps it out of any agent's chat history.",
+      "plain": "Open the app in HubSpot and go to the Auth tab. Paste the client ID and secret into your Composio HubSpot auth config.",
+      "technical": "Run `hs project open`. Go to Project Components > your app > Auth > Client credentials.",
+      "whyHuman": "The secret is the password for your app. Paste it yourself. Then it does not go into the chat history of an agent.",
       "minutes": {
         "min": 2,
         "max": 4
@@ -170,9 +170,9 @@
     {
       "id": "test",
       "owner": "human",
-      "title": "Install it in a test account",
-      "plain": "Connect a HubSpot test account through Composio. You will need to tick a box accepting an 'unverified app', because the app isn't listed yet.",
-      "whyHuman": "Installing needs a Super Admin of the account, and accepting the unverified-app warning is a judgment call.",
+      "title": "Install the app in a test account",
+      "plain": "Connect a HubSpot test account through Composio. The app is not on the Marketplace yet. Thus, you must select a box to accept an 'unverified app'.",
+      "whyHuman": "A Super Admin of the account must install the app. A person must decide to accept the unverified-app warning.",
       "minutes": {
         "min": 3,
         "max": 8
@@ -196,9 +196,9 @@
       "id": "own-token",
       "owner": "human",
       "title": "Copy the access token into Composio (your own account only)",
-      "plain": "For a private app on your own account there is no sign-in flow: copy the app's access token and add it to Composio as a token-based connection.",
-      "technical": "Set auth.type to \"static\" in app-hsmeta.json and remove redirectUrls. After hs project upload, copy the access token from the app's Auth tab.",
-      "whyHuman": "The token is a password for your account. Paste it yourself.",
+      "plain": "A private app on your own account has no sign-in steps. Copy the access token of the app. Add it to Composio as a token connection.",
+      "technical": "In app-hsmeta.json, set auth.type to \"static\" and remove redirectUrls. Run hs project upload. Then copy the access token from the Auth tab of the app.",
+      "whyHuman": "The token is the password for your account. Paste it yourself.",
       "minutes": {
         "min": 2,
         "max": 5
@@ -221,8 +221,8 @@
   ],
   "forks": [
     {
-      "condition": "You want the 'unverified' warning gone (Marketplace listing)",
-      "effect": "You need at least 3 active installs in unrelated HubSpot accounts. HubSpot does a first review within 10 business days, and the full feedback cycle can run up to 60 days.",
+      "condition": "You want to remove the 'unverified' warning (Marketplace listing)",
+      "effect": "You need at least 3 active installs in HubSpot accounts that are not related to you. HubSpot does a first review in 10 business days or less. All the feedback can take a maximum of 60 days.",
       "evidence": {
         "level": "sourced",
         "sources": [
@@ -237,8 +237,8 @@
       ]
     },
     {
-      "condition": "Only your own company's HubSpot account will connect",
-      "effect": "Use a private app with a static token instead of OAuth. No redirect addresses are needed.",
+      "condition": "Only the HubSpot account of your company will connect",
+      "effect": "Use a private app with a static token, not OAuth. You do not need redirect addresses.",
       "evidence": {
         "level": "sourced",
         "sources": [
@@ -253,8 +253,8 @@
   "nuances": [
     {
       "title": "Only Super Admins can install",
-      "detail": "A regular HubSpot user at your customer can't connect the app.",
-      "ifStuck": "Ask the customer's HubSpot Super Admin to do the first connection.",
+      "detail": "A usual HubSpot user at your customer cannot connect the app.",
+      "ifStuck": "Tell the HubSpot Super Admin of the customer to do the first connection.",
       "evidence": {
         "level": "sourced",
         "sources": [
@@ -269,9 +269,9 @@
       ]
     },
     {
-      "title": "Is there a cap on installs before listing?",
-      "detail": "Older HubSpot guidance limited unlisted apps to a small number of installs. The current docs we read don't mention a cap.",
-      "ifStuck": "Ask HubSpot developer support before rolling out widely while unlisted.",
+      "title": "Is there a maximum number of installs before the listing?",
+      "detail": "Older HubSpot pages gave a small maximum number of installs for unlisted apps. The current pages that we read do not give a maximum.",
+      "ifStuck": "Before you give an unlisted app to many customers, ask HubSpot developer support.",
       "evidence": {
         "level": "uncertain",
         "sources": [
@@ -280,7 +280,7 @@
             "title": "HubSpot: Marketplace listing requirements"
           }
         ],
-        "note": "Not stated on current pages. Not tested."
+        "note": "The current pages do not say this. We did not test it."
       },
       "useCaseIds": [
         "customers"
@@ -288,8 +288,8 @@
     },
     {
       "title": "Access tokens last 30 minutes",
-      "detail": "HubSpot access tokens expire after 1,800 seconds and are renewed with the refresh token. Composio handles the renewal.",
-      "ifStuck": "If connections drop, check that the refresh works in Composio's connected account view.",
+      "detail": "HubSpot access tokens expire after 1,800 seconds. The refresh token gets a new access token. Composio does this for you.",
+      "ifStuck": "If connections stop, open the connected account view in Composio. Make sure that the refresh works.",
       "evidence": {
         "level": "sourced",
         "sources": [
@@ -306,7 +306,7 @@
   ],
   "config": {
     "consoleUrl": "https://app.hubspot.com/developer",
-    "redirectUriNote": "Add the Composio redirect URI to auth.redirectUrls in app-hsmeta.json.",
+    "redirectUriNote": "Add the Composio redirect address to auth.redirectUrls in app-hsmeta.json.",
     "scopes": [
       {
         "name": "crm.objects.contacts.read",
@@ -323,7 +323,7 @@
   "useCases": [
     {
       "id": "customers",
-      "label": "Work in your customers' HubSpot accounts",
+      "label": "Work in the HubSpot accounts of your customers",
       "difficulty": "moderate",
       "handsOnMinutes": {
         "min": 30,
@@ -333,7 +333,7 @@
         "min": 0,
         "max": 0
       },
-      "summary": "Built with the HubSpot CLI. No review, but installers accept an 'unverified app' warning until you list on the Marketplace.",
+      "summary": "You build the app with the HubSpot CLI. HubSpot does not review it. Users who install it must accept an 'unverified app' warning until you list it on the Marketplace.",
       "scopes": [
         "crm.objects.contacts.read",
         "crm.objects.contacts.write"
@@ -358,7 +358,7 @@
     },
     {
       "id": "own",
-      "label": "Only your own company's HubSpot",
+      "label": "Only the HubSpot account of your company",
       "difficulty": "easy",
       "handsOnMinutes": {
         "min": 10,
@@ -368,7 +368,7 @@
         "min": 0,
         "max": 0
       },
-      "summary": "Use a private app with a static token. No OAuth redirect needed.",
+      "summary": "Use a private app with a static token. You do not need an OAuth redirect.",
       "scopes": [
         "crm.objects.contacts.read"
       ],
@@ -391,7 +391,7 @@
   ],
   "composio": {
     "managedApp": "yes",
-    "note": "You can connect users today with Composio's own HubSpot app while yours is set up or in review. Users see 'Composio' on the consent screen, rate limits are shared with other Composio customers, and polling triggers run at most every 15 minutes. Switch to your own app when it is ready.",
+    "note": "Users can connect today through the Composio HubSpot app. Use it while you set up your own app or wait for the review. Users see 'Composio' on the approval screen. Other Composio customers share the same rate limits. Polling triggers run a maximum of one time in 15 minutes. Change to your own app when it is ready.",
     "evidence": {
       "level": "sourced",
       "sources": [
@@ -407,12 +407,12 @@
     }
   },
   "existingApp": {
-    "summary": "Add Composio's redirect address to auth.redirectUrls in app-hsmeta.json, run hs project upload, then paste the client ID and secret into Composio.",
+    "summary": "Add the Composio redirect address to auth.redirectUrls in app-hsmeta.json. Run hs project upload. Then paste the client ID and secret into Composio.",
     "steps": [],
     "reReviewTriggers": [
       {
-        "trigger": "You change the app's uid",
-        "effect": "HubSpot treats it as a different app, so existing installs do not carry over. Keep the uid.",
+        "trigger": "You change the uid of the app",
+        "effect": "HubSpot then sees a different app. Existing installs do not move to it. Do not change the uid.",
         "evidence": {
           "level": "sourced",
           "sources": [
@@ -425,29 +425,29 @@
       },
       {
         "trigger": "You add required scopes",
-        "effect": "Accounts that already installed the app need to reinstall to grant the new scopes.",
+        "effect": "Accounts that installed the app must install it again to give the new scopes.",
         "evidence": {
           "level": "uncertain",
           "sources": [],
-          "note": "Not stated on the pages we read."
+          "note": "The pages that we read do not say this."
         }
       },
       {
-        "trigger": "Your app is listed on the HubSpot Marketplace",
-        "effect": "Listing changes go back through HubSpot's Ecosystem Quality review.",
+        "trigger": "Your app is on the HubSpot Marketplace",
+        "effect": "The HubSpot Ecosystem Quality team reviews changes to the listing again.",
         "evidence": {
           "level": "uncertain",
           "sources": [],
-          "note": "Inferred from the listing process; not stated for changes."
+          "note": "This is our conclusion from the listing process. The pages do not say this about changes."
         }
       }
     ]
   },
   "blockers": [
     {
-      "symptom": "You can't list on the App Marketplace yet",
-      "cause": "Listing needs at least three active installs: HubSpot accounts unconnected to your company that made successful API calls through your app in the last 30 days.",
-      "fix": "Install the app directly for three customer accounts first, using your install link, and keep them active before you submit.",
+      "symptom": "You cannot list your app on the App Marketplace yet",
+      "cause": "A listing needs at least three active installs. Each install must be a HubSpot account that is not related to your company. Each account must make successful API calls through your app in the last 30 days.",
+      "fix": "First, use your install link to install the app in three customer accounts. Keep these accounts active. Then send the app for listing.",
       "escalate": {
         "url": "https://developers.hubspot.com/docs/apps/developer-platform/list-apps/listing-your-app/app-marketplace-listing-requirements",
         "label": "HubSpot: listing requirements"
@@ -466,9 +466,9 @@
       }
     },
     {
-      "symptom": "Your listing is set back to Draft or rejected",
-      "cause": "Missing, incorrect or misleading listing details, dead links, or scopes your app requests but does not use.",
-      "fix": "Apply the feedback from the Ecosystem Quality team, remove unused scopes or mark them optional, and resubmit. The first review takes up to 10 business days; the whole cycle should finish within 60 days. Submit one app at a time: extra submissions are rejected automatically.",
+      "symptom": "HubSpot sets your listing back to Draft or refuses it",
+      "cause": "These are the usual causes: listing data that is missing, wrong or misleading, links that do not work, or scopes that your app requests but does not use.",
+      "fix": "Do the changes that the Ecosystem Quality team asks for. Remove the scopes that you do not use, or make them optional. Send the app again. The first review takes a maximum of 10 business days. All the review must be complete in 60 days. Send one app at a time. HubSpot automatically refuses more applications.",
       "escalate": {
         "url": "https://community.hubspot.com/c/develop-build-integrate/apis-integrations/80",
         "label": "HubSpot developer community"

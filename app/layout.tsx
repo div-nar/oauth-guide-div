@@ -11,7 +11,7 @@ export const metadata: Metadata = {
   title: "OAuth App Guides",
   alternates: { types: { "text/plain": "/llms.txt" } },
   description:
-    "How hard it is to get your own OAuth app approved, how long it takes, and which steps your agent can do for you.",
+    "How difficult it is to get approval for your own OAuth app, how long it takes, and which steps your agent can do.",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
