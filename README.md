@@ -62,13 +62,12 @@ Building this changed how I think about development from here on out.
 
 ## What I Corrected
 
-Checking the guides against provider pages changed them. The full record is in [`docs/evidence-log.md`](docs/evidence-log.md).
+Building and checking the guides changed my approach. The full record is in [`docs/evidence-log.md`](docs/evidence-log.md).
 
-- **Slack was not Easy.** My first guide said Easy. Slack's changelog limits unlisted apps to 1 request a minute on message history, so reading messages needs a Marketplace listing (10 installs, then up to 10 weeks of review).
-- **Slack's callback is not an exact match.** I first wrote "exact match" for every provider. Slack accepts a subdirectory of the registered URL; Google, GitHub and LinkedIn do not.
-- **PKCE differs by provider.** GitHub supports S256 only, Slack makes it opt-in and irreversible, and LinkedIn allows it for native clients only. Every guide now has a sourced Protocol section.
-- **Composio's app is not a way round every review.** Its Slack app is not Marketplace-listed yet, and its Gmail and LinkedIn pages do not confirm permissions, so those paths are marked Unconfirmed.
-- **The research agent cited pages it never opened** and had no way to say an app did not exist. Code now checks every citation against the pages it read, and reports "not found" instead of writing a guide.
+- **Not an MCP server.** I first assumed agents needed an MCP server. Setting up an OAuth app happens once per app, and the agent only reads, so a plain URL and `llms.txt` work with any agent and need nothing installed.
+- **Protocols differ for each app, and developers need to know them.** I first treated OAuth as one protocol. GitHub supports PKCE with S256 only, Slack makes it opt-in and irreversible, and LinkedIn allows it for native clients only. Every guide now has a sourced Protocol section.
+- **Slack's callback.** I first wrote "exact match" for every provider. Slack accepts a subdirectory of the registered URL; Google, GitHub and LinkedIn do not.
+- **Steering the agent.** The research agent cited pages it never opened and invented guides for apps that do not exist. It now writes into a fixed structure, code checks every citation against the pages it read, and it reports "not found" instead of guessing. The ask box answers only from the app's guide.
 
 ## Limitations
 
