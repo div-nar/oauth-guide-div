@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { EvidenceBadge } from "@/components/EvidenceBadge";
-import { PathVisual } from "@/components/PathVisual";
+import { PathLegend, PathVisual } from "@/components/PathVisual";
 import type { Step } from "@/lib/guide-schema";
 import { formatRange } from "@/lib/format";
 
@@ -83,7 +83,7 @@ export function StepScroller({ steps }: { steps: Step[] }) {
       }}
     >
       {steps.map((x) => <span key={x.id} id={`step-${x.id}`} className="step-anchor" aria-hidden />)}
-      <PathVisual steps={steps} active={active} onSelect={go} />
+      <PathVisual steps={steps} active={active} onSelect={go} legend={false} />
       <article className={`step-card ${s.owner} from-${dir > 0 ? "right" : "left"}`} aria-live="polite" key={s.id}>
         <header className="step-card-head">
           <span className="owner-chip">{OWNER[s.owner]}</span>
@@ -106,7 +106,10 @@ export function StepScroller({ steps }: { steps: Step[] }) {
         {s.technical && <p className="tech-text">{s.technical}</p>}
         <EvidenceBadge evidence={s.evidence} />
       </article>
-      <p className="step-hint">Use ← → to move between steps</p>
+      <div className="step-foot">
+        <PathLegend steps={steps} />
+        <p className="step-hint">Use ← → to move between steps</p>
+      </div>
     </div>
   );
 }

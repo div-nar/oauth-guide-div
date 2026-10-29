@@ -5,8 +5,7 @@ import { formatWait } from "@/lib/format";
 // out because it is the part that takes calendar time.
 // With `active`, it doubles as a progress bar: the line fills up to the current
 // step, and `progress` (0 to 1) fills the stretch towards the next one.
-export function PathVisual({ steps, active, progress = 0, onSelect }: { steps: Step[]; active?: number; progress?: number; onSelect?: (i: number) => void }) {
-  const total = (o: string) => steps.filter((s) => s.owner === o).length;
+export function PathVisual({ steps, active, progress = 0, onSelect, legend = true }: { steps: Step[]; active?: number; progress?: number; onSelect?: (i: number) => void; legend?: boolean }) {
   return (
     <figure className="journey" aria-label="Who does each step, in order">
       <ol className="journey-track">
@@ -31,11 +30,19 @@ export function PathVisual({ steps, active, progress = 0, onSelect }: { steps: S
           </li>
         ))}
       </ol>
-      <figcaption className="journey-legend small">
-        <span><i className="key agent" /> Your agent: {total("agent")}</span>
-        <span><i className="key human" /> You: {total("human")}</span>
-        <span><i className="key waiting" /> Waiting on the provider: {total("waiting")}</span>
-      </figcaption>
+      {legend && <PathLegend steps={steps} />}
     </figure>
+  );
+}
+
+// Who does how many steps; shown under the strip, or wherever the caller places it.
+export function PathLegend({ steps }: { steps: Step[] }) {
+  const total = (o: string) => steps.filter((s) => s.owner === o).length;
+  return (
+    <p className="journey-legend small">
+      <span><i className="key agent" /> Your agent: {total("agent")}</span>
+      <span><i className="key human" /> You: {total("human")}</span>
+      <span><i className="key waiting" /> Waiting on the provider: {total("waiting")}</span>
+    </p>
   );
 }

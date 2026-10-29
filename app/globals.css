@@ -200,7 +200,9 @@ section.block, details.block { margin-top: 48px; }
 .step-cta::after { content: "\2197"; font-size: 13px; }
 .step-cta:hover { background: color-mix(in srgb, var(--c) 22%, transparent); border-color: var(--c); }
 .step-cta .prefilled { font-size: 11px; padding: 1px 6px; border-radius: 4px; background: rgba(0, 0, 0, 0.25); }
-.step-hint { margin: -18px 0 0; text-align: center; font-size: 12.5px; color: var(--faint); }
+.step-foot { margin-top: -16px; display: flex; justify-content: space-between; align-items: center; gap: 8px 20px; flex-wrap: wrap; }
+.step-foot .journey-legend { margin: 0; }
+.step-hint { margin: 0; font-size: 12.5px; color: var(--faint); }
 @keyframes from-right { from { opacity: 0; transform: translateX(12px); } to { opacity: 1; transform: none; } }
 @keyframes from-left { from { opacity: 0; transform: translateX(-12px); } to { opacity: 1; transform: none; } }
 @media (prefers-reduced-motion: reduce) { .step-card.from-right, .step-card.from-left { animation: none; } }
