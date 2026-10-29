@@ -50,7 +50,7 @@ Div followed the Slack guide on a free workspace. Claude Code acted as the agent
 - Step 2, pre-filled link: **Slack rejected our manifest** with "We can't translate a manifest with errors". Slack needs a bot user (`features.bot_user`) when a manifest asks for bot scopes, and our link had none. Div pasted a fixed manifest and it worked. The guide link is fixed, and a test now checks for the bot user.
 - Step 2, the button now says **Create and Install**. Slack installs the app in your own workspace at once and shows a bot token (`xoxb-`) and an app token (`xapp-`). For your own workspace, that token is enough without OAuth. The guide now says this, and warns not to paste the token into an agent chat.
 - Step 3, redirect URL: added `https://oauth-guide-div.vercel.app/slack-test-callback`. Manage Distribution kept a reminder until the URL was saved.
-- Step 4, Manage Distribution: the checklist has four items, not two. The guide missed "Remove hard-coded information", a box you tick to confirm.
+- Step 4, Manage Distribution: the checklist has four items, not two. The guide missed "Remove hard-coded information", a box you tick to confirm. Div completed it and activated public distribution, within the 6 minutes.
 - Step 5: Client ID read from Basic Information. The secret stayed with Div.
 - Step 6: Div installed the app through its sign-in link in the same workspace. The consent screen showed the app name and two permissions, and Slack sent the browser to the callback address. Code had checked first that Slack's authorize page accepts the client ID and callback.
 
