@@ -32,6 +32,12 @@ export async function chat(messages: ChatMessage[], tools: unknown[]): Promise<C
   return { finish_reason: choice.finish_reason, message: choice.message };
 }
 
+// A short plain answer from the fast model, for questions about a guide.
+export async function complete(messages: { role: string; content: string }[], maxTokens = 500): Promise<string> {
+  const json = await post({ model: SEARCH_MODEL, messages, max_tokens: maxTokens });
+  return String(json.choices?.[0]?.message?.content ?? "").trim();
+}
+
 // Web search through OpenRouter's web plugin; we only use the cited results.
 export async function search(query: string): Promise<SearchResult[]> {
   const json = await post({

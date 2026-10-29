@@ -28,7 +28,6 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
           </Link>
           <ResearchPill />
           <nav>
-            <Link href="/">Guides</Link>
             <a href="/llms.txt">For agents</a>
           </nav>
         </header>

@@ -5,7 +5,7 @@ import { useState } from "react";
 import { AccessModal } from "@/components/AccessModal";
 import { EvidenceBadge } from "@/components/EvidenceBadge";
 import { AppLogo } from "@/components/AppLogo";
-import { BlockedList, FaqList, WhoList } from "@/components/GuideExtras";
+import { BlockedList, FaqList, OAuthBasics, WhoList } from "@/components/GuideExtras";
 import { HandoffButtons } from "@/components/HandoffButtons";
 import { GRADE_MEANING, GRADE_WORD, GradeMark } from "@/components/GradeMark";
 import { StepScroller } from "@/components/StepScroller";
@@ -139,6 +139,7 @@ export function GuideBody({ guide: g, initialIds, initialExisting = false, baseU
       )}
       <BlockedList guide={g} ids={u.ids} />
       <FaqList guide={g} ids={u.ids} />
+      <OAuthBasics />
       <ViewToggle human={`/guides/${g.slug}${selectionQuery(sel)}`} machine={`/guides/${g.slug}/ai${selectionQuery(sel)}`} current="human" />
     </>
   );

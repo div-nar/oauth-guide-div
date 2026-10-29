@@ -3,7 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { GuideBody } from "@/components/GuideBody";
 import { AppLogo } from "@/components/AppLogo";
-import { BlockedList, FaqList, WhoList } from "@/components/GuideExtras";
+import { BlockedList, FaqList, OAuthBasics, WhoList } from "@/components/GuideExtras";
 import { GuideCheck } from "@/components/EvidenceBadge";
 import { HandoffButtons } from "@/components/HandoffButtons";
 import { StepTable } from "@/components/StepTable";
@@ -81,6 +81,7 @@ export default async function GuidePage({ params, searchParams }: PageProps<"/gu
           )}
           <BlockedList guide={g} ids={null} />
           <FaqList guide={g} ids={null} />
+          <OAuthBasics />
         </>
       )}
 

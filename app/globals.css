@@ -23,7 +23,7 @@
   --gated: #fb923c;
   --error: #f87171;
   --na: #8a8a8a;
-  --font: Arial, "Helvetica Neue", Helvetica, sans-serif;
+  --font: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   /* aliases used by components */
   --surface: var(--card);
   --wash: #161616;
@@ -185,8 +185,6 @@ html { overflow-anchor: none; overflow-x: clip; }
 .step-card { --c: var(--agent); --cw: var(--agent-wash); position: relative; padding: 22px 24px 18px; border: 1px solid var(--border); border-radius: 12px; background: radial-gradient(120% 90% at 0% 0%, var(--cw), transparent 55%), var(--card); overflow-wrap: anywhere; }
 .step-card.human { --c: var(--you); --cw: var(--you-wash); }
 .step-card.waiting { --c: var(--wait); --cw: var(--wait-wash); }
-.step-card.from-right { animation: from-right 220ms ease-out; }
-.step-card.from-left { animation: from-left 220ms ease-out; }
 .step-card-head { display: flex; align-items: center; gap: 12px; }
 .step-card-count { font-family: var(--font-mono), monospace; font-size: 12px; color: var(--faint); white-space: nowrap; }
 .step-card-head .owner-chip { white-space: nowrap; }
@@ -207,9 +205,6 @@ html { overflow-anchor: none; overflow-x: clip; }
 .step-foot { margin-top: -16px; display: flex; justify-content: space-between; align-items: center; gap: 8px 20px; flex-wrap: wrap; }
 .step-foot .journey-legend { margin: 0; }
 .step-hint { margin: 0; font-size: 12.5px; color: var(--faint); }
-@keyframes from-right { from { opacity: 0; transform: translateX(12px); } to { opacity: 1; transform: none; } }
-@keyframes from-left { from { opacity: 0; transform: translateX(-12px); } to { opacity: 1; transform: none; } }
-@media (prefers-reduced-motion: reduce) { .step-card.from-right, .step-card.from-left { animation: none; } }
 @media (max-width: 760px) {
   .step-card { padding: 18px 16px 14px; }
   .step-hint, .step-card-time { display: none; }
@@ -226,15 +221,9 @@ html { overflow-anchor: none; overflow-x: clip; }
 .handoff p { margin: 0 0 12px; color: var(--muted); }
 .handoff .row { display: flex; flex-wrap: wrap; gap: 8px; }
 
-.faq details { border-bottom: 1px solid var(--border); }
-.faq summary { cursor: pointer; padding: 16px 28px 16px 0; font-weight: 600; list-style: none; position: relative; }
-.faq summary::-webkit-details-marker { display: none; }
-.faq summary::after { content: "+"; position: absolute; right: 4px; top: 14px; font-size: 18px; color: var(--faint); }
-.faq details[open] summary::after { content: "\2212"; }
-.faq-body { padding: 0 0 16px; color: var(--muted); max-width: 68ch; }
 
 /* human / machine toggle */
-.view-toggle { position: fixed; bottom: 18px; left: 50%; transform: translateX(-50%); display: flex; gap: 2px; padding: 3px; background: #0a0a0a; border: 1px solid var(--border-strong); border-radius: 8px; font-family: var(--font-mono), monospace; font-size: 12.5px; z-index: 10; }
+.view-toggle { position: fixed; bottom: 18px; left: 50%; transform: translateX(-50%); display: flex; gap: 2px; padding: 3px; background: rgba(10, 10, 10, 0.62); -webkit-backdrop-filter: blur(16px) saturate(160%); backdrop-filter: blur(16px) saturate(160%); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 10px; box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45); font-family: var(--font-mono), monospace; font-size: 12.5px; z-index: 10; }
 .view-toggle a { color: var(--muted); text-decoration: none; padding: 5px 12px; border-radius: 6px; text-transform: uppercase; letter-spacing: 0.04em; }
 .view-toggle a[aria-current="page"] { background: var(--ink); color: var(--bg); }
 
@@ -393,10 +382,10 @@ html { overflow-anchor: none; overflow-x: clip; }
 .blocker:last-child { border-bottom: 0; }
 .blocker p { margin: 0; }
 .blocker-icon { grid-row: 1; display: inline-grid; place-items: center; width: 16px; height: 16px; margin-top: 3px; border-radius: 50%; background: var(--error); color: #000; font-size: 11px; font-weight: 800; line-height: 1; }
-.blocker-where { grid-column: 2; font-size: 15px; font-weight: 600; line-height: 1.45; color: var(--ink); }
+.blocker-where { grid-column: 2; display: flex; align-items: baseline; justify-content: space-between; gap: 16px; font-size: 15px; font-weight: 600; line-height: 1.45; color: var(--ink); }
+.blocker-where a { flex: none; display: inline-flex; align-items: center; gap: 4px; color: var(--faint); font-size: 13px; font-weight: 400; text-decoration: none; }
+.blocker-where a:hover { color: var(--ink); }
 .blocker-fix { grid-column: 2; font-size: 14px; line-height: 1.55; color: var(--muted); max-width: 70ch; }
-.blocker-fix a { display: inline-flex; align-items: center; gap: 4px; margin-left: 6px; color: var(--faint); font-size: 13px; text-decoration: none; white-space: nowrap; vertical-align: baseline; }
-.blocker-fix a:hover { color: var(--ink); }
 
 /* what you'll need: who or what, then why */
 .need-list { list-style: none; margin: 0; padding: 0; }
@@ -421,3 +410,63 @@ html { overflow-anchor: none; overflow-x: clip; }
 .verdict-path-summary { grid-column: 2; font-size: 14px; line-height: 1.55; color: var(--muted); max-width: 66ch; }
 .add-access { justify-self: start; width: auto; display: inline-flex; align-items: center; margin-top: 4px; padding: 5px 10px; border-radius: 7px; border: 1px dashed var(--border-strong); background: none; color: var(--muted); font: inherit; font-size: 13px; cursor: pointer; transition: border-color 120ms, color 120ms; }
 .add-access:hover { border-color: var(--muted); color: var(--ink); }
+
+/* questions: this app's what-ifs open one at a time, then a small glossary */
+.faq-group { margin: 22px 0 6px; font-family: var(--font-mono), monospace; font-size: 11.5px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.04em; color: var(--faint); }
+.faq-group:first-of-type { margin-top: 4px; }
+.faq details { border-bottom: 1px solid var(--border); }
+.faq summary { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 13px 2px; font-size: 15px; font-weight: 500; color: var(--ink); cursor: pointer; list-style: none; }
+.faq summary::-webkit-details-marker { display: none; }
+.faq summary:hover { color: #fff; }
+.faq-chevron { flex: none; color: var(--faint); transition: transform 160ms ease; }
+.faq details[open] .faq-chevron { transform: rotate(180deg); }
+.faq-body { padding: 0 2px 16px; font-size: 14px; line-height: 1.6; color: var(--muted); max-width: 68ch; }
+.faq-body p { margin: 0 0 8px; }
+.faq-stuck span { display: block; font-family: var(--font-mono), monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--faint); margin-bottom: 2px; }
+@media (prefers-reduced-motion: reduce) { .faq-chevron { transition: none; } }
+/* fetched logos (favicons, agent-found) sit on a light tile so dark marks show */
+.logo-fetched { background: #f4f4f5; padding: 2px; box-sizing: border-box; }
+
+/* press feedback: everything clickable answers on pointer-down, not on release */
+:where(button, .btn, .card, .step-cta, .agent-links a, .add-access, .modal-option, .step-arrows button, .view-toggle a, .stop a):active:not(:disabled) { transform: scale(0.97); transition: transform 100ms ease-out; }
+.card:active { transform: scale(0.99); }
+
+/* sub-group headings read as text, not as more mono section labels */
+.picker-q, .faq-group { font-family: var(--font); text-transform: none; letter-spacing: 0; font-size: 13px; font-weight: 600; color: var(--muted); }
+
+/* reduced transparency and higher contrast */
+@media (prefers-reduced-transparency: reduce) { .view-toggle { background: #0a0a0a; backdrop-filter: none; -webkit-backdrop-filter: none; } }
+@media (prefers-contrast: more) {
+  :root { --muted: #c8c8c8; --faint: #9a9a9a; --border: #4a4a4a; --border-strong: #6a6a6a; }
+  .view-toggle { background: #000; backdrop-filter: none; -webkit-backdrop-filter: none; border-color: #8a8a8a; }
+}
+@media (prefers-reduced-motion: reduce) { :where(button, .btn, .card, .step-cta, .agent-links a, .add-access, .modal-option, .view-toggle a, .stop a):active { transform: none; } }
+
+/* the step card is dragged and sprung by script; vertical moves stay with the page */
+.step-card { touch-action: pan-y; will-change: transform; }
+
+/* ask anything about this app's setup, answered from the guide; same material as the copy pill */
+.ask { margin-top: 4px; }
+.faq-list { margin-top: 18px; border-top: 1px solid var(--border); }
+.ask-form { display: flex; align-items: center; gap: 10px; padding: 6px 6px 6px 12px; border-radius: 12px; border: 1px solid var(--border-strong); background: linear-gradient(180deg, #2a2a2a 0%, #141414 55%, #0d0d0d 100%); box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08), 0 1px 2px rgba(0, 0, 0, 0.6); transition: border-color 120ms; }
+.ask-form:focus-within { border-color: #555; }
+.ask-spark { flex: none; color: var(--muted); }
+.ask-input { flex: 1; min-width: 0; padding: 7px 0; border: 0; background: none; color: var(--ink); font-family: var(--font-mono), monospace; font-size: 13px; }
+.ask-input::placeholder { color: var(--faint); }
+.ask-input:focus { outline: none; }
+.ask-go { flex: none; display: inline-grid; place-items: center; width: 32px; height: 32px; padding: 0; border-radius: 8px; border: 0; background: var(--ink); color: var(--bg); cursor: pointer; transition: background 120ms, color 120ms, opacity 120ms; }
+.ask-go:disabled { background: rgba(255, 255, 255, 0.06); color: var(--faint); cursor: default; }
+.ask-go .pulse { background: var(--muted); }
+.ask-starters { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+.ask-starters button { padding: 5px 11px; border-radius: 99px; border: 1px solid var(--border); background: rgba(255, 255, 255, 0.02); color: var(--muted); font-family: var(--font); font-size: 13px; cursor: pointer; transition: border-color 120ms, color 120ms; }
+.ask-starters button:hover { border-color: var(--border-strong); color: var(--ink); }
+.ask-answer { margin-top: 10px; padding: 14px 16px; border-radius: 12px; border: 1px solid var(--border); background: var(--card); font-size: 14.5px; line-height: 1.6; color: var(--ink); }
+.ask-answer p { margin: 0 0 8px; max-width: 68ch; }
+.ask-q { color: var(--muted); font-size: 13.5px; }
+.ask-wait { display: flex; align-items: center; gap: 8px; color: var(--muted); }
+.ask-note { color: var(--faint); font-size: 12.5px; margin: 4px 0 0 !important; }
+.glossary { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; margin: 0; }
+.glossary div { padding: 12px 14px; border: 1px solid var(--border); border-radius: 8px; background: var(--card); }
+.glossary dt { font-size: 14px; font-weight: 500; color: var(--ink); margin-bottom: 4px; }
+.glossary dd { margin: 0; font-size: 13.5px; line-height: 1.55; color: var(--muted); }
+@media (max-width: 600px) { .glossary { grid-template-columns: minmax(0, 1fr); } }
