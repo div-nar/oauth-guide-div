@@ -4,7 +4,7 @@ export type Caps = { daily: number };
 export type CountFn = (now: Date) => Promise<{ day: number }>;
 
 export function capsFromEnv(): Caps {
-  return { daily: Number(process.env.DAILY_GENERATION_CAP ?? 10) };
+  return { daily: Number(process.env.DAILY_GENERATION_CAP ?? 15) };
 }
 
 const dbCounts: CountFn = async (now) => {
