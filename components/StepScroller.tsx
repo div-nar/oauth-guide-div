@@ -88,8 +88,12 @@ export function StepScroller({ steps }: { steps: Step[] }) {
     return () => el.removeEventListener("wheel", onWheel);
   }, [n]);
 
-  // The address names the open step, so it can be shared.
+  // The address names the open step once someone moves, so it can be shared. Not on
+  // first load: writing #step-<first> there made the page jump down to the steps.
+  const shown = useRef(active);
   useEffect(() => {
+    if (active === shown.current) return;
+    shown.current = active;
     if (steps[active]) history.replaceState(null, "", `#step-${steps[active].id}`);
     // Only when the step changes: the array is rebuilt on every render.
     // eslint-disable-next-line react-hooks/exhaustive-deps
