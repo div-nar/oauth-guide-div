@@ -3,7 +3,7 @@ import { disambiguate, type Option } from "@/lib/agent/disambiguate";
 import type { AgentEvent } from "@/lib/agent/events";
 import { runChecks } from "@/lib/agent/checks";
 import { composioLookup } from "@/lib/agent/composio";
-import { runGuideAgent } from "@/lib/agent/run";
+import { AppNotFoundError, runGuideAgent } from "@/lib/agent/run";
 import { query } from "@/lib/db";
 import { getGuide, saveGuide, slugForApp } from "@/lib/guides";
 import { getLibraryGuide } from "@/lib/library";
@@ -57,7 +57,8 @@ async function runJob(id: number, q: string) {
   } catch (err) {
     console.error("research job failed", id, err);
     const message = err instanceof Error ? err.message : "Something went wrong. Try again.";
-    await appendEvent(id, started, { type: "error", message }).catch(() => {});
+    const notFound = err instanceof AppNotFoundError;
+    await appendEvent(id, started, notFound ? { type: "error", message, notFound } : { type: "error", message }).catch(() => {});
     await query("UPDATE generations SET status = 'failed', finished_at = now() WHERE id = $1", [id]).catch(() => {});
   }
 }
@@ -77,6 +78,20 @@ export async function startResearch(
   // Hand-checked guides are never overwritten by a refresh (the library copy always wins).
   if (getLibraryGuide(slug)) return { kind: "ready", slug };
   if (!opts.refresh && (await getGuide(slug))) return { kind: "ready", slug };
+
+  // A name that was just researched and not found answers at once, instead of
+  // spending another run (agents re-fetch a guide URL until it exists).
+  if (!opts.refresh) {
+    const [miss] = await query<{ events: { type: string; message?: string; notFound?: boolean }[] }>(
+      `SELECT events FROM generations
+        WHERE slug = $1 AND status = 'failed' AND created_at > now() - interval '24 hours'
+          AND events @> '[{"notFound": true}]'::jsonb
+        ORDER BY id DESC LIMIT 1`,
+      [slug],
+    );
+    const e = miss?.events.find((x) => x.notFound);
+    if (e) return { kind: "rejected", reason: e.message ?? "We couldn't find that app.", status: 404 };
+  }
 
   const [running] = await query<{ id: number; query: string }>(
     `SELECT id, query FROM generations

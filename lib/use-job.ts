@@ -17,6 +17,12 @@ export function useJob(id: number | null, intervalMs = 1500): Job | null {
           const j = (await res.json()) as Job;
           if (!stop) setJob(j);
           if (j.status !== "started") return;
+        } else if (res.status === 404) {
+          // An old or mistyped link: say so once instead of "Working" forever.
+          const now = new Date().toISOString();
+          const message = "This research run no longer exists. Search for the app again to start a new one.";
+          if (!stop) setJob({ id, query: "", slug: "", status: "failed", events: [{ type: "error", message, t: 0 }], startedAt: now, finishedAt: now });
+          return;
         }
       } catch {}
       if (!stop) timer = setTimeout(tick, intervalMs);
