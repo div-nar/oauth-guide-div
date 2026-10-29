@@ -8,7 +8,7 @@ import { AppLogo } from "@/components/AppLogo";
 import { BlockedList, FaqList, WhoList } from "@/components/GuideExtras";
 import { HandoffButtons } from "@/components/HandoffButtons";
 import { GRADE_MEANING, GRADE_WORD, GradeMark } from "@/components/GradeMark";
-import { PathVisual } from "@/components/PathVisual";
+import { StepScroller } from "@/components/StepScroller";
 import { StepTable } from "@/components/StepTable";
 import { formatHandsOn, formatWait } from "@/lib/format";
 import type { Guide } from "@/lib/guide-schema";
@@ -114,12 +114,8 @@ export function GuideBody({ guide: g, initialIds, initialExisting = false, baseU
       ) : (
         <>
           <section className="block">
-            <h2 className="label">The path</h2>
-            <PathVisual steps={steps} />
-          </section>
-          <section className="block">
             <h2 className="label">Steps</h2>
-            <StepTable steps={steps} />
+            <StepScroller steps={steps} />
           </section>
         </>
       )}

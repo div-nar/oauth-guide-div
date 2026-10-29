@@ -126,7 +126,7 @@ section.block, details.block { margin-top: 48px; }
 
 .journey { margin: 0; background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 20px 20px 14px; }
 .journey-track { list-style: none; display: flex; align-items: center; padding: 0; margin: 0 0 14px; }
-.stop { flex: 1 1 0; display: flex; align-items: center; min-width: 0; }
+.stop { flex: 1 1 0; display: flex; align-items: center; min-width: 30px; }
 .stop::before { content: ""; flex: 1; height: 1px; background: var(--border-strong); }
 .stop:first-child { flex: 0 0 auto; }
 .stop:first-child::before { display: none; }
@@ -168,6 +168,29 @@ section.block, details.block { margin-top: 48px; }
 .step-link { display: inline-grid; place-items: center; width: 30px; height: 26px; border-radius: 6px; border: 1px solid var(--c); color: var(--c); }
 .step-link:hover { background: var(--cw); }
 .show-sm { display: none; }
+
+/* Steps: a pinned panel that moves through the path as you scroll. */
+.scrolly { --panel: min(600px, calc(100svh - 32px)); position: relative; }
+.scrolly-panel { position: sticky; top: 16px; z-index: 1; min-height: var(--panel); display: flex; flex-direction: column; gap: 16px; background: var(--bg); }
+.scrolly-markers { position: relative; margin-top: calc(-1 * var(--panel)); pointer-events: none; }
+.scrolly-markers > div { height: 42vh; }
+.scrolly-markers > div:last-child { height: var(--panel); }
+.stop.current .dot { box-shadow: 0 0 0 3px var(--bg), 0 0 0 5px var(--c); }
+.stop.later .dot { opacity: 0.35; }
+.step-card { --c: var(--agent); --cw: var(--agent-wash); flex: 1; padding: 22px 24px; background: var(--card); border: 1px solid var(--border); border-left: 3px solid var(--c); border-radius: 8px; animation: card-in 180ms ease-out; overflow-wrap: anywhere; }
+.step-card.human { --c: var(--you); --cw: var(--you-wash); }
+.step-card.waiting { --c: var(--wait); --cw: var(--wait-wash); }
+.step-card-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
+.step-card h3 { font-size: 22px; font-weight: 700; margin: 14px 0 8px; }
+.step-card p { margin: 6px 0; color: var(--muted); max-width: 68ch; }
+.step-card .why { font-size: 14px; color: var(--faint); }
+.step-card .tech-text { font-size: 13.5px; padding: 8px 10px; border: 1px solid var(--border); border-radius: 6px; }
+.step-cta { display: inline-flex; gap: 10px; align-items: center; margin: 14px 0 4px; padding: 8px 14px; border-radius: 6px; border: 1px solid var(--c); color: var(--c); font-weight: 600; font-size: 14px; text-decoration: none; }
+.step-cta:hover { background: var(--cw); }
+.step-nav { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+.step-nav .btn:disabled { opacity: 0.35; cursor: default; }
+@keyframes card-in { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: reduce) { .step-card { animation: none; } }
 
 .ev { font-size: 12.5px; margin-top: 8px; color: var(--faint); display: flex; flex-wrap: wrap; gap: 4px 8px; align-items: baseline; }
 .ev .tag { font-family: var(--font-mono), monospace; color: var(--muted); }
@@ -215,6 +238,10 @@ section.block, details.block { margin-top: 48px; }
   .card-grid, .home-try { grid-template-columns: minmax(0, 1fr); }
   .home-hero h1 { font-size: 32px; }
   .hide-sm, .wait-label { display: none; }
+  .scroll-hint { display: none; }
+  .stop { min-width: 24px; }
+  .stop .dot { width: 22px; height: 22px; font-size: 10.5px; }
+  .step-card { padding: 18px; }
   .show-sm { display: block; }
   .step-head, .step-row { grid-template-columns: 22px 56px minmax(0, 1fr) 32px; gap: 8px; }
   .who-list li { grid-template-columns: minmax(0, 1fr); gap: 2px; }
