@@ -115,7 +115,7 @@ function finalize(raw: unknown, query: string, today: string, seen: Set<string>)
   const fix = <T extends { evidence: Evidence }>(xs: T[]) => xs.map((x) => ({ ...x, evidence: sanitizeEvidence(x.evidence, seen) }));
   const steps = fix(g.steps).map((st) => (st.link && !safeLink(st.link.url, g.app.website, seen) ? { ...st, link: null } : st));
   // Checks are recorded by code after research (lib/agent/checks.ts), never by the model.
-  return { ...g, useCases: fix(g.useCases), steps, forks: fix(g.forks), nuances: fix(g.nuances), checks: null };
+  return { ...g, useCases: fix(g.useCases), steps, forks: fix(g.forks), nuances: fix(g.nuances), composio: null, checks: null };
 }
 
 export async function runGuideAgent(query: string, emit: (e: AgentEvent) => void, deps: AgentDeps = {}): Promise<Guide> {
