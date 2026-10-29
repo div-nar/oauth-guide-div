@@ -35,12 +35,13 @@ export function StepScroller({ steps }: { steps: Step[] }) {
   const root = useRef<HTMLDivElement>(null);
   const onScreen = useRef(false);
   const touchX = useRef<number | null>(null);
+  const activeNow = useRef(0);
+  useEffect(() => { activeNow.current = active; }, [active]);
 
   const go = (i: number) => {
     const k = Math.max(0, Math.min(n - 1, i));
     setDir(k >= active ? 1 : -1);
     setActive(k);
-    history.replaceState(null, "", `#step-${steps[k].id}`);
   };
 
   // Arrow keys work while the steps are visible, unless you are typing somewhere.
@@ -60,10 +61,48 @@ export function StepScroller({ steps }: { steps: Step[] }) {
     return () => { io.disconnect(); window.removeEventListener("keydown", onKey); };
   }, [n]);
 
-  // Open the step named in the address (#step-<id>), as agents' permalinks do.
+  // Scrolling or swiping over the steps moves between them. At the first or last
+  // step the page scrolls on as usual, so nobody gets stuck. One move per gesture:
+  // a trackpad keeps sending scroll events for a moment after a swipe.
   useEffect(() => {
+    const el = root.current;
+    if (!el) return;
+    let acc = 0;
+    let lockedUntil = 0;
+    const onWheel = (e: WheelEvent) => {
+      if (e.ctrlKey) return; // pinch zoom
+      const d = Math.abs(e.deltaX) > Math.abs(e.deltaY) ? e.deltaX : e.deltaY;
+      const step = d > 0 ? 1 : -1;
+      const next = activeNow.current + step;
+      if (next < 0 || next > n - 1) { acc = 0; return; }
+      e.preventDefault();
+      if (performance.now() < lockedUntil) return;
+      acc += d;
+      if (Math.abs(acc) < 40) return;
+      acc = 0;
+      lockedUntil = performance.now() + 450;
+      setDir(step);
+      setActive(next);
+    };
+    el.addEventListener("wheel", onWheel, { passive: false });
+    return () => el.removeEventListener("wheel", onWheel);
+  }, [n]);
+
+  // The address names the open step, so it can be shared.
+  useEffect(() => {
+    if (steps[active]) history.replaceState(null, "", `#step-${steps[active].id}`);
+    // Only when the step changes: the array is rebuilt on every render.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [active]);
+
+  // Open the step named in the address (#step-<id>), as agents' permalinks do. Keyed on
+  // the step ids, not the array: updating the address re-renders the page with a new
+  // array, and re-running this would scroll the page back to the steps.
+  const ids = steps.map((s) => s.id).join(" ");
+  useEffect(() => {
+    const list = ids.split(" ");
     const fromHash = () => {
-      const i = steps.findIndex((s) => `#step-${s.id}` === window.location.hash);
+      const i = list.findIndex((id) => `#step-${id}` === window.location.hash);
       if (i >= 0) {
         setActive(i);
         root.current?.scrollIntoView({ block: "start" });
@@ -72,7 +111,7 @@ export function StepScroller({ steps }: { steps: Step[] }) {
     const frame = requestAnimationFrame(fromHash);
     window.addEventListener("hashchange", fromHash);
     return () => { cancelAnimationFrame(frame); window.removeEventListener("hashchange", fromHash); };
-  }, [steps]);
+  }, [ids]);
 
   const s = steps[active] ?? steps[0];
   if (!s) return null;
@@ -117,7 +156,7 @@ export function StepScroller({ steps }: { steps: Step[] }) {
       </article>
       <div className="step-foot">
         <PathLegend steps={steps} />
-        <p className="step-hint">Use ← → to move between steps</p>
+        <p className="step-hint">Scroll over the steps, or use ← →</p>
       </div>
     </div>
   );
