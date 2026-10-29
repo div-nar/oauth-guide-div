@@ -114,3 +114,11 @@ export type Difficulty = Guide["verdict"]["difficulty"];
 export function parseGuide(x: unknown): Guide {
   return GuideSchema.parse(x);
 }
+
+// Rows saved by older agent versions lack fields added since. An empty
+// stepIds list means "every step", so it is a safe default for them.
+export function parseStoredGuide(x: unknown): Guide {
+  const g = x as { useCases?: { stepIds?: unknown }[] };
+  const useCases = g.useCases?.map((u) => ({ ...u, stepIds: u.stepIds ?? [] }));
+  return parseGuide(useCases ? { ...g, useCases } : g);
+}
