@@ -27,6 +27,20 @@ What we read, what we tried, and what surprised us. Dates are when the check hap
 
 ## Hands-on attempts
 
+### 2026-10-29: GitHub OAuth app, by hand (Div), following our guide
+
+Div followed the GitHub guide on a personal account. Claude Code acted as the agent in chat and gave the field values. Div clicked through GitHub.
+
+- Step 1, sign in: already signed in.
+- Step 2, callback address: `http://localhost:8787/callback`. GitHub accepts a localhost callback.
+- Step 3, register the app: the form matched the guide (Application name, Homepage URL, optional description, Authorization callback URL, Enable Device Flow off).
+- Step 4, client secret: **GitHub asked for a one-time code before it made the secret.** The guide did not say this. GitHub calls it sudo mode: it applies when you generate or remove a client secret, and lasts two hours. The guide now has this in the step and as a pitfall.
+- Steps 3 and 4 together took about 2 minutes (16:44 to 16:46 UTC). The guide estimate is 3 to 7 minutes.
+- Code then checked the new client ID: GitHub's authorize endpoint accepted it and sent the browser to sign-in (HTTP 302).
+- The client secret was first pasted into the agent chat in place of the client ID. The two values sit near each other on the app page. The secret was replaced. The guide now says what each value looks like (client ID starts with `Ov23li`, the secret is 40 characters).
+
+Not done: step 5, a full sign-in through the app and a code-for-token exchange. Steps 1, 3 and 4 are marked `Tested by hand` in the guide. Steps 2 and 5 stay sourced.
+
 ## 2026-10-29: "Blocked or rejected?" sections
 
 Read each provider's review or troubleshooting page for what happens after a rejection or a stall, and what to do next:
@@ -51,7 +65,7 @@ The same day, code checked what an agent sees on the live site:
 
 Not recorded yet, so no step is marked `Tested by hand` from this run: the app, the agent, the steps it completed, and whether an OAuth app was created.
 
-- [ ] GitHub OAuth app on a free account (Div): time taken, screens, surprises.
+- [x] GitHub OAuth app on a free account (Div): see above.
 - [ ] Slack app with public distribution on a free workspace (Div): time taken, screens, surprises.
 
 No credentials are recorded here or anywhere in the repo.

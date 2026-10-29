@@ -72,7 +72,7 @@ Building and checking the guides changed my approach. The full record is in [`do
 
 ## Limitations
 
-- Not verified: no step is `Tested by hand` yet. Few providers publish review times, so wait ranges are marked as estimates. Details are in `docs/evidence-log.md`.
+- Tested by hand: only GitHub, up to the client secret (sign-in, register, secret). That run found a step the docs-based guide missed: GitHub asks for a one-time code before it makes a secret. A full sign-in through the app is not tested. Few providers publish review times, so wait ranges are marked as estimates. Details are in `docs/evidence-log.md`.
 - Five curated guides; the rest are agent-researched and not reviewed by a person.
 - Agent checks show pages and endpoints are live, not that a setup works end to end.
 - Self-hosted or regional instances (Salesforce custom domains, Jira Server) are only described when the agent finds them.
