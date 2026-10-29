@@ -43,6 +43,7 @@ export function guideToMarkdown(g: Guide, baseUrl: string, sel?: Selection): str
     "",
     `Canonical: ${baseUrl}/guides/${g.slug} | Last checked: ${g.lastChecked} | Source: ${g.generatedBy}`,
     "",
+    ...(g.app.canDo ? [`Once connected, an agent can: ${g.app.canDo}`, ""] : []),
     `Difficulty: ${v.difficulty} | Hands-on: ${range(v.handsOnMinutes, "min")} | Waiting: ${range(v.waitDays, "days")}`,
     "",
     v.summary,

@@ -2,7 +2,8 @@
   "slug": "hubspot",
   "app": {
     "name": "HubSpot",
-    "website": "https://www.hubspot.com"
+    "website": "https://www.hubspot.com",
+    "canDo": "Read and update contacts and other CRM records in the HubSpot accounts people connect."
   },
   "lastChecked": "2026-10-28",
   "generatedBy": "library",

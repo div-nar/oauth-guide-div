@@ -2,7 +2,8 @@
   "slug": "slack",
   "app": {
     "name": "Slack",
-    "website": "https://slack.com"
+    "website": "https://slack.com",
+    "canDo": "Post messages and replies, and read channel history and threads to summarise, search or triage."
   },
   "lastChecked": "2026-10-28",
   "generatedBy": "library",

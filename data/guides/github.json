@@ -2,7 +2,8 @@
   "slug": "github",
   "app": {
     "name": "GitHub",
-    "website": "https://github.com"
+    "website": "https://github.com",
+    "canDo": "Read and change code, open and review pull requests, and manage issues in the repositories people connect."
   },
   "lastChecked": "2026-10-28",
   "generatedBy": "library",

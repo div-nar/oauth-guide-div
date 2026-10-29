@@ -2,7 +2,8 @@
   "slug": "gmail",
   "app": {
     "name": "Gmail",
-    "website": "https://mail.google.com"
+    "website": "https://mail.google.com",
+    "canDo": "Read, sort and label email, draft replies and send messages from the inbox people connect."
   },
   "lastChecked": "2026-10-28",
   "generatedBy": "library",

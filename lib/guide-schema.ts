@@ -66,7 +66,8 @@ export const ChecksSchema = z.object({
 const GuideFields = z
   .object({
   slug: z.string(),
-  app: z.object({ name: z.string(), website: z.string(), logoUrl: z.string().nullish() }),
+  // canDo: what an agent can do in the app once connected, in one plain sentence.
+  app: z.object({ name: z.string(), website: z.string(), logoUrl: z.string().nullish(), canDo: z.string().nullish() }),
   lastChecked: z.string(),
   generatedBy: z.enum(["library", "agent"]),
   oauth: z.object({ supported: z.boolean(), notes: z.string().nullish() }),

@@ -21,7 +21,7 @@ function toRow(g: Guide): GuideRow {
     website: g.app.website,
     logoUrl: g.app.logoUrl,
     difficulty: v.difficulty,
-    summary: v.summary,
+    summary: g.app.canDo ?? v.summary,
     handsOn: formatHandsOn(v.handsOnMinutes),
     waiting: formatWait(v.waitDays),
     handsOnMax: v.handsOnMinutes.max,
