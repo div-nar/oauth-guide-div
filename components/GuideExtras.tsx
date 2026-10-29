@@ -3,10 +3,10 @@ import type { Guide } from "@/lib/guide-schema";
 import { appliesTo } from "@/lib/paths";
 
 const GLOSSARY: [string, string][] = [
-  ["What is an OAuth app?", "Your app's registration with the provider. It sets the name users see on the 'Allow?' screen and what you may ask for."],
-  ["What are the client ID and secret?", "Your app's username and password. The ID is public. Keep the secret private, in your app's secret store, and add it there yourself."],
-  ["What is a redirect address (redirect URI)?", "Where the provider sends people after they click Allow: a callback address in your own app, which must match what you register with the provider."],
-  ["What are scopes?", "The specific permissions you ask for, such as 'read email'. More powerful scopes mean more review."],
+  ["OAuth app", "Your app's registration with the provider. It sets the name users see on the 'Allow?' screen and what you may ask for."],
+  ["Client ID and secret", "Your app's username and password. The ID is public. Keep the secret private, in your app's secret store, and add it there yourself."],
+  ["Redirect address (redirect URI)", "Where the provider sends people after they click Allow: a callback address in your own app, which must match what you register with the provider."],
+  ["Scopes", "The specific permissions you ask for, such as 'read email'. More powerful scopes mean more review."],
 ];
 
 // "A Super Admin in each account" reads better as a list item without the article.
@@ -63,28 +63,51 @@ export function BlockedList({ guide: g, ids }: { guide: Guide; ids: string[] | n
   );
 }
 
+function Chevron() {
+  return (
+    <svg className="faq-chevron" width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden>
+      <path d="M4 6l4 4 4-4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
+// This app's what-ifs and gotchas open one at a time; the OAuth terms are short, so
+// they sit open as a small glossary.
 export function FaqList({ guide: g, ids }: { guide: Guide; ids: string[] | null }) {
   const keep = (x: { useCaseIds?: string[] | null }) => !ids || appliesTo(x.useCaseIds, ids);
   const faqs = [
-    ...g.forks.filter(keep).map((f) => ({ q: `What if ${f.condition.charAt(0).toLowerCase() + f.condition.slice(1)}?`, a: f.effect, extra: null as string | null, evidence: f.evidence })),
-    ...g.nuances.filter(keep).map((n) => ({ q: n.title, a: n.detail, extra: `If you're stuck: ${n.ifStuck}`, evidence: n.evidence })),
-    ...GLOSSARY.map(([q, a]) => ({ q, a, extra: null, evidence: null })),
+    ...g.forks.filter(keep).map((f) => ({ q: `What if ${f.condition.charAt(0).toLowerCase() + f.condition.slice(1)}?`, a: f.effect, stuck: null as string | null, evidence: f.evidence })),
+    ...g.nuances.filter(keep).map((n) => ({ q: n.title, a: n.detail, stuck: n.ifStuck, evidence: n.evidence })),
   ];
   return (
     <section className="block">
       <h2 className="label">Questions</h2>
-      <div className="faq">
-        {faqs.map((f) => (
-          <details key={f.q}>
-            <summary>{f.q}</summary>
-            <div className="faq-body">
-              <p>{f.a}</p>
-              {f.extra && <p>{f.extra}</p>}
-              {f.evidence && <EvidenceBadge evidence={f.evidence} />}
-            </div>
-          </details>
+      {faqs.length > 0 && (
+        <>
+          <h3 className="faq-group">{g.app.name}</h3>
+          <div className="faq">
+            {faqs.map((f) => (
+              <details key={f.q}>
+                <summary>{f.q}<Chevron /></summary>
+                <div className="faq-body">
+                  <p>{f.a}</p>
+                  {f.stuck && <p className="faq-stuck"><span>If you&apos;re stuck</span>{f.stuck}</p>}
+                  {f.evidence && <EvidenceBadge evidence={f.evidence} />}
+                </div>
+              </details>
+            ))}
+          </div>
+        </>
+      )}
+      <h3 className="faq-group">OAuth basics</h3>
+      <dl className="glossary">
+        {GLOSSARY.map(([term, def]) => (
+          <div key={term}>
+            <dt>{term}</dt>
+            <dd>{def}</dd>
+          </div>
         ))}
-      </div>
+      </dl>
     </section>
   );
 }
