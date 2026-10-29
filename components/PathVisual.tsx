@@ -3,8 +3,9 @@ import { formatWait } from "@/lib/format";
 
 // A journey strip: one stop per step, coloured by who does it. Waiting stretches
 // out because it is the part that takes calendar time.
-// With `active`, steps before it read as done and later ones as still to come.
-export function PathVisual({ steps, active }: { steps: Step[]; active?: number }) {
+// With `active`, it doubles as a progress bar: the line fills up to the current
+// step, and `progress` (0 to 1) fills the stretch towards the next one.
+export function PathVisual({ steps, active, progress = 0, onSelect }: { steps: Step[]; active?: number; progress?: number; onSelect?: (i: number) => void }) {
   const total = (o: string) => steps.filter((s) => s.owner === o).length;
   return (
     <figure className="journey" aria-label="Who does each step, in order">
@@ -12,10 +13,18 @@ export function PathVisual({ steps, active }: { steps: Step[]; active?: number }
         {steps.map((s, i) => (
           <li
             key={s.id}
-            className={`stop ${s.owner}${active === undefined ? "" : i === active ? " current" : i > active ? " later" : ""}`}
-            style={s.owner === "waiting" ? { flexGrow: Math.max(3, Math.round((s.waitDays?.max ?? 14) / 7)) } : undefined}
+            className={`stop ${s.owner}${active === undefined ? "" : i === active ? " current" : i > active ? " later" : " passed"}${active !== undefined && i <= active ? " reached" : ""}`}
+            style={{
+              ...(s.owner === "waiting" ? { flexGrow: Math.max(3, Math.round((s.waitDays?.max ?? 14) / 7)) } : {}),
+              ...(active !== undefined && i === active + 1 ? ({ "--seg": progress } as React.CSSProperties) : {}),
+            }}
           >
-            <a href={`#step-${s.id}`} title={s.title} aria-current={i === active ? "step" : undefined}>
+            <a
+              href={`#step-${s.id}`}
+              title={s.title}
+              aria-current={i === active ? "step" : undefined}
+              onClick={onSelect ? (e) => { e.preventDefault(); onSelect(i); } : undefined}
+            >
               <span className="dot">{i + 1}</span>
               {s.owner === "waiting" && <span className="wait-label">{s.waitDays ? formatWait(s.waitDays) : "Review"}</span>}
             </a>

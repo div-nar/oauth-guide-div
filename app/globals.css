@@ -169,44 +169,41 @@ section.block, details.block { margin-top: 48px; }
 .step-link:hover { background: var(--cw); }
 .show-sm { display: none; }
 
-/* Steps: a pinned index beside step cards that open as you scroll onto them. */
-.steps-layout { width: calc(100% + max(0px, min(200px, (100vw - 900px) / 2))); margin-top: 24px; display: grid; grid-template-columns: 230px minmax(0, 1fr); gap: 28px; align-items: start; }
-.step-index { position: sticky; top: 24px; }
-.step-index ol { list-style: none; margin: 0; padding: 0; font-size: 13.5px; }
-.step-index li, .step-card { --c: var(--agent); --cw: var(--agent-wash); }
-.step-index li.human, .step-card.human { --c: var(--you); --cw: var(--you-wash); }
-.step-index li.waiting, .step-card.waiting { --c: var(--wait); --cw: var(--wait-wash); }
-.step-index button { all: unset; box-sizing: border-box; width: 100%; cursor: pointer; display: flex; gap: 10px; padding: 6px 10px; border-left: 2px solid var(--border); color: var(--faint); line-height: 1.4; transition: color 150ms, background 150ms; }
-.step-index button:hover { color: var(--ink); }
-.step-index li.done button { color: var(--muted); }
-.step-index li.on button { border-left-color: var(--c); color: var(--ink); background: var(--card); font-weight: 600; }
-.step-index button:focus-visible { outline: 2px solid var(--ink); }
-.step-index-num { font-family: var(--font-mono), monospace; color: var(--c); min-width: 18px; }
-.step-cards { overflow-anchor: none; list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 10px; }
-.step-card { min-height: 92px; display: flex; flex-direction: column; justify-content: center; background: var(--card); border: 1px solid var(--border); border-left: 3px solid var(--border-strong); border-radius: 8px; overflow-wrap: anywhere; scroll-margin-top: calc(35vh - 4px); transition: border-color 150ms; }
-.step-card.open { justify-content: flex-start; }
-.step-card.on { border-left-color: var(--c); box-shadow: 0 0 0 1px var(--cw); }
-.step-card.open:not(.on) { border-left-color: var(--c); opacity: 0.75; }
-.step-card-head { all: unset; box-sizing: border-box; width: 100%; cursor: pointer; display: grid; grid-template-columns: 20px auto minmax(0, 1fr) auto; gap: 12px; align-items: center; padding: 16px 18px; }
-.step-card-head:focus-visible { outline: 2px solid var(--ink); outline-offset: -2px; }
-.step-card-title { font-weight: 600; color: var(--muted); }
-.step-card.open .step-card-title { color: var(--ink); }
-.step-card.on .step-card-title { font-size: 17.5px; }
-.step-card-body { padding: 0 18px 18px 50px; animation: card-in 200ms ease-out; }
-.step-card-body p { margin: 4px 0; color: var(--muted); max-width: 64ch; }
-.step-card-body .why { font-size: 14px; color: var(--faint); }
-.step-card-body .tech-text { font-size: 13px; padding: 10px 12px; margin: 12px 0 0; background: var(--bg); border: 1px solid var(--border); border-radius: 6px; }
+/* Steps: the path strip and one card stay frozen; scrolling fills the strip like a
+   progress bar and swaps the card. Each step takes about one wheel notch of scroll. */
+.step-scroll { position: relative; margin-top: 16px; }
+.step-stage .stop::before { height: 3px; border-radius: 2px; }
+.step-anchor { position: absolute; left: 0; width: 1px; height: 1px; scroll-margin-top: 0; }
+.step-stage { position: sticky; top: 16px; display: flex; flex-direction: column; gap: 14px; background: var(--bg); padding-bottom: 8px; }
+.stop.reached .dot { opacity: 1; }
+.stop.later .dot { background: var(--bg); color: var(--faint); box-shadow: inset 0 0 0 1px var(--border-strong); }
+.stop.reached::before { background: var(--c); }
+.stop.waiting.reached::before { background: repeating-linear-gradient(90deg, var(--wait) 0 6px, transparent 6px 12px); }
+.stop.later::before { background: linear-gradient(90deg, var(--ink) calc(var(--seg, 0) * 100%), var(--border-strong) 0); }
+.stop.later.waiting::before { background: linear-gradient(90deg, var(--ink) calc(var(--seg, 0) * 100%), transparent 0), repeating-linear-gradient(90deg, var(--border-strong) 0 6px, transparent 6px 12px); }
+.stop.current .dot { box-shadow: 0 0 0 3px var(--bg), 0 0 0 5px var(--c); }
+.stop .dot { transition: background 150ms, box-shadow 150ms; }
+.step-card { --c: var(--agent); --cw: var(--agent-wash); min-height: 250px; padding: 20px 22px; background: var(--card); border: 1px solid var(--border); border-top: 2px solid var(--c); border-radius: 10px; overflow-wrap: anywhere; animation: card-in 180ms ease-out; }
+.step-card.human { --c: var(--you); --cw: var(--you-wash); }
+.step-card.waiting { --c: var(--wait); --cw: var(--wait-wash); }
+.step-card-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
+.step-card-count { font-family: var(--font-mono), monospace; font-size: 12px; color: var(--faint); }
+.step-card-title { font-size: 21px; font-weight: 700; margin: 12px 0 6px; }
+.step-card p { margin: 6px 0; color: var(--muted); max-width: 66ch; }
+.step-card .why { font-size: 14px; color: var(--faint); }
+.step-card .tech-text { font-size: 13px; padding: 10px 12px; margin: 12px 0 0; background: var(--bg); border: 1px solid var(--border); border-radius: 6px; }
 .step-cta { display: inline-flex; gap: 10px; align-items: center; margin: 14px 0 4px; padding: 9px 16px; border-radius: 7px; background: var(--c); color: #000; font-weight: 700; font-size: 14px; text-decoration: none; }
 .step-cta:hover { filter: brightness(1.1); }
 .step-cta .prefilled { background: rgba(0, 0, 0, 0.15); }
+.step-nav { display: flex; justify-content: space-between; align-items: center; gap: 12px; font-size: 13px; color: var(--faint); }
+.step-nav button { all: unset; cursor: pointer; padding: 6px 12px; border: 1px solid var(--border-strong); border-radius: 6px; color: var(--ink); }
+.step-nav button:disabled { opacity: 0.3; cursor: default; }
+.step-nav button:focus-visible { outline: 2px solid var(--ink); }
 @keyframes card-in { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
-@media (prefers-reduced-motion: reduce) { .step-card-body { animation: none; } }
-@media (max-width: 860px) {
-  .steps-layout { width: auto; grid-template-columns: minmax(0, 1fr); }
-  .step-index { display: none; }
-  .step-card-head { grid-template-columns: 20px minmax(0, 1fr) auto; }
-  .step-card-head .owner-chip { display: none; }
-  .step-card-body { padding-left: 18px; }
+@media (prefers-reduced-motion: reduce) { .step-card { animation: none; } }
+@media (max-width: 760px) {
+  .step-card { min-height: 300px; padding: 16px; }
+  .step-nav span { display: none; }
 }
 
 .ev { font-size: 12.5px; margin-top: 8px; color: var(--faint); display: flex; flex-wrap: wrap; gap: 4px 8px; align-items: baseline; }

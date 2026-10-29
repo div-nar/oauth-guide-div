@@ -2,42 +2,31 @@
 
 import { useEffect, useRef, useState } from "react";
 import { EvidenceBadge } from "@/components/EvidenceBadge";
+import { PathVisual } from "@/components/PathVisual";
 import type { Step } from "@/lib/guide-schema";
 import { formatRange } from "@/lib/format";
 
-const OWNER = { agent: "Your agent", human: "You", waiting: "Waiting" } as const;
-// A step opens once it crosses this line (a fraction of the window's height).
-const LINE = 0.35;
+const OWNER = { agent: "Your agent", human: "You", waiting: "Waiting on the provider" } as const;
+// Pixels of scrolling per step: about one mouse-wheel notch.
+const STEP_PX = 120;
+// Where the panel sticks, matching .step-stage's top.
+const STICK = 16;
 
 const timeOf = (s: Step) => (s.waitDays ? formatRange(s.waitDays, "day") : s.minutes ? formatRange(s.minutes, "min") : "");
 
-// A pinned index of every step beside the step cards. A card opens when you scroll
-// onto it and stays open after, so nothing above your position changes height.
+// The path strip and one step card stay frozen while you scroll. Scrolling fills
+// the strip like a progress bar and swaps the card to each step in turn.
 export function StepScroller({ steps }: { steps: Step[] }) {
-  const [active, setActive] = useState(0);
-  const items = useRef<(HTMLElement | null)[]>([]);
-  // Steps open when you reach them and stay open, so nothing above the reading
-  // position ever changes height and the page never jumps.
-  const [reached, setReached] = useState<Set<number>>(() => new Set([0]));
-  // While a click-scroll runs, scrolling should not pick a different step.
-  const lockUntil = useRef(0);
-
-  const show = (i: number) => {
-    setActive(i);
-    setReached((r) => (r.has(i) ? r : new Set(r).add(i)));
-  };
+  const [pos, setPos] = useState(0);
+  const wrap = useRef<HTMLDivElement>(null);
+  const n = steps.length;
 
   useEffect(() => {
     let frame = 0;
     const update = () => {
       frame = 0;
-      if (performance.now() < lockUntil.current) return;
-      const line = window.innerHeight * LINE;
-      let i = 0;
-      items.current.forEach((el, k) => {
-        if (el && el.getBoundingClientRect().top <= line) i = k;
-      });
-      show(i);
+      const el = wrap.current;
+      if (el) setPos(Math.min(Math.max((STICK - el.getBoundingClientRect().top) / STEP_PX, 0), n - 0.001));
     };
     const onScroll = () => {
       if (!frame) frame = requestAnimationFrame(update);
@@ -50,69 +39,61 @@ export function StepScroller({ steps }: { steps: Step[] }) {
       window.removeEventListener("resize", onScroll);
       cancelAnimationFrame(frame);
     };
-  }, [steps]);
+  }, [n]);
 
-  // `at` is the click's timestamp, on the same clock as performance.now().
-  const open = (i: number, at: number) => {
-    lockUntil.current = at + 900;
-    show(i);
-    requestAnimationFrame(() => {
-      const el = items.current[i];
-      if (el) window.scrollTo({ top: window.scrollY + el.getBoundingClientRect().top - window.innerHeight * LINE + 4, behavior: "smooth" });
-    });
+  const active = Math.floor(pos);
+  const go = (i: number) => {
+    const el = wrap.current;
+    if (!el) return;
+    const k = Math.max(0, Math.min(n - 1, i));
+    window.scrollTo({ top: window.scrollY + el.getBoundingClientRect().top - STICK + k * STEP_PX + STEP_PX / 2, behavior: "smooth" });
   };
 
-  if (!steps.length) return null;
+  const s = steps[active] ?? steps[0];
+  if (!s) return null;
 
   return (
-    <div className="steps-layout">
-      <nav className="step-index" aria-label="Steps">
-        <ol>
-          {steps.map((x, i) => (
-            <li key={x.id} className={`${x.owner}${i === active ? " on" : ""}${i < active ? " done" : ""}`}>
-              <button type="button" onClick={(e) => open(i, e.timeStamp)} aria-current={i === active ? "step" : undefined}>
-                <span className="step-index-num">{i + 1}</span>
-                <span>{x.title}</span>
-              </button>
-            </li>
-          ))}
-        </ol>
-      </nav>
-      <ol className="step-cards">
-        {steps.map((x, i) => {
-          const on = i === active;
-          const opened = on || reached.has(i);
-          return (
-            <li
-              key={x.id}
-              id={`step-${x.id}`}
-              ref={(el) => { items.current[i] = el; }}
-              className={`step-card ${x.owner}${on ? " on" : ""}${opened ? " open" : ""}`}
-            >
-              <button type="button" className="step-card-head" onClick={(e) => open(i, e.timeStamp)} aria-expanded={opened}>
-                <span className="step-index-num">{i + 1}</span>
-                <span className="owner-chip">{OWNER[x.owner]}</span>
-                <span className="step-card-title">{x.title}</span>
-                <span className="muted small nowrap">{timeOf(x)}</span>
-              </button>
-              {opened && (
-                <div className="step-card-body">
-                  <p>{x.plain}</p>
-                  {x.whyHuman && <p className="why">{x.whyHuman}</p>}
-                  {x.link && (
-                    <a className="step-cta" href={x.link.url} target="_blank" rel="noreferrer">
-                      {x.link.label}
-                      {x.link.prefilled && <span className="prefilled">pre-filled</span>}
-                    </a>
-                  )}
-                  {x.technical && <p className="tech-text">{x.technical}</p>}
-                  <EvidenceBadge evidence={x.evidence} />
-                </div>
-              )}
-            </li>
-          );
-        })}
-      </ol>
+    <div
+      ref={wrap}
+      className="step-scroll"
+      tabIndex={-1}
+      onKeyDown={(e) => {
+        if (e.key === "ArrowRight") go(active + 1);
+        if (e.key === "ArrowLeft") go(active - 1);
+      }}
+    >
+      {/* Anchors for #step-<id> links, one scroll stop apart. */}
+      {steps.map((x, i) => (
+        <span key={x.id} id={`step-${x.id}`} className="step-anchor" style={{ top: i * STEP_PX + STEP_PX / 2 }} aria-hidden />
+      ))}
+      <div className="step-stage">
+        <PathVisual steps={steps} active={active} progress={pos - active} onSelect={go} />
+        <article className={`step-card ${s.owner}`} aria-live="polite" key={s.id}>
+          <header className="step-card-head">
+            <span className="owner-chip">{OWNER[s.owner]}</span>
+            <span className="step-card-count">Step {active + 1} of {n}{timeOf(s) && `, ${timeOf(s)}`}</span>
+          </header>
+          <h3 className="step-card-title">{s.title}</h3>
+          <p>{s.plain}</p>
+          {s.whyHuman && <p className="why">{s.whyHuman}</p>}
+          {s.link && (
+            <a className="step-cta" href={s.link.url} target="_blank" rel="noreferrer">
+              {s.link.label}
+              {s.link.prefilled && <span className="prefilled">pre-filled</span>}
+            </a>
+          )}
+          {s.owner === "waiting" && !s.link && <p className="why">Nothing to do but wait. The next step starts when the provider replies.</p>}
+          {s.technical && <p className="tech-text">{s.technical}</p>}
+          <EvidenceBadge evidence={s.evidence} />
+        </article>
+        <nav className="step-nav" aria-label="Move between steps">
+          <button type="button" onClick={() => go(active - 1)} disabled={active === 0}>Previous</button>
+          <span>Scroll, or use the arrows</span>
+          <button type="button" onClick={() => go(active + 1)} disabled={active === n - 1}>Next</button>
+        </nav>
+      </div>
+      {/* Scroll room for the frozen panel: sticky elements cannot move into padding. */}
+      <div style={{ height: n * STEP_PX }} aria-hidden />
     </div>
   );
 }
