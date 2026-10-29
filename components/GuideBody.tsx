@@ -2,118 +2,126 @@
 
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { AccessModal } from "@/components/AccessModal";
-import { EvidenceBadge } from "@/components/EvidenceBadge";
 import { AppLogo } from "@/components/AppLogo";
-import { BlockedList, FaqList, OAuthBasics, WhoList } from "@/components/GuideExtras";
+import { EvidenceBadge } from "@/components/EvidenceBadge";
+import { BlockedList, FaqList, PitfallList, ProtocolList, WhoList } from "@/components/GuideExtras";
+import { GRADE_WORD, GradeMark } from "@/components/GradeMark";
 import { HandoffButtons } from "@/components/HandoffButtons";
-import { GRADE_MEANING, GRADE_WORD, GradeMark } from "@/components/GradeMark";
-import { StepScroller } from "@/components/StepScroller";
 import { StepTable } from "@/components/StepTable";
+import { StepTimeline } from "@/components/StepTimeline";
+import { ViewToggle } from "@/components/ViewToggle";
 import { formatHandsOn, formatWait } from "@/lib/format";
 import type { Guide } from "@/lib/guide-schema";
 import { combine, selectionQuery } from "@/lib/paths";
-import { ViewToggle } from "@/components/ViewToggle";
 
-// The two questions that decide the path: what access, and whether you already have an app.
+// The first sentence of the verdict in bold, the rest after it.
+function Lede({ text }: { text: string }) {
+  const m = text.match(/^([^]+?[.!?])\s+([^]*)$/);
+  return <p className="guide-lede">{m ? <><b>{m[1]}</b> {m[2]}</> : <b>{text}</b>}</p>;
+}
+
+// One page, top to bottom: the verdict, the hand-off, what access you need (a table you
+// pick from, no pop-up), what to have ready, the steps, pitfalls and fixes, the protocol,
+// then questions.
 export function GuideBody({ guide: g, initialIds, initialExisting = false, baseUrl }: { guide: Guide; initialIds: string[]; initialExisting?: boolean; baseUrl: string }) {
   const router = useRouter();
   const [ids, setIds] = useState<string[]>(initialIds);
-  const [existing, setExisting] = useState(initialExisting && !!g.existingApp);
-  const [editing, setEditing] = useState(false);
-  const u = combine(g, ids);
-  const steps = u.steps;
-  const parallelNote = u.ids.length > 1 && g.useCases.filter((x) => u.ids.includes(x.id) && x.waitDays.max > 0).length > 1;
   const ex = g.existingApp;
-  const picked = g.useCases.filter((x) => u.ids.includes(x.id));
-
+  const [existing, setExisting] = useState(initialExisting && !!ex);
+  const u = combine(g, ids);
   const sel = { ids: u.ids, existing: existing && !!ex };
-  const composioRuledOut = (g.composio?.limits ?? []).some(
-    (l) => l.evidence.level === "sourced" && l.useCaseIds.some((id) => u.ids.includes(id)),
-  );
+  const scopeText = new Map(g.config.scopes.map((s) => [s.name, s.plain]));
+
+  const update = (next: string[], nextExisting: boolean) => {
+    setIds(next);
+    setExisting(nextExisting);
+    router.replace(`/guides/${g.slug}${selectionQuery({ ids: next, existing: nextExisting })}`, { scroll: false });
+  };
+  // Multi-select, but never empty.
+  const toggle = (id: string) => {
+    const has = u.ids.includes(id);
+    if (has && u.ids.length === 1) return;
+    update(has ? u.ids.filter((x) => x !== id) : [...u.ids, id], existing);
+  };
+
+  // A tip under the review wait: Composio's own app when it has one, else an access with no review.
+  const composioRuledOut = (g.composio?.limits ?? []).some((l) => l.evidence.level === "sourced" && l.useCaseIds.some((id) => u.ids.includes(id)));
+  const noReview = g.useCases.find((x) => !u.ids.includes(x.id) && x.waitDays.max === 0);
+  const waitTip =
+    g.composio?.managedApp === "yes" && !composioRuledOut ? (
+      <><b>Do you need access now?</b> Connect users today through the Composio {g.app.name} app. Change to your own app after it gets approval. <a href={`https://docs.composio.dev/toolkits/${g.slug}`} target="_blank" rel="noreferrer"><AppLogo name="Composio" website="composio.dev" size={12} /> Composio</a></>
+    ) : noReview ? (
+      <><b>Do you need access now?</b> &ldquo;{noReview.label}&rdquo; needs no review. Release it first.</>
+    ) : null;
+
+  const steps = existing && ex ? ex.steps : u.steps;
   return (
     <>
-      <HandoffButtons guide={g} baseUrl={baseUrl} sel={sel} steps={existing && ex ? ex.steps : steps} />
+      <Lede text={existing && ex ? ex.summary : g.verdict.summary} />
+      <HandoffButtons guide={g} baseUrl={baseUrl} sel={sel} steps={steps} />
 
-      <section className="picker" aria-label="Your situation">
-        <div className="verdict-card" aria-live="polite">
-          <div className="verdict-grade">
-            <GradeMark difficulty={u.difficulty} size={44} />
-            <div>
-              <div className="verdict-word">{GRADE_WORD[u.difficulty]}</div>
-              <div className="small muted">{GRADE_MEANING[u.difficulty]}</div>
-            </div>
-          </div>
-          {!existing && (
-            <dl className="verdict-facts">
-              <div><dt>Your time</dt><dd>{formatHandsOn(u.handsOnMinutes)}</dd></div>
-              <div><dt>Waiting on {g.app.name}{parallelNote ? " (longest)" : ""}</dt><dd>{formatWait(u.waitDays)}</dd></div>
-              <div><dt>Steps</dt><dd>{steps.length}</dd></div>
-            </dl>
+      {g.useCases.length > 0 ? (
+        <section className="block">
+          <h2 className="label">What will your agent do in {g.app.name}?</h2>
+          <table className="access-table">
+            <thead>
+              <tr><th>Access</th><th>Difficulty</th><th>Your time</th><th>Wait</th></tr>
+            </thead>
+            <tbody>
+              {g.useCases.map((x) => {
+                const on = u.ids.includes(x.id);
+                return (
+                  <tr key={x.id} className={on ? "sel" : undefined} onClick={() => toggle(x.id)}>
+                    <td>
+                      <button type="button" role="checkbox" aria-checked={on} className="access-pick" onClick={(e) => { e.stopPropagation(); toggle(x.id); }}>
+                        <span className="tick" aria-hidden />
+                        {x.label}
+                      </button>
+                      {on && x.scopes.length > 0 && (
+                        <dl className="scope-list">
+                          {x.scopes.map((s) => (
+                            <div key={s}><dt><code>{s}</code></dt><dd>{scopeText.get(s) ?? ""}</dd></div>
+                          ))}
+                        </dl>
+                      )}
+                    </td>
+                    <td><span className={`grade-chip ${x.difficulty}`}><GradeMark difficulty={x.difficulty} size={10} /> {GRADE_WORD[x.difficulty]}</span></td>
+                    <td className="num">{formatHandsOn(x.handsOnMinutes)}</td>
+                    <td className="num">{formatWait(x.waitDays)}</td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+          <p className="access-under">
+            {g.useCases.length > 1 && "Select more than one row to combine them. "}
+            {ex && (
+              <button type="button" className="link-btn" onClick={() => update(u.ids, !existing)}>
+                {existing ? "Show the setup for a new app" : `Do you already have a ${g.app.name} app?`}
+              </button>
+            )}
+          </p>
+          {u.ids.length > 1 && (
+            <p className="access-total">For your selection: {formatHandsOn(u.handsOnMinutes)} of your time, {formatWait(u.waitDays)} of waiting.</p>
           )}
-          {!existing && picked.length > 0 ? (
-            // One short row per selected kind of access, so the verdicts don't run together.
-            <ul className="verdict-paths">
-              {picked.map((x) => (
-                <li key={x.id}>
-                  <GradeMark difficulty={x.difficulty} size={12} />
-                  <p className="verdict-path-label">{x.label} <span>{GRADE_WORD[x.difficulty]}</span></p>
-                  <p className="verdict-path-summary">{x.summary}</p>
-                </li>
-              ))}
-            </ul>
-          ) : (
-            <p className="verdict-summary">{existing && ex ? ex.summary : u.summary}</p>
-          )}
-          {(picked.length < g.useCases.length || ex) && (
-            <button type="button" className="add-access" onClick={() => setEditing(true)}>
-              {existing ? "You use your existing app. Change" : picked.length < g.useCases.length ? "+ Add more access" : "Already have an app?"}
-            </button>
-          )}
-          {!g.oauth.supported && g.oauth.notes && (
+        </section>
+      ) : g.oauth.supported ? null : (
+        <section className="block">
+          <p className="no-oauth"><b>No OAuth app is necessary.</b> {g.app.name} uses an API key.</p>
+          {g.oauth.notes && (
             <details className="verdict-more">
               <summary>Why there is no OAuth app</summary>
               <p className="small muted">{g.oauth.notes}</p>
             </details>
           )}
-          {parallelNote && !existing && (
-            <p className="small muted">The wait is the longest single review. We think that different reviews can occur at the same time. We did not confirm this for each provider.</p>
-          )}
-          {u.scopes.length > 0 && (
-            <p className="small muted">Permissions: {u.scopes.map((s) => <code key={s}>{s}</code>)}</p>
-          )}
-        </div>
-
-        {g.composio?.managedApp === "yes" && u.waitDays.max > 0 && !existing && !composioRuledOut && (
-          <a className="btn secondary composio-btn" href={`https://docs.composio.dev/toolkits/${g.slug}`} target="_blank" rel="noreferrer" title={`Connect users today through the Composio ${g.app.name} app. Change to your own app after it gets approval.`}>
-            <AppLogo name="Composio" website="composio.dev" size={16} />
-            Can&apos;t wait? Connect on Composio
-          </a>
-        )}
-      </section>
-
-      {editing && (
-        <AccessModal
-          app={g.app}
-          options={g.useCases.map((x) => ({ id: x.id, label: x.label, difficulty: x.difficulty }))}
-          hasExisting={!!ex}
-          initial={{ access: u.ids, existing }}
-          confirmLabel="Update the guide"
-          onClose={() => setEditing(false)}
-          onConfirm={(access, isExisting) => {
-            setIds(access);
-            setExisting(isExisting);
-            setEditing(false);
-            router.replace(`/guides/${g.slug}?access=${access.join(",")}${isExisting ? "&existing=1" : ""}`, { scroll: false });
-          }}
-        />
+        </section>
       )}
 
-      {/* People to line up before starting, so it comes before the steps. */}
       <WhoList guide={g} ids={u.ids} />
+
       {existing && ex ? (
         <section className="block">
-          <h2 className="label">What could send you back to review</h2>
+          <h2 className="label">What can send you back to review</h2>
           <ul className="who-list">
             {ex.reReviewTriggers.map((t) => (
               <li key={t.trigger}>
@@ -130,16 +138,18 @@ export function GuideBody({ guide: g, initialIds, initialExisting = false, baseU
           )}
         </section>
       ) : (
-        <>
-          <section className="block">
-            <h2 className="label">Steps</h2>
-            <StepScroller steps={steps} />
-          </section>
-        </>
+        <section className="block">
+          <h2 className="label">Steps</h2>
+          <StepTimeline steps={u.steps} waitTip={waitTip} />
+        </section>
       )}
-      <BlockedList guide={g} ids={u.ids} />
+
+      <div className="two-col">
+        <PitfallList guide={g} ids={u.ids} />
+        <BlockedList guide={g} ids={u.ids} />
+      </div>
+      <ProtocolList guide={g} />
       <FaqList guide={g} ids={u.ids} />
-      <OAuthBasics />
       <ViewToggle human={`/guides/${g.slug}${selectionQuery(sel)}`} machine={`/guides/${g.slug}/ai${selectionQuery(sel)}`} current="human" />
     </>
   );

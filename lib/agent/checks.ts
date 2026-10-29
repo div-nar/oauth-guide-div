@@ -135,7 +135,7 @@ export async function checkDiscovery(authorizeUrl: string, scopes: string[], p: 
   }
   for (const path of ["/.well-known/openid-configuration", "/.well-known/oauth-authorization-server"]) {
     const url = origin + path;
-    let doc: { authorization_endpoint?: unknown; scopes_supported?: unknown };
+    let doc: { authorization_endpoint?: unknown; scopes_supported?: unknown; code_challenge_methods_supported?: unknown };
     try {
       const res = await p(url, { accept: "application/json", userAgent: USER_AGENT });
       if (res.status !== 200) continue;
@@ -146,7 +146,10 @@ export async function checkDiscovery(authorizeUrl: string, scopes: string[], p: 
     if (typeof doc.authorization_endpoint !== "string") continue;
     const listed = Array.isArray(doc.scopes_supported) ? new Set(doc.scopes_supported.map(String)) : null;
     const known = listed ? scopes.filter((s) => listed.has(s)) : [];
-    const scopeNote = known.length ? ` It also lists ${known.length} of the guide's ${scopes.length} permissions.` : "";
+    const pkce = Array.isArray(doc.code_challenge_methods_supported) ? doc.code_challenge_methods_supported.map(String) : null;
+    const scopeNote =
+      (known.length ? ` It also lists ${known.length} of the guide's ${scopes.length} permissions.` : "") +
+      (pkce ? (pkce.length ? ` It lists PKCE methods: ${pkce.join(", ")}.` : " It lists no PKCE methods.") : "");
     if (sameEndpoint(doc.authorization_endpoint, authorizeUrl)) {
       return { kind: "discovery", url, outcome: "ok", detail: `The provider's published OAuth configuration lists the same sign-in address.${scopeNote}` };
     }

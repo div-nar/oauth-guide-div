@@ -252,6 +252,92 @@
       "stepIds": []
     }
   ],
+  "protocol": {
+    "version": {
+      "value": "OAuth 2.0",
+      "note": "This is not OAuth 1.0a. You do not sign each request.",
+      "evidence": {
+        "level": "sourced",
+        "sources": [
+          {
+            "url": "https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/authorizing-oauth-apps",
+            "title": "GitHub: Authorizing OAuth apps"
+          }
+        ],
+        "note": null
+      }
+    },
+    "flow": {
+      "value": "Authorization code",
+      "note": "Your server exchanges the code for a token.",
+      "evidence": {
+        "level": "sourced",
+        "sources": [
+          {
+            "url": "https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/authorizing-oauth-apps",
+            "title": "GitHub: Authorizing OAuth apps"
+          }
+        ],
+        "note": null
+      }
+    },
+    "pkce": {
+      "value": "Supported, S256 only",
+      "note": "GitHub strongly recommends it. The plain method is not supported.",
+      "evidence": {
+        "level": "sourced",
+        "sources": [
+          {
+            "url": "https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/authorizing-oauth-apps",
+            "title": "GitHub: Authorizing OAuth apps"
+          }
+        ],
+        "note": null
+      }
+    },
+    "callback": {
+      "value": "Exact match",
+      "note": "Subdirectories work only if you turn on wildcard matching. For local tests, use 127.0.0.1, not localhost.",
+      "evidence": {
+        "level": "sourced",
+        "sources": [
+          {
+            "url": "https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/authorizing-oauth-apps",
+            "title": "GitHub: Authorizing OAuth apps"
+          }
+        ],
+        "note": null
+      }
+    },
+    "tokens": {
+      "value": "Do not expire by default",
+      "note": "If you turn on expiring tokens, access tokens last 8 hours and refresh tokens last 6 months.",
+      "evidence": {
+        "level": "sourced",
+        "sources": [
+          {
+            "url": "https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/authorizing-oauth-apps",
+            "title": "GitHub: Authorizing OAuth apps"
+          }
+        ],
+        "note": null
+      }
+    },
+    "state": {
+      "value": "Send a random value",
+      "note": "If it does not match on return, stop the sign-in.",
+      "evidence": {
+        "level": "sourced",
+        "sources": [
+          {
+            "url": "https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/authorizing-oauth-apps",
+            "title": "GitHub: Authorizing OAuth apps"
+          }
+        ],
+        "note": null
+      }
+    }
+  },
   "composio": {
     "managedApp": "yes",
     "note": "Users can connect today through the Composio GitHub app. Use it while you set up your own app. Users see 'Composio' on the approval screen. Other Composio customers share the same rate limits. Polling triggers run a maximum of one time in 15 minutes. Change to your own app when it is ready.",

@@ -391,6 +391,92 @@
       ]
     }
   ],
+  "protocol": {
+    "version": {
+      "value": "OAuth 2.0",
+      "note": "This is not OAuth 1.0a. You do not sign each request.",
+      "evidence": {
+        "level": "sourced",
+        "sources": [
+          {
+            "url": "https://developers.hubspot.com/docs/apps/legacy-apps/authentication/oauth-quickstart-guide",
+            "title": "HubSpot: Working with OAuth"
+          }
+        ],
+        "note": null
+      }
+    },
+    "flow": {
+      "value": "Authorization code",
+      "note": "Your server exchanges the code for a token.",
+      "evidence": {
+        "level": "sourced",
+        "sources": [
+          {
+            "url": "https://developers.hubspot.com/docs/apps/legacy-apps/authentication/oauth-quickstart-guide",
+            "title": "HubSpot: Working with OAuth"
+          }
+        ],
+        "note": null
+      }
+    },
+    "pkce": {
+      "value": "Partly documented",
+      "note": "The v3 token endpoint lists a code_verifier parameter.",
+      "evidence": {
+        "level": "uncertain",
+        "sources": [
+          {
+            "url": "https://developers.hubspot.com/docs/methods/oauth2/oauth2-quickstart",
+            "title": "HubSpot: Manage OAuth tokens (v3)"
+          }
+        ],
+        "note": "We did not find a page that tells how to turn on PKCE."
+      }
+    },
+    "callback": {
+      "value": "HTTPS in production",
+      "note": "Use the exact URL that you registered.",
+      "evidence": {
+        "level": "uncertain",
+        "sources": [
+          {
+            "url": "https://developers.hubspot.com/docs/apps/legacy-apps/authentication/oauth-quickstart-guide",
+            "title": "HubSpot: Working with OAuth"
+          }
+        ],
+        "note": "HubSpot requires HTTPS in production. It does not say how strictly the address must match."
+      }
+    },
+    "tokens": {
+      "value": "Access tokens last 30 minutes",
+      "note": "Refresh the token before it expires.",
+      "evidence": {
+        "level": "uncertain",
+        "sources": [
+          {
+            "url": "https://developers.hubspot.com/docs/apps/legacy-apps/authentication/oauth-quickstart-guide",
+            "title": "HubSpot: Working with OAuth"
+          }
+        ],
+        "note": "HubSpot does not state the refresh token lifetime."
+      }
+    },
+    "state": {
+      "value": "Supported",
+      "note": "You can use it to keep the state of the user, as a nonce.",
+      "evidence": {
+        "level": "sourced",
+        "sources": [
+          {
+            "url": "https://developers.hubspot.com/docs/apps/legacy-apps/authentication/oauth-quickstart-guide",
+            "title": "HubSpot: Working with OAuth"
+          }
+        ],
+        "note": null
+      }
+    }
+  },
   "composio": {
     "managedApp": "yes",
     "note": "Users can connect today through the Composio HubSpot app. Use it while you set up your own app or wait for the review. Users see 'Composio' on the approval screen. Other Composio customers share the same rate limits. Polling triggers run a maximum of one time in 15 minutes. Change to your own app when it is ready.",

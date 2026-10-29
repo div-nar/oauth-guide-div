@@ -152,3 +152,26 @@ describe("checks by the agent", () => {
     expect(guideToMarkdown(g, "https://example.test")).not.toContain("Observed");
   });
 });
+
+describe("protocol", () => {
+  const curated = ["github", "slack", "gmail", "hubspot", "linkedin"];
+
+  test("every curated guide states its protocol, each fact with evidence", () => {
+    for (const slug of curated) {
+      const p = getLibraryGuide(slug)!.protocol;
+      expect(p, slug).toBeTruthy();
+      for (const k of ["version", "flow", "pkce", "callback", "tokens", "state"] as const) {
+        expect(p![k].value.length, `${slug}.${k}`).toBeGreaterThan(0);
+        const e = p![k].evidence;
+        expect(e.level === "sourced" ? e.sources.length > 0 : !!e.note, `${slug}.${k} evidence`).toBe(true);
+      }
+    }
+  });
+
+  test("the Markdown lists the protocol before the configuration", () => {
+    const out = guideToMarkdown(getLibraryGuide("slack")!, "https://x.test");
+    expect(out.indexOf("## Protocol")).toBeGreaterThan(0);
+    expect(out.indexOf("## Protocol")).toBeLessThan(out.indexOf("## Configuration"));
+    expect(out).toContain("- Callback: Same URL or a subdirectory.");
+  });
+});

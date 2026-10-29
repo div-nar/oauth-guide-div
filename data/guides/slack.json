@@ -342,6 +342,11 @@
         "name": "channels:history",
         "plain": "Read messages in the public channels that the app is in.",
         "sensitivity": "basic"
+      },
+      {
+        "name": "groups:history",
+        "plain": "Read messages in the private channels that the app is in.",
+        "sensitivity": "basic"
       }
     ]
   },
@@ -447,6 +452,92 @@
       ]
     }
   ],
+  "protocol": {
+    "version": {
+      "value": "OAuth 2.0",
+      "note": "This is not OAuth 1.0a. You do not sign each request.",
+      "evidence": {
+        "level": "sourced",
+        "sources": [
+          {
+            "url": "https://docs.slack.dev/authentication/installing-with-oauth",
+            "title": "Slack: Installing with OAuth"
+          }
+        ],
+        "note": null
+      }
+    },
+    "flow": {
+      "value": "Authorization code",
+      "note": "Your server exchanges the code for a token at `oauth.v2.access`.",
+      "evidence": {
+        "level": "sourced",
+        "sources": [
+          {
+            "url": "https://docs.slack.dev/authentication/installing-with-oauth",
+            "title": "Slack: Installing with OAuth"
+          }
+        ],
+        "note": null
+      }
+    },
+    "pkce": {
+      "value": "Supported, opt-in",
+      "note": "Turn on `pkce_enabled`. The app becomes a public client, and you cannot undo this. Refresh tokens then expire after 30 days.",
+      "evidence": {
+        "level": "sourced",
+        "sources": [
+          {
+            "url": "https://docs.slack.dev/authentication/using-pkce/",
+            "title": "Slack: Using PKCE"
+          }
+        ],
+        "note": null
+      }
+    },
+    "callback": {
+      "value": "Same URL or a subdirectory",
+      "note": "The address must use HTTPS. It cannot contain #.",
+      "evidence": {
+        "level": "sourced",
+        "sources": [
+          {
+            "url": "https://docs.slack.dev/authentication/installing-with-oauth",
+            "title": "Slack: Installing with OAuth"
+          }
+        ],
+        "note": null
+      }
+    },
+    "tokens": {
+      "value": "Do not expire",
+      "note": "This changes if you turn on token rotation.",
+      "evidence": {
+        "level": "sourced",
+        "sources": [
+          {
+            "url": "https://docs.slack.dev/authentication/installing-with-oauth",
+            "title": "Slack: Installing with OAuth"
+          }
+        ],
+        "note": null
+      }
+    },
+    "state": {
+      "value": "Check it on return",
+      "note": "If it does not match, treat the sign-in as a forgery.",
+      "evidence": {
+        "level": "sourced",
+        "sources": [
+          {
+            "url": "https://docs.slack.dev/authentication/installing-with-oauth",
+            "title": "Slack: Installing with OAuth"
+          }
+        ],
+        "note": null
+      }
+    }
+  },
   "composio": {
     "managedApp": "yes",
     "note": "Users can connect today through the Composio Slack app. Use it while you set up your own app or wait for the review. Users see 'Composio' on the approval screen. Other Composio customers share the same rate limits. Polling triggers run a maximum of one time in 15 minutes. Change to your own app when it is ready.",

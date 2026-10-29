@@ -33,6 +33,9 @@ export const StepSchema = z.object({
   evidence: EvidenceSchema,
 });
 
+// One protocol fact: a short value ("Supported, opt-in"), one line on what it means, and its evidence.
+const ProtocolFact = z.object({ value: z.string(), note: z.string().nullish(), evidence: EvidenceSchema });
+
 export const UseCaseSchema = z.object({
   id: z.string(),
   label: z.string(),
@@ -120,6 +123,18 @@ const GuideFields = z
       }),
     ),
   }),
+  // How this provider applies OAuth: each fact sourced, or unconfirmed with the reason.
+  // The developer's code depends on these (PKCE, callback matching, token lifetime).
+  protocol: z
+    .object({
+      version: ProtocolFact,
+      flow: ProtocolFact,
+      pkce: ProtocolFact,
+      callback: ProtocolFact,
+      tokens: ProtocolFact,
+      state: ProtocolFact,
+    })
+    .nullish(),
   // Whether Composio's own (managed) app can be used while yours is set up or in review.
   composio: z
     .object({
