@@ -2,10 +2,11 @@
 
 import { useState } from "react";
 
-const STARTERS = ["Can I test before my app is approved?", "Which permissions need a review?", "What do I do if I'm rejected?"];
+const DEFAULT_STARTERS = ["Can I test before my app is approved?", "Which permissions need a review?", "What do I do if I'm rejected?"];
 
 // Any question about this app's OAuth setup, answered from the guide on this page.
-export function AskBox({ slug, appName, access }: { slug: string; appName: string; access: string[] | null }) {
+export function AskBox({ slug, appName, access, starters = [] }: { slug: string; appName: string; access: string[] | null; starters?: string[] }) {
+  const chips = starters.length ? starters : DEFAULT_STARTERS;
   const [question, setQuestion] = useState("");
   const [state, setState] = useState<{ asked: string; answer?: string; error?: string } | null>(null);
   const busy = !!state && !state.answer && !state.error;
@@ -29,7 +30,6 @@ export function AskBox({ slug, appName, access }: { slug: string; appName: strin
 
   return (
     <div className="ask">
-      <h3 className="faq-group">Ask about {appName}&apos;s OAuth setup</h3>
       <form
         className="ask-form"
         onSubmit={(e) => {
@@ -61,7 +61,7 @@ export function AskBox({ slug, appName, access }: { slug: string; appName: strin
       </form>
       {!state && (
         <div className="ask-starters">
-          {STARTERS.map((s) => (
+          {chips.map((s) => (
             <button key={s} type="button" onClick={() => { setQuestion(s); void ask(s); }}>{s}</button>
           ))}
         </div>

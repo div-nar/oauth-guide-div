@@ -3,11 +3,12 @@ import { EvidenceBadge } from "@/components/EvidenceBadge";
 import type { Guide } from "@/lib/guide-schema";
 import { appliesTo } from "@/lib/paths";
 
-const GLOSSARY: [string, string][] = [
-  ["OAuth app", "Your app's registration with the provider. It sets the name users see on the 'Allow?' screen and what you may ask for."],
-  ["Client ID and secret", "Your app's username and password. The ID is public. Keep the secret private, in your app's secret store, and add it there yourself."],
-  ["Redirect address (redirect URI)", "Where the provider sends people after they click Allow: a callback address in your own app, which must match what you register with the provider."],
-  ["Scopes", "The specific permissions you ask for, such as 'read email'. More powerful scopes mean more review."],
+// The general OAuth questions every guide answers the same way.
+const BASICS: [string, string][] = [
+  ["What is an OAuth app?", "Your app's registration with the provider. It sets the name users see on the 'Allow?' screen and what you may ask for."],
+  ["What are the client ID and secret?", "Your app's username and password. The ID is public. Keep the secret private, in your app's secret store, and add it there yourself."],
+  ["What is a redirect address (redirect URI)?", "Where the provider sends people after they click Allow: a callback address in your own app, which must match what you register with the provider."],
+  ["What are scopes?", "The specific permissions you ask for, such as 'read email'. More powerful scopes mean more review."],
 ];
 
 // "A Super Admin in each account" reads better as a list item without the article.
@@ -72,41 +73,46 @@ function Chevron() {
   );
 }
 
-// This app's what-ifs and gotchas open one at a time; the OAuth terms are short, so
-// they sit open as a small glossary.
+// Ask anything first (answered from this guide), then this app's four most useful
+// what-ifs and gotchas. The rest stay in the Markdown that agents and the ask box read.
 export function FaqList({ guide: g, ids }: { guide: Guide; ids: string[] | null }) {
   const keep = (x: { useCaseIds?: string[] | null }) => !ids || appliesTo(x.useCaseIds, ids);
   const faqs = [
     ...g.forks.filter(keep).map((f) => ({ q: `What if ${f.condition.charAt(0).toLowerCase() + f.condition.slice(1)}?`, a: f.effect, stuck: null as string | null, evidence: f.evidence })),
     ...g.nuances.filter(keep).map((n) => ({ q: n.title, a: n.detail, stuck: n.ifStuck, evidence: n.evidence })),
-  ];
+  ].slice(0, 4);
   return (
     <section className="block">
       <h2 className="label">Questions</h2>
-      {faqs.length > 0 && (
-        <>
-          <h3 className="faq-group">{g.app.name}</h3>
-          <div className="faq">
-            {faqs.map((f) => (
-              <details key={f.q}>
-                <summary>{f.q}<Chevron /></summary>
-                <div className="faq-body">
-                  <p>{f.a}</p>
-                  {f.stuck && <p className="faq-stuck"><span>If you&apos;re stuck</span>{f.stuck}</p>}
-                  {f.evidence && <EvidenceBadge evidence={f.evidence} />}
-                </div>
-              </details>
-            ))}
-          </div>
-        </>
-      )}
       <AskBox slug={g.slug} appName={g.app.name} access={ids} />
-      <h3 className="faq-group">OAuth basics</h3>
+      {faqs.length > 0 && (
+        <div className="faq faq-list">
+          {faqs.map((f) => (
+            <details key={f.q}>
+              <summary>{f.q}<Chevron /></summary>
+              <div className="faq-body">
+                <p>{f.a}</p>
+                {f.stuck && <p className="faq-stuck"><span>If you&apos;re stuck</span>{f.stuck}</p>}
+                {f.evidence && <EvidenceBadge evidence={f.evidence} />}
+              </div>
+            </details>
+          ))}
+        </div>
+      )}
+    </section>
+  );
+}
+
+// The general OAuth terms, the same for every app.
+export function OAuthBasics() {
+  return (
+    <section className="block">
+      <h2 className="label">OAuth basics</h2>
       <dl className="glossary">
-        {GLOSSARY.map(([term, def]) => (
-          <div key={term}>
-            <dt>{term}</dt>
-            <dd>{def}</dd>
+        {BASICS.map(([q, a]) => (
+          <div key={q}>
+            <dt>{q}</dt>
+            <dd>{a}</dd>
           </div>
         ))}
       </dl>
