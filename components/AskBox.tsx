@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 
-const DEFAULT_STARTERS = ["Can I test before approval?", "Which permissions need review?", "What if I'm rejected?"];
+const DEFAULT_STARTERS = ["Can I test before approval?", "Which permissions need review?", "What if the provider refuses my app?"];
 
 // Any question about this app's OAuth setup, answered from the guide on this page.
 export function AskBox({ slug, appName, access, starters = [] }: { slug: string; appName: string; access: string[] | null; starters?: string[] }) {
@@ -22,9 +22,9 @@ export function AskBox({ slug, appName, access, starters = [] }: { slug: string;
         body: JSON.stringify({ slug, question: text, access: access ?? [] }),
       });
       const j = await res.json().catch(() => ({}));
-      setState(res.ok ? { asked: text, answer: j.answer } : { asked: text, error: j.error ?? "Could not answer right now." });
+      setState(res.ok ? { asked: text, answer: j.answer } : { asked: text, error: j.error ?? "No answer is available now. Try again." });
     } catch {
-      setState({ asked: text, error: "Could not reach the server. Check your connection." });
+      setState({ asked: text, error: "The server did not reply. Examine your connection." });
     }
   };
 
@@ -72,7 +72,7 @@ export function AskBox({ slug, appName, access, starters = [] }: { slug: string;
           {busy && <p className="ask-wait"><span className="pulse" aria-hidden /> Reading the guide…</p>}
           {state.answer && state.answer.split(/\n{2,}/).map((p, i) => <p key={i}>{p}</p>)}
           {state.error && <p className="error" role="alert">{state.error}</p>}
-          {state.answer && <p className="ask-note">Answered by AI from this guide only. Check the sources on the steps before you act.</p>}
+          {state.answer && <p className="ask-note">AI wrote this answer from this guide only. Before you act, examine the sources on the steps.</p>}
         </div>
       )}
     </div>

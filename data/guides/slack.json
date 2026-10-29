@@ -3,7 +3,7 @@
   "app": {
     "name": "Slack",
     "website": "https://slack.com",
-    "canDo": "Post messages and replies, and read channel history and threads to summarise, search or triage."
+    "canDo": "Post messages and replies. Read channel history and threads to summarise, search or sort them."
   },
   "lastChecked": "2026-10-28",
   "generatedBy": "library",
@@ -20,16 +20,16 @@
       "min": 14,
       "max": 80
     },
-    "summary": "Posting messages is self-serve in minutes. Reading messages at a useful rate needs a Slack Marketplace listing: new unlisted apps can only read history once a minute, 15 messages at a time."
+    "summary": "To post messages, you can make the app yourself in minutes. To read messages at a useful rate, you need a Slack Marketplace listing. New unlisted apps can read history only one time each minute, 15 messages at a time."
   },
   "whoYouNeed": [
     {
-      "role": "A member of a Slack workspace you control",
-      "why": "Every Slack app is created inside one workspace, and you test it there first."
+      "role": "A member of a Slack workspace that you control",
+      "why": "You create each Slack app in one workspace. You test the app there first."
     },
     {
       "role": "10 or more real customer workspaces (for reading messages)",
-      "why": "Slack only reviews Marketplace apps that already have 10 active installs.",
+      "why": "Slack reviews a Marketplace app only after it has 10 active installs.",
       "useCaseIds": [
         "read"
       ]
@@ -39,9 +39,9 @@
     {
       "id": "sign-in",
       "owner": "human",
-      "title": "Sign in to Slack's app dashboard",
-      "plain": "Log in at api.slack.com/apps with the workspace that will own the app.",
-      "whyHuman": "Signing in is yours to do.",
+      "title": "Sign in to the Slack app dashboard",
+      "plain": "Sign in at api.slack.com/apps with the workspace that will own the app.",
+      "whyHuman": "You must sign in yourself.",
       "minutes": {
         "min": 1,
         "max": 2
@@ -65,7 +65,7 @@
       "id": "create-app",
       "owner": "agent",
       "title": "Create the app from a pre-filled link",
-      "plain": "One link opens Slack's 'Create app' screen with the usual agent permissions already filled in. Change the name, pick your workspace, remove permissions you don't need, and create.",
+      "plain": "This link opens the Slack 'Create app' screen. The usual agent permissions are already on it. Change the name and select your workspace. Remove the permissions that you do not need. Then create the app.",
       "minutes": {
         "min": 2,
         "max": 4
@@ -83,7 +83,7 @@
           }
         ]
       },
-      "technical": "Uses Slack's manifest URL (api.slack.com/apps?new_app=1&manifest_json=...). Bot scopes pre-filled: chat:write, channels:read, channels:history, users:read. You add your redirect URL in the next step.",
+      "technical": "The link uses the Slack manifest URL (`api.slack.com/apps?new_app=1&manifest_json=...`). It adds these bot scopes: `chat:write`, `channels:read`, `channels:history`, `users:read`. You add your callback address in the next step.",
       "link": {
         "url": "https://api.slack.com/apps?new_app=1&manifest_json=%7B%22display_information%22%3A%7B%22name%22%3A%22Your%20agent%27s%20name%22%7D%2C%22oauth_config%22%3A%7B%22scopes%22%3A%7B%22bot%22%3A%5B%22chat%3Awrite%22%2C%22channels%3Aread%22%2C%22channels%3Ahistory%22%2C%22users%3Aread%22%5D%7D%7D%2C%22settings%22%3A%7B%22org_deploy_enabled%22%3Afalse%2C%22token_rotation_enabled%22%3Afalse%7D%7D",
         "label": "Create the app with settings pre-filled",
@@ -93,9 +93,9 @@
     {
       "id": "redirect-scopes",
       "owner": "agent",
-      "title": "Check the redirect address and permissions",
-      "plain": "Under OAuth & Permissions, add your app's callback address as a redirect URL and confirm the permission list is what your agent needs.",
-      "technical": "Redirect URLs must use HTTPS and cannot contain '#'. Bot scopes and user scopes are listed separately.",
+      "title": "Examine the callback address and permissions",
+      "plain": "Open OAuth & Permissions. Add the callback address of your app as a redirect URL. Make sure that the permissions are the ones that your agent needs.",
+      "technical": "Redirect URLs must use HTTPS. They cannot contain '#'. Slack shows bot scopes and user scopes in two lists.",
       "minutes": {
         "min": 3,
         "max": 8
@@ -118,9 +118,9 @@
     {
       "id": "distribute",
       "owner": "agent",
-      "title": "Switch on public distribution",
-      "plain": "Without this, only your own workspace can install the app. Open Manage Distribution, tick off Slack's checklist, and click Activate Public Distribution.",
-      "technical": "Checklist requires OAuth handling and HTTPS on every request URL. No review happens at this step.",
+      "title": "Turn on public distribution",
+      "plain": "If you do not do this step, only your workspace can install the app. Open Manage Distribution. Complete each item on the Slack checklist. Click Activate Public Distribution.",
+      "technical": "The checklist needs OAuth and HTTPS on each request URL. Slack does not review the app at this step.",
       "minutes": {
         "min": 3,
         "max": 8
@@ -143,9 +143,9 @@
     {
       "id": "credentials",
       "owner": "human",
-      "title": "Store the client ID and secret in your app",
-      "plain": "From Basic Information, copy the client ID and client secret into your app's secret store or environment variables.",
-      "whyHuman": "The secret is a password for your app. Pasting it yourself keeps it out of any agent's chat history.",
+      "title": "Keep the client ID and secret in your app",
+      "plain": "Open Basic Information. Copy the client ID and client secret into the secret store or environment variables of your app.",
+      "whyHuman": "The secret is the password for your app. Paste it yourself. Then it does not go into the chat history of an agent.",
       "minutes": {
         "min": 1,
         "max": 2
@@ -169,7 +169,7 @@
       "id": "test",
       "owner": "agent",
       "title": "Install in a second workspace to test",
-      "plain": "Install the app in a different workspace through your app's sign-in flow to confirm other teams can install it.",
+      "plain": "Install the app in a different workspace through the sign-in of your app. This shows that other teams can install it.",
       "minutes": {
         "min": 2,
         "max": 5
@@ -182,7 +182,7 @@
             "title": "Slack Marketplace review guide"
           }
         ],
-        "note": "Slack asks Marketplace applicants to test outside the development workspace. We apply the same advice here."
+        "note": "Slack tells Marketplace applicants to test outside the development workspace. We give the same advice here."
       },
       "link": {
         "url": "https://docs.slack.dev/authentication/installing-with-oauth",
@@ -193,9 +193,9 @@
     {
       "id": "installs",
       "owner": "human",
-      "title": "Reach 10 active workspaces (reading only)",
-      "plain": "Get the app installed and used in at least 10 workspaces in the last 28 days. Until then you can't apply for the Marketplace, and reading stays throttled for new installs.",
-      "whyHuman": "These have to be real customers or pilots, not your own test workspaces.",
+      "title": "Get 10 active workspaces (reading only)",
+      "plain": "At least 10 workspaces must install and use the app in the last 28 days. Until then, you cannot apply for the Marketplace. Also, new installs can read only slowly.",
+      "whyHuman": "These must be real customers or pilots. Your own test workspaces do not count.",
       "minutes": {
         "min": 30,
         "max": 120
@@ -218,9 +218,9 @@
     {
       "id": "submit-marketplace",
       "owner": "human",
-      "title": "Submit to the Slack Marketplace (reading only)",
-      "plain": "Submit from your app's settings with a demo video (install, sign-in, use, uninstall), a test account with dummy data, and a reason for each permission.",
-      "whyHuman": "The video and test account need a person. An agent can draft the permission justifications.",
+      "title": "Send the app to the Slack Marketplace (reading only)",
+      "plain": "Send the app from its settings. Include a demo video that shows install, sign-in, use and uninstall. Include a test account with test data. Tell why you need each permission.",
+      "whyHuman": "A person must make the video and the test account. An agent can write a draft of the reasons for each permission.",
       "minutes": {
         "min": 60,
         "max": 120
@@ -244,7 +244,7 @@
       "id": "slack-review",
       "owner": "waiting",
       "title": "Slack reviews your app (reading only)",
-      "plain": "A preliminary review takes up to 10 business days, then a functional review takes up to 10 weeks for new apps. Resubmitting during the preliminary stage resets your place in the queue.",
+      "plain": "The first review takes a maximum of 10 business days. Then the functional review of a new app takes a maximum of 10 weeks. If you send the app again during the first review, you go back to the end of the queue.",
       "waitDays": {
         "min": 14,
         "max": 80
@@ -257,14 +257,14 @@
             "title": "Slack Marketplace review guide"
           }
         ],
-        "note": "Slack gives upper bounds only. The 14-day minimum is our estimate."
+        "note": "Slack gives only maximum times. The minimum of 14 days is our estimate."
       }
     }
   ],
   "forks": [
     {
       "condition": "Your agent only posts messages",
-      "effect": "Stop after step 6. Throttling only affects reading history and threads, so no Marketplace listing is needed.",
+      "effect": "Stop after step 6. The limits apply only when you read history and threads. Thus, you do not need a Marketplace listing.",
       "evidence": {
         "level": "sourced",
         "sources": [
@@ -283,8 +283,8 @@
   "nuances": [
     {
       "title": "Unlisted apps read Slack slowly",
-      "detail": "Since May 29, 2025, commercially distributed apps outside the Marketplace get 1 request a minute and at most 15 messages per call on conversations.history and conversations.replies. Internal apps keep 50+ requests a minute and 1,000 messages.",
-      "ifStuck": "For pilots, read only recent messages or run as an internal app in each customer's workspace. For scale, plan the Marketplace listing early.",
+      "detail": "Since May 29, 2025, Slack limits commercial apps outside the Marketplace. They get 1 request each minute and a maximum of 15 messages in each call to conversations.history and conversations.replies. Internal apps keep 50 or more requests each minute and 1,000 messages.",
+      "ifStuck": "For pilots, read only recent messages. Or, install the app as an internal app in the workspace of each customer. For many customers, start the Marketplace listing early.",
       "evidence": {
         "level": "sourced",
         "sources": [
@@ -293,16 +293,16 @@
             "title": "Slack changelog: rate limits for non-Marketplace apps"
           }
         ],
-        "note": "Slack's changelog exempts existing installs of older apps. Slack's FAQ reportedly extends the limits to existing installs from March 3, 2026; we have not confirmed that on Slack's own page."
+        "note": "The Slack changelog says that the limits do not apply to existing installs of older apps. Other sources say that the Slack FAQ applies the limits to existing installs from March 3, 2026. We did not find this on a Slack page."
       },
       "useCaseIds": [
         "read"
       ]
     },
     {
-      "title": "The redirect address must be HTTPS",
-      "detail": "Slack rejects plain http:// redirect addresses, including for local testing.",
-      "ifStuck": "Use an HTTPS address, or a tunnel such as ngrok for local work.",
+      "title": "The callback address must be HTTPS",
+      "detail": "Slack does not accept callback addresses that start with http://. This is also true for local tests.",
+      "ifStuck": "Use an HTTPS address. For local work, use a tunnel, for example ngrok.",
       "evidence": {
         "level": "sourced",
         "sources": [
@@ -315,8 +315,8 @@
     },
     {
       "title": "Ask for fewer permissions",
-      "detail": "Workspace admins weigh the permissions you request when deciding whether to approve your app.",
-      "ifStuck": "Remove scopes your agent does not use yet. You can add them later.",
+      "detail": "Workspace admins look at the permissions that your app requests. They use this to decide if they approve your app.",
+      "ifStuck": "Remove the scopes that your agent does not use now. You can add them later.",
       "evidence": {
         "level": "sourced",
         "sources": [
@@ -331,7 +331,7 @@
   "config": {
     "consoleUrl": "https://api.slack.com/apps",
     "authorizeUrl": "https://slack.com/oauth/v2/authorize",
-    "redirectUriNote": "Your app's HTTPS callback URL, added under OAuth & Permissions > Redirect URLs.",
+    "redirectUriNote": "Add the HTTPS callback address of your app in OAuth & Permissions > Redirect URLs.",
     "scopes": [
       {
         "name": "chat:write",
@@ -340,7 +340,7 @@
       },
       {
         "name": "channels:history",
-        "plain": "Read messages in public channels the app is in.",
+        "plain": "Read messages in the public channels that the app is in.",
         "sensitivity": "basic"
       }
     ]
@@ -358,7 +358,7 @@
         "min": 0,
         "max": 0
       },
-      "summary": "Create the app and switch on public distribution. No review. Steps 1 to 6.",
+      "summary": "Create the app and turn on public distribution. Slack does not review the app. Do steps 1 to 6.",
       "scopes": [
         "chat:write"
       ],
@@ -392,7 +392,7 @@
         "min": 14,
         "max": 80
       },
-      "summary": "Unlisted apps created after May 29, 2025 get 1 request a minute and 15 messages per request on conversations.history and conversations.replies. Lifting that needs a Marketplace listing: 10+ active installs, then up to 10 business days plus up to 10 weeks of review.",
+      "summary": "Slack limits unlisted apps that you created after May 29, 2025. They get 1 request each minute and 15 messages in each request to conversations.history and conversations.replies. To remove the limit, you need a Marketplace listing. First, get 10 or more active installs. Then the review takes a maximum of 10 business days and then a maximum of 10 weeks.",
       "scopes": [
         "channels:history",
         "groups:history"
@@ -414,7 +414,7 @@
     },
     {
       "id": "internal",
-      "label": "Only inside your own company's workspace",
+      "label": "Only in the workspace of your company",
       "difficulty": "easy",
       "handsOnMinutes": {
         "min": 10,
@@ -424,7 +424,7 @@
         "min": 0,
         "max": 0
       },
-      "summary": "Internal apps are not throttled and need no distribution or review.",
+      "summary": "Slack does not limit internal apps. They need no distribution and no review.",
       "scopes": [
         "chat:write",
         "channels:history"
@@ -449,7 +449,7 @@
   ],
   "composio": {
     "managedApp": "yes",
-    "note": "You can connect users today with Composio's own Slack app while yours is set up or in review. Users see 'Composio' on the consent screen, rate limits are shared with other Composio customers, and polling triggers run at most every 15 minutes. Switch to your own app when it is ready.",
+    "note": "Users can connect today through the Composio Slack app. Use it while you set up your own app or wait for the review. Users see 'Composio' on the approval screen. Other Composio customers share the same rate limits. Polling triggers run a maximum of one time in 15 minutes. Change to your own app when it is ready.",
     "evidence": {
       "level": "sourced",
       "sources": [
@@ -468,7 +468,7 @@
         "useCaseIds": [
           "read"
         ],
-        "note": "Composio's own Slack app is not Marketplace-listed yet (Composio says its review is in progress), so reading history through it hits the same limits as any unlisted app, including at most 15 messages per request. It does not get you around the wait for reading.",
+        "note": "The Composio Slack app is not on the Marketplace yet. Composio says that its review continues. Thus, it has the same limits as each unlisted app when it reads history. It gets a maximum of 15 messages in each request. It does not let you read without the wait.",
         "evidence": {
           "level": "sourced",
           "sources": [
@@ -482,12 +482,12 @@
     ]
   },
   "existingApp": {
-    "summary": "Add your agent's callback address under OAuth & Permissions if it differs, and reuse the existing client ID and secret. Existing installs keep working.",
+    "summary": "If the callback address of your agent is different, add it in OAuth & Permissions. Use the existing client ID and secret. Existing installs continue to work.",
     "steps": [],
     "reReviewTriggers": [
       {
         "trigger": "You add permissions",
-        "effect": "New scopes only apply after each workspace reinstalls the app.",
+        "effect": "New scopes apply only after each workspace installs the app again.",
         "evidence": {
           "level": "sourced",
           "sources": [
@@ -499,8 +499,8 @@
         }
       },
       {
-        "trigger": "Your app is already in the Slack Marketplace and you change permissions",
-        "effect": "Resubmit for review: the functional review takes up to 6 weeks for published apps.",
+        "trigger": "Your app is on the Slack Marketplace and you change permissions",
+        "effect": "Send the app for review again. For published apps, the functional review takes a maximum of 6 weeks.",
         "evidence": {
           "level": "sourced",
           "sources": [
@@ -513,7 +513,7 @@
       },
       {
         "trigger": "Your app is unlisted and gets new installs",
-        "effect": "Installs made after May 29, 2025 are throttled when reading history, even if the app itself is older.",
+        "effect": "Slack limits installs after May 29, 2025 when they read history. This is also true if the app is older.",
         "evidence": {
           "level": "sourced",
           "sources": [
@@ -528,9 +528,9 @@
   },
   "blockers": [
     {
-      "symptom": "Slack won't let you submit to the Marketplace",
-      "cause": "Apps need at least 10 active workspace installs before they can be submitted.",
-      "fix": "Distribute the app directly (shareable install link) to customer workspaces until you reach 10 active installs, then submit.",
+      "symptom": "Slack does not let you send the app to the Marketplace",
+      "cause": "An app must have at least 10 active workspace installs before you can send it.",
+      "fix": "Give your install link directly to customer workspaces. When you have 10 active installs, send the app.",
       "escalate": {
         "url": "https://docs.slack.dev/slack-marketplace/slack-marketplace-review-guide",
         "label": "Slack Marketplace review guide"
@@ -549,9 +549,9 @@
       }
     },
     {
-      "symptom": "Your Marketplace submission is sent back",
-      "cause": "Common reasons: scopes for features you have not built yet, scopes you cannot justify, install problems, or bugs that block testing. Reviewers cannot get into your workspaces.",
-      "fix": "Address each point of the feedback in your app settings and resubmit. Request only the scopes you use today, and give reviewers a test account and a way to install the app themselves. Your queue place resets if you resubmit during the preliminary review.",
+      "symptom": "Slack sends back your Marketplace application",
+      "cause": "These are the usual causes: scopes for features that you did not build, scopes without a good reason, install problems, or bugs that stop tests. Reviewers cannot get into your workspaces.",
+      "fix": "Correct each item of the feedback in your app settings. Then send the app again. Request only the scopes that you use now. Give reviewers a test account and a method to install the app. If you send the app again during the first review, you go back to the end of the queue.",
       "escalate": {
         "url": "https://docs.slack.dev/slack-marketplace/slack-marketplace-review-guide",
         "label": "Slack Marketplace review guide"
@@ -570,9 +570,9 @@
       }
     },
     {
-      "symptom": "A customer can't install your app",
-      "cause": "Their workspace requires admin approval for apps, or has restricted yours.",
-      "fix": "Ask the customer to request the app and have a workspace owner or app manager approve it. Restricted apps cannot be requested at all.",
+      "symptom": "A customer cannot install your app",
+      "cause": "The workspace of the customer needs admin approval for apps. Or, the workspace blocks your app.",
+      "fix": "Tell the customer to request the app. A workspace owner or app manager must approve it. Users cannot request a blocked app.",
       "escalate": {
         "url": "https://slack.com/help/articles/222386767-Manage-app-approval-for-your-workspace",
         "label": "Slack: app approval for workspaces"

@@ -11,7 +11,7 @@ export async function POST(req: Request) {
   const q = checkQuestion(body.question);
   if (!q.ok) return Response.json({ error: q.reason }, { status: 400 });
   const g = typeof body.slug === "string" ? await getGuide(body.slug) : null;
-  if (!g) return Response.json({ error: "No guide for that app yet." }, { status: 404 });
+  if (!g) return Response.json({ error: "There is no guide for that app yet." }, { status: 404 });
   const ids = (Array.isArray(body.access) ? body.access : []).filter((id) => g.useCases.some((u) => u.id === id));
   const sel = ids.length || body.existing ? { ids, existing: !!body.existing } : undefined;
   try {
@@ -19,6 +19,6 @@ export async function POST(req: Request) {
     return Response.json({ answer });
   } catch (err) {
     console.error("ask failed", err);
-    return Response.json({ error: "Could not answer right now. Try again in a moment." }, { status: 502 });
+    return Response.json({ error: "No answer is available now. Try again in one minute." }, { status: 502 });
   }
 }

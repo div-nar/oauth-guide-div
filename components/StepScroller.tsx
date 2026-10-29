@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { EvidenceBadge } from "@/components/EvidenceBadge";
 import { PathLegend, PathVisual } from "@/components/PathVisual";
+import { TechDetails } from "@/components/TechDetails";
 import type { Step } from "@/lib/guide-schema";
 import { formatRange } from "@/lib/format";
 
@@ -253,8 +254,8 @@ export function StepScroller({ steps }: { steps: Step[] }) {
             <ExternalIcon />
           </a>
         )}
-        {s.owner === "waiting" && !s.link && <p className="why">Nothing to do but wait. The next step starts when the provider replies.</p>}
-        {s.technical && <p className="tech-text">{s.technical}</p>}
+        {s.owner === "waiting" && !s.link && <p className="why">You have nothing to do. Wait for the provider to reply. Then do the next step.</p>}
+        {s.technical && <TechDetails text={s.technical} />}
         <EvidenceBadge evidence={s.evidence} />
       </article>
       <div className="step-foot">

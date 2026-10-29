@@ -1,4 +1,5 @@
 import { EvidenceBadge } from "@/components/EvidenceBadge";
+import { TechDetails } from "@/components/TechDetails";
 import type { Step } from "@/lib/guide-schema";
 import { formatRange } from "@/lib/format";
 
@@ -34,7 +35,7 @@ export function StepTable({ steps }: { steps: Step[] }) {
               <div className="step-body">
                 <p>{s.plain}</p>
                 {s.whyHuman && <p className="why">{s.whyHuman}</p>}
-                {s.technical && <p className="tech-text">{s.technical}</p>}
+                {s.technical && <TechDetails text={s.technical} />}
                 <EvidenceBadge evidence={s.evidence} />
                 {time && <span className="show-sm muted small">{time}</span>}
               </div>
