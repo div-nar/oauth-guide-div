@@ -53,7 +53,7 @@ export function BlockedList({ guide: g, ids }: { guide: Guide; ids: string[] | n
             <p className="blocker-fix">
               {b.fix}
               {b.escalate && (
-                <> <a href={b.escalate.url} target="_blank" rel="noreferrer" title={b.escalate.label}>Help ↗</a></>
+                <> <a href={b.escalate.url} target="_blank" rel="noreferrer" title={b.escalate.label}>Help<svg width="12" height="12" viewBox="0 0 16 16" fill="none" aria-hidden><path d="M9.5 2.5h4v4M13.5 2.5 7.5 8.5M12 9.5v3a1 1 0 0 1-1 1H3.5a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1h3" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" /></svg></a></>
               )}
             </p>
           </li>

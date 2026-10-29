@@ -36,15 +36,6 @@ export function GuideBody({ guide: g, initialIds, initialExisting = false, baseU
       <HandoffButtons guide={g} baseUrl={baseUrl} sel={sel} steps={existing && ex ? ex.steps : steps} />
 
       <section className="picker" aria-label="Your situation">
-        <div className="choice-bar">
-          <span className="choice-text">
-            {u.labels.length ? <><span className="muted">Access:</span> {u.labels.join(" + ")}</> : <span className="muted">No OAuth app needed. {g.app.name} uses an API key.</span>}
-            {ex && <><span className="choice-sep" aria-hidden>/</span><span className="muted">{existing ? "Reusing your existing app" : "New app"}</span></>}
-          </span>
-          {(g.useCases.length > 1 || ex) && (
-            <button type="button" className="change-btn" onClick={() => setEditing(true)}>Change</button>
-          )}
-        </div>
         <div className="verdict-card" aria-live="polite">
           <div className="verdict-grade">
             <GradeMark difficulty={u.difficulty} size={44} />
@@ -60,8 +51,8 @@ export function GuideBody({ guide: g, initialIds, initialExisting = false, baseU
               <div><dt>Steps</dt><dd>{steps.length}</dd></div>
             </dl>
           )}
-          {!existing && picked.length > 1 ? (
-            // Several kinds of access: one short row each, so the verdicts don't run together.
+          {!existing && picked.length > 0 ? (
+            // One short row per selected kind of access, so the verdicts don't run together.
             <ul className="verdict-paths">
               {picked.map((x) => (
                 <li key={x.id}>
@@ -73,6 +64,11 @@ export function GuideBody({ guide: g, initialIds, initialExisting = false, baseU
             </ul>
           ) : (
             <p className="verdict-summary">{existing && ex ? ex.summary : u.summary}</p>
+          )}
+          {(picked.length < g.useCases.length || ex) && (
+            <button type="button" className="add-access" onClick={() => setEditing(true)}>
+              {existing ? "Reusing your existing app. Change" : picked.length < g.useCases.length ? "+ Add more access" : "Already have an app?"}
+            </button>
           )}
           {!g.oauth.supported && g.oauth.notes && (
             <details className="verdict-more">

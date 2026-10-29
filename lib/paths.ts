@@ -41,10 +41,16 @@ export function combine(g: Guide, ids: string[]): Combined {
   const stepIds = new Set(picked.flatMap((u) => stepsFor(g, u.id).map((s) => s.id)));
   const steps = g.steps.filter((s) => stepIds.has(s.id));
   const active = steps.filter((s) => s.owner !== "waiting" && s.minutes);
-  // Step times can undercount a use case's own estimate, so never go below the largest one.
-  const floor = { min: Math.max(...picked.map((u) => u.handsOnMinutes.min)), max: Math.max(...picked.map((u) => u.handsOnMinutes.max)) };
-  const summed = { min: active.reduce((a, s) => a + s.minutes!.min, 0), max: active.reduce((a, s) => a + s.minutes!.max, 0) };
-  const handsOnMinutes = { min: Math.max(floor.min, summed.min), max: Math.max(floor.max, summed.max) };
+  const sum = (xs: Step[]) => ({ min: xs.reduce((a, s) => a + s.minutes!.min, 0), max: xs.reduce((a, s) => a + s.minutes!.max, 0) });
+  // Step times can undercount a use case's own estimate, so each selected access gives
+  // a floor: its own estimate plus the steps only the others need. Take the highest.
+  const floors = picked.map((u) => {
+    const own = new Set(stepsFor(g, u.id).map((s) => s.id));
+    const extra = sum(active.filter((s) => !own.has(s.id)));
+    return { min: u.handsOnMinutes.min + extra.min, max: u.handsOnMinutes.max + extra.max };
+  });
+  const summed = sum(active);
+  const handsOnMinutes = { min: Math.max(summed.min, ...floors.map((f) => f.min)), max: Math.max(summed.max, ...floors.map((f) => f.max)) };
   const longest = picked.reduce((a, u) => (u.waitDays.max > a.max ? u.waitDays : a), picked[0].waitDays);
   return {
     ids: picked.map((u) => u.id),

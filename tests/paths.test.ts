@@ -88,8 +88,15 @@ describe("combine (multi-select access)", () => {
     expect(c.waitDays).toEqual({ min: 7, max: 30 });
   });
 
-  test("adds hands-on time from the combined steps, counting shared steps once", () => {
-    expect(combine(build(), ["basic", "partner"]).handsOnMinutes).toEqual({ min: 25, max: 50 });
+  test("adds the steps only the other access needs to each estimate, counting shared steps once", () => {
+    // basic's own 5-15 plus apply (20-40), which only partner needs.
+    expect(combine(build(), ["basic", "partner"]).handsOnMinutes).toEqual({ min: 25, max: 55 });
+  });
+
+  test("HubSpot: both kinds of access take longer than either one alone", () => {
+    const g = getLib("hubspot")!;
+    // customers is 30-60; own adds one step of its own (own-token, 2-5).
+    expect(combine(g, ["customers", "own"]).handsOnMinutes).toEqual({ min: 32, max: 65 });
   });
 
   test("never reports less hands-on time than any single selected access", () => {
