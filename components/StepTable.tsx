@@ -4,6 +4,15 @@ import { formatRange } from "@/lib/format";
 
 const OWNER = { agent: "Agent", human: "You", waiting: "Wait" } as const;
 
+function ExternalIcon() {
+  return (
+    <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden>
+      <path d="M6 3H3v10h10v-3M9 3h4v4M13 3 7 9" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
+// One line per step; the explanation and source open on click, so long paths stay scannable.
 export function StepTable({ steps }: { steps: Step[] }) {
   return (
     <ol className="step-table">
@@ -12,6 +21,7 @@ export function StepTable({ steps }: { steps: Step[] }) {
         <span>Who</span>
         <span>Step</span>
         <span className="hide-sm">Time</span>
+        <span />
       </li>
       {steps.map((s, i) => {
         const time = s.waitDays ? formatRange(s.waitDays, "day") : s.minutes ? formatRange(s.minutes, "min") : "";
@@ -19,24 +29,24 @@ export function StepTable({ steps }: { steps: Step[] }) {
           <li key={s.id} id={`step-${s.id}`} className={`step-row ${s.owner}`}>
             <span className="num">{i + 1}</span>
             <span><span className="owner-chip">{OWNER[s.owner]}</span></span>
-            <div className="step-main">
-              <h3>{s.title}</h3>
-              <p>{s.plain}</p>
-              {s.whyHuman && <p className="why">{s.whyHuman}</p>}
-              {s.link && (
-                <a className="step-link" href={s.link.url} target="_blank" rel="noreferrer">
-                  {s.link.label}
-                  {s.link.prefilled && <span className="prefilled">pre-filled</span>}
-                </a>
-              )}
-              <details className="tech">
-                <summary>{s.technical ? "Technical detail and source" : "Source"}</summary>
-                {s.technical && <div>{s.technical}</div>}
+            <details className="step-main">
+              <summary>{s.title}</summary>
+              <div className="step-body">
+                <p>{s.plain}</p>
+                {s.whyHuman && <p className="why">{s.whyHuman}</p>}
+                {s.technical && <p className="tech-text">{s.technical}</p>}
                 <EvidenceBadge evidence={s.evidence} />
-              </details>
-              <span className="show-sm muted small">{time}</span>
-            </div>
+                {time && <span className="show-sm muted small">{time}</span>}
+              </div>
+            </details>
             <span className="hide-sm muted small nowrap">{time}</span>
+            {s.link ? (
+              <a className="step-link" href={s.link.url} target="_blank" rel="noreferrer" title={s.link.label} aria-label={s.link.label}>
+                <ExternalIcon />
+              </a>
+            ) : (
+              <span />
+            )}
           </li>
         );
       })}
