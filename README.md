@@ -12,6 +12,12 @@ Fundamentally, I needed to understand: **Who are developers?**
 
 **Agents.** Each of these developers hands work to a coding agent, so the agent is a developer too, and often the first one to read the documentation.
 
+## Scope
+
+Before an agent can act in someone's Gmail or Slack, the developer needs their own **OAuth app** with that provider: the registration that holds the name on the "Allow?" screen, the callback address and the permissions (scopes). Each of their users then connects through that one app. I scoped the product to exactly that: getting *your own* OAuth app created and approved, for any app, and used from your own code. Composio appears once, as a "Can't wait?" option to use its managed app during a review.
+
+Five guides are curated by hand, each chosen for a different challenge: GitHub (self-serve), Slack (marketplace review), Gmail (security assessment), HubSpot (CLI setup) and LinkedIn (partner gate). Any other app is researched live into the same structure. Difficulty is set per kind of access, not per app, because one app can be both: Slack is Easy if your agent only posts, and Hard if it reads messages.
+
 ## Developers Work Differently Now
 
 After developing a foundational understanding of how OAuth works, I wanted to understand how developers actually build applications that use OAuth. I spoke to developers about their workflows and realised that usage comes in two forms.
@@ -53,6 +59,16 @@ Building this changed how I think about development from here on out.
 **Agents.** While I stuck first to building for humans, post-GPT, the primary reader of documentation is an agent, and not a person, so the Markdown became the product and the website became a layer for oversight. Designing for agents also meant designing for their weaknesses: they invent citations and guess at details, so checks had to be placed at every layer, with honesty being rewarded. And most crucially for me, I realised, not all agent-driven development is an MCP server; for a task an agent reads once, a plain URL and an `llms.txt` were enough.
 
 **Humans.** Less was more. My first version's polish didn't land; cutting friction did. What mattered was a high-level overview for decision-making: before committing to an integration, a developer needs to know whether it is worth it, which access they need, how long approval takes, and who must be involved. An agent is prone to make small mistakes. But these small details decide success, such as a callback that differs only by "www", which makes sign-in fail or not enforcing PKCE rules that change from one provider to the next.
+
+## What I Corrected
+
+Checking the guides against provider pages changed them. The full record is in [`docs/evidence-log.md`](docs/evidence-log.md).
+
+- **Slack was not Easy.** My first guide said Easy. Slack's changelog limits unlisted apps to 1 request a minute on message history, so reading messages needs a Marketplace listing (10 installs, then up to 10 weeks of review).
+- **Slack's callback is not an exact match.** I first wrote "exact match" for every provider. Slack accepts a subdirectory of the registered URL; Google, GitHub and LinkedIn do not.
+- **PKCE differs by provider.** GitHub supports S256 only, Slack makes it opt-in and irreversible, and LinkedIn allows it for native clients only. Every guide now has a sourced Protocol section.
+- **Composio's app is not a way round every review.** Its Slack app is not Marketplace-listed yet, and its Gmail and LinkedIn pages do not confirm permissions, so those paths are marked Unconfirmed.
+- **The research agent cited pages it never opened** and had no way to say an app did not exist. Code now checks every citation against the pages it read, and reports "not found" instead of writing a guide.
 
 ## Limitations
 
