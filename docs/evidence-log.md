@@ -43,6 +43,19 @@ Div followed the GitHub guide on a personal account. Claude Code acted as the ag
 
 Steps 1, 3, 4 and 5 are marked `Tested by hand` in the guide. Step 2 stays sourced: the callback address is a choice, not a GitHub screen.
 
+### 2026-10-29: Slack app, by hand (Div), following our guide ("post messages" path)
+
+Div followed the Slack guide on a free workspace. Claude Code acted as the agent in chat. Div clicked through Slack. The run took about 6 minutes (17:35 to 17:41 UTC). The guide estimate for this path is 12 to 29 minutes.
+
+- Step 2, pre-filled link: **Slack rejected our manifest** with "We can't translate a manifest with errors". Slack needs a bot user (`features.bot_user`) when a manifest asks for bot scopes, and our link had none. Div pasted a fixed manifest and it worked. The guide link is fixed, and a test now checks for the bot user.
+- Step 2, the button now says **Create and Install**. Slack installs the app in your own workspace at once and shows a bot token (`xoxb-`) and an app token (`xapp-`). For your own workspace, that token is enough without OAuth. The guide now says this, and warns not to paste the token into an agent chat.
+- Step 3, redirect URL: added `https://oauth-guide-div.vercel.app/slack-test-callback`. Manage Distribution kept a reminder until the URL was saved.
+- Step 4, Manage Distribution: the checklist has four items, not two. The guide missed "Remove hard-coded information", a box you tick to confirm.
+- Step 5: Client ID read from Basic Information. The secret stayed with Div.
+- Step 6: Div installed the app through its sign-in link in the same workspace. The consent screen showed the app name and two permissions, and Slack sent the browser to the callback address. Code had checked first that Slack's authorize page accepts the client ID and callback.
+
+Not tested: installing in a second workspace, and the code-for-token exchange. Steps 1 to 5 are marked `Tested by hand`. Step 6 stays sourced, with a note.
+
 ## 2026-10-29: "Blocked or rejected?" sections
 
 Read each provider's review or troubleshooting page for what happens after a rejection or a stall, and what to do next:
@@ -68,6 +81,6 @@ The same day, code checked what an agent sees on the live site:
 Not recorded yet, so no step is marked `Tested by hand` from this run: the app, the agent, the steps it completed, and whether an OAuth app was created.
 
 - [x] GitHub OAuth app on a free account (Div): see above.
-- [ ] Slack app with public distribution on a free workspace (Div): time taken, screens, surprises.
+- [x] Slack app on a free workspace (Div): see above.
 
 No credentials are recorded here or anywhere in the repo.

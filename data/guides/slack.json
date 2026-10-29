@@ -5,7 +5,7 @@
     "website": "https://slack.com",
     "canDo": "Post messages and replies. Read channel history and threads to summarise, search or sort them."
   },
-  "lastChecked": "2026-10-28",
+  "lastChecked": "2026-10-29",
   "generatedBy": "library",
   "oauth": {
     "supported": true
@@ -47,13 +47,14 @@
         "max": 2
       },
       "evidence": {
-        "level": "sourced",
+        "level": "tested",
         "sources": [
           {
             "url": "https://docs.slack.dev/authentication/installing-with-oauth",
             "title": "Slack: Installing with OAuth"
           }
-        ]
+        ],
+        "note": "Div did this by hand on 2026-10-29."
       },
       "link": {
         "url": "https://api.slack.com/apps",
@@ -65,13 +66,13 @@
       "id": "create-app",
       "owner": "agent",
       "title": "Create the app from a pre-filled link",
-      "plain": "This link opens the Slack 'Create app' screen. The usual agent permissions are already on it. Change the name and select your workspace. Remove the permissions that you do not need. Then create the app.",
+      "plain": "This link opens the Slack 'Create app' screen. The usual agent permissions are already on it. Change the name, select your workspace and remove the permissions that you do not need. Then click Create and Install.",
       "minutes": {
         "min": 2,
         "max": 4
       },
       "evidence": {
-        "level": "sourced",
+        "level": "tested",
         "sources": [
           {
             "url": "https://docs.slack.dev/app-manifests/configuring-apps-with-app-manifests",
@@ -81,11 +82,12 @@
             "url": "https://docs.slack.dev/reference/app-manifest",
             "title": "Slack: App manifest reference"
           }
-        ]
+        ],
+        "note": "Div did this by hand on 2026-10-29. Our first link had no bot user, and Slack showed 'We can't translate a manifest with errors'. The link is now fixed."
       },
-      "technical": "The link uses the Slack manifest URL (`api.slack.com/apps?new_app=1&manifest_json=...`). It adds these bot scopes: `chat:write`, `channels:read`, `channels:history`, `users:read`. You add your callback address in the next step.",
+      "technical": "The link uses the Slack manifest URL (`api.slack.com/apps?new_app=1&manifest_json=...`). It adds these bot scopes: `chat:write`, `channels:read`, `channels:history`, `users:read`, and a bot user. Slack rejects a manifest with bot scopes and no bot user. Create and Install also installs the app in your own workspace, and Slack then shows a bot token (`xoxb-`). Do not paste that token into an agent chat. You add your callback address in the next step.",
       "link": {
-        "url": "https://api.slack.com/apps?new_app=1&manifest_json=%7B%22display_information%22%3A%7B%22name%22%3A%22Your%20agent%27s%20name%22%7D%2C%22oauth_config%22%3A%7B%22scopes%22%3A%7B%22bot%22%3A%5B%22chat%3Awrite%22%2C%22channels%3Aread%22%2C%22channels%3Ahistory%22%2C%22users%3Aread%22%5D%7D%7D%2C%22settings%22%3A%7B%22org_deploy_enabled%22%3Afalse%2C%22token_rotation_enabled%22%3Afalse%7D%7D",
+        "url": "https://api.slack.com/apps?new_app=1&manifest_json=%7B%22display_information%22%3A%7B%22name%22%3A%22Your%20agent%27s%20name%22%7D%2C%22features%22%3A%7B%22bot_user%22%3A%7B%22display_name%22%3A%22Your%20agent%27s%20name%22%2C%22always_online%22%3Afalse%7D%7D%2C%22oauth_config%22%3A%7B%22scopes%22%3A%7B%22bot%22%3A%5B%22chat%3Awrite%22%2C%22channels%3Aread%22%2C%22channels%3Ahistory%22%2C%22users%3Aread%22%5D%7D%7D%2C%22settings%22%3A%7B%22org_deploy_enabled%22%3Afalse%2C%22token_rotation_enabled%22%3Afalse%7D%7D",
         "label": "Create the app with settings pre-filled",
         "prefilled": true
       }
@@ -101,13 +103,14 @@
         "max": 8
       },
       "evidence": {
-        "level": "sourced",
+        "level": "tested",
         "sources": [
           {
             "url": "https://docs.slack.dev/authentication/installing-with-oauth",
             "title": "Slack: Installing with OAuth"
           }
-        ]
+        ],
+        "note": "Div did this by hand on 2026-10-29. Remember to click Save URLs. The Manage Distribution page shows a reminder until a redirect URL is saved."
       },
       "link": {
         "url": "https://api.slack.com/apps",
@@ -120,19 +123,20 @@
       "owner": "agent",
       "title": "Turn on public distribution",
       "plain": "If you do not do this step, only your workspace can install the app. Open Manage Distribution. Complete each item on the Slack checklist. Click Activate Public Distribution.",
-      "technical": "The checklist needs OAuth and HTTPS on each request URL. Slack does not review the app at this step.",
+      "technical": "The checklist has four items: Enable Features & Functionality, Add OAuth redirect URLs, Remove hard-coded information (you tick a box to confirm), and Use HTTPS for your features. Slack does not review the app at this step.",
       "minutes": {
         "min": 3,
         "max": 8
       },
       "evidence": {
-        "level": "sourced",
+        "level": "tested",
         "sources": [
           {
             "url": "https://docs.slack.dev/distribution/",
             "title": "Slack: Distributing your app"
           }
-        ]
+        ],
+        "note": "Div did this by hand on 2026-10-29. Div saw the four-item checklist."
       },
       "link": {
         "url": "https://api.slack.com/apps",
@@ -151,13 +155,14 @@
         "max": 2
       },
       "evidence": {
-        "level": "sourced",
+        "level": "tested",
         "sources": [
           {
             "url": "https://docs.slack.dev/authentication/installing-with-oauth",
             "title": "Slack: Installing with OAuth"
           }
-        ]
+        ],
+        "note": "Div did this by hand on 2026-10-29."
       },
       "link": {
         "url": "https://api.slack.com/apps",
@@ -182,7 +187,7 @@
             "title": "Slack Marketplace review guide"
           }
         ],
-        "note": "Slack tells Marketplace applicants to test outside the development workspace. We give the same advice here."
+        "note": "On 2026-10-29 Div installed the app through its own sign-in link, in the same workspace. The consent screen showed the app name and the two permissions, and Slack sent the browser to the callback address. A second workspace was not tested. Slack tells Marketplace applicants to test outside the development workspace. We give the same advice here."
       },
       "link": {
         "url": "https://docs.slack.dev/authentication/installing-with-oauth",
@@ -298,6 +303,16 @@
       "useCaseIds": [
         "read"
       ]
+    },
+    {
+      "title": "For your own workspace, you may not need OAuth",
+      "detail": "Create and Install puts the app in your workspace and shows a bot token at once. That token is enough for your own workspace. You need the OAuth steps only when other workspaces install your app.",
+      "ifStuck": "Keep the bot token in your secret store. Do not paste it into an agent chat.",
+      "evidence": {
+        "level": "tested",
+        "sources": [],
+        "note": "Div did this by hand on 2026-10-29."
+      }
     },
     {
       "title": "The callback address must be HTTPS",
@@ -694,7 +709,7 @@
       },
       {
         "kind": "link",
-        "url": "https://api.slack.com/apps?new_app=1&manifest_json=%7B%22display_information%22%3A%7B%22name%22%3A%22Your%20agent%27s%20name%22%7D%2C%22oauth_config%22%3A%7B%22scopes%22%3A%7B%22bot%22%3A%5B%22chat%3Awrite%22%2C%22channels%3Aread%22%2C%22channels%3Ahistory%22%2C%22users%3Aread%22%5D%7D%7D%2C%22settings%22%3A%7B%22org_deploy_enabled%22%3Afalse%2C%22token_rotation_enabled%22%3Afalse%7D%7D",
+        "url": "https://api.slack.com/apps?new_app=1&manifest_json=%7B%22display_information%22%3A%7B%22name%22%3A%22Your%20agent%27s%20name%22%7D%2C%22features%22%3A%7B%22bot_user%22%3A%7B%22display_name%22%3A%22Your%20agent%27s%20name%22%2C%22always_online%22%3Afalse%7D%7D%2C%22oauth_config%22%3A%7B%22scopes%22%3A%7B%22bot%22%3A%5B%22chat%3Awrite%22%2C%22channels%3Aread%22%2C%22channels%3Ahistory%22%2C%22users%3Aread%22%5D%7D%7D%2C%22settings%22%3A%7B%22org_deploy_enabled%22%3Afalse%2C%22token_rotation_enabled%22%3Afalse%7D%7D",
         "outcome": "ok",
         "detail": "Page loads"
       },
