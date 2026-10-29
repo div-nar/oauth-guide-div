@@ -45,7 +45,8 @@ export default async function GuidePage({ params, searchParams }: PageProps<"/gu
   const baseUrl = await getBaseUrl();
   const picked = typeof sp.access === "string" ? sp.access.split(",").filter((id) => g.useCases.some((u) => u.id === id)) : [];
   const headline = g.useCases.find((u) => u.difficulty === g.verdict.difficulty) ?? g.useCases[0];
-  const initialIds = picked.length ? picked : headline ? [headline.id] : [];
+  // ?access= with nothing after it means no row ticked: the whole guide.
+  const initialIds = picked.length ? picked : sp.access === "" ? [] : headline ? [headline.id] : [];
 
 
   return (

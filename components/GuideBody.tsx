@@ -28,19 +28,21 @@ export function GuideBody({ guide: g, initialIds, initialExisting = false, baseU
   const [ids, setIds] = useState<string[]>(initialIds);
   const ex = g.existingApp;
   const [existing, setExisting] = useState(initialExisting && !!ex);
-  const u = combine(g, ids);
+  // No row ticked means the whole guide: every step, nothing narrowed.
+  const all = g.useCases.length > 0 && ids.length === 0;
+  const u = all ? { ...combine(g, []), ids: [] as string[], steps: g.steps } : combine(g, ids);
   const sel = { ids: u.ids, existing: existing && !!ex };
   const scopeText = new Map(g.config.scopes.map((s) => [s.name, s.plain]));
 
   const update = (next: string[], nextExisting: boolean) => {
     setIds(next);
     setExisting(nextExisting);
-    router.replace(`/guides/${g.slug}${selectionQuery({ ids: next, existing: nextExisting })}`, { scroll: false });
+    // An empty ?access= keeps "every step" when the page is reloaded or shared.
+    const q = next.length || nextExisting ? selectionQuery({ ids: next, existing: nextExisting }) : "?access=";
+    router.replace(`/guides/${g.slug}${q}`, { scroll: false });
   };
-  // Multi-select, but never empty.
   const toggle = (id: string) => {
     const has = u.ids.includes(id);
-    if (has && u.ids.length === 1) return;
     update(has ? u.ids.filter((x) => x !== id) : [...u.ids, id], existing);
   };
 
@@ -78,11 +80,18 @@ export function GuideBody({ guide: g, initialIds, initialExisting = false, baseU
                         {x.label}
                       </button>
                       {on && x.scopes.length > 0 && (
-                        <dl className="scope-list">
-                          {x.scopes.map((s) => (
-                            <div key={s}><dt><code>{s}</code></dt><dd>{scopeText.get(s) ?? ""}</dd></div>
-                          ))}
-                        </dl>
+                        <>
+                          {x.scopes.some((s) => scopeText.get(s)) && (
+                            <dl className="scope-list">
+                              {x.scopes.filter((s) => scopeText.get(s)).map((s) => (
+                                <div key={s}><dt><code>{s}</code></dt><dd>{scopeText.get(s)}</dd></div>
+                              ))}
+                            </dl>
+                          )}
+                          {x.scopes.some((s) => !scopeText.get(s)) && (
+                            <p className="scope-chips">{x.scopes.filter((s) => !scopeText.get(s)).map((s) => <code key={s}>{s}</code>)}</p>
+                          )}
+                        </>
                       )}
                     </td>
                     <td><span className={`grade-chip ${x.difficulty}`}><GradeMark difficulty={x.difficulty} size={10} /> {GRADE_WORD[x.difficulty]}</span></td>
@@ -94,14 +103,14 @@ export function GuideBody({ guide: g, initialIds, initialExisting = false, baseU
             </tbody>
           </table>
           <p className="access-under">
-            {g.useCases.length > 1 && "Select more than one row to combine them. "}
+            {all ? "No row is selected, so the guide shows every step. Select a row to see only its steps. " : g.useCases.length > 1 && "Select more than one row to combine them. "}
             {ex && (
               <button type="button" className="link-btn" onClick={() => update(u.ids, !existing)}>
                 {existing ? "Show the setup for a new app" : `Do you already have a ${g.app.name} app?`}
               </button>
             )}
           </p>
-          {u.ids.length > 1 && (
+          {!all && u.ids.length > 1 && (
             <p className="access-total">For your selection: {formatHandsOn(u.handsOnMinutes)} of your time, {formatWait(u.waitDays)} of waiting.</p>
           )}
         </section>
