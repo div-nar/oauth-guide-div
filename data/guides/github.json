@@ -152,13 +152,14 @@
         "max": 3
       },
       "evidence": {
-        "level": "sourced",
+        "level": "tested",
         "sources": [
           {
             "url": "https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/authorizing-oauth-apps",
             "title": "GitHub Docs: Authorizing OAuth apps"
           }
-        ]
+        ],
+        "note": "Div signed in through the new app by hand on 2026-10-29, and it worked. Our recording script was not running, so we have no log of the callback."
       },
       "link": {
         "url": "https://github.com/settings/applications",

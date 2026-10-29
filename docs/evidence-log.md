@@ -39,7 +39,9 @@ Div followed the GitHub guide on a personal account. Claude Code acted as the ag
 - Code then checked the new client ID: GitHub's authorize endpoint accepted it and sent the browser to sign-in (HTTP 302).
 - The client secret was first pasted into the agent chat in place of the client ID. The two values sit near each other on the app page. The secret was replaced. The guide now says what each value looks like (client ID starts with `Ov23li`, the secret is 40 characters).
 
-Not done: step 5, a full sign-in through the app and a code-for-token exchange. Steps 1, 3 and 4 are marked `Tested by hand` in the guide. Steps 2 and 5 stay sourced.
+- Step 5, test a connection: Div signed in through the new app, and it worked. Our recording script was not running, so we have no log of the callback or the token exchange.
+
+Steps 1, 3, 4 and 5 are marked `Tested by hand` in the guide. Step 2 stays sourced: the callback address is a choice, not a GitHub screen.
 
 ## 2026-10-29: "Blocked or rejected?" sections
 
