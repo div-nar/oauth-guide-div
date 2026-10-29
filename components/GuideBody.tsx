@@ -3,7 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { AccessModal } from "@/components/AccessModal";
-import { EndpointCheck, EvidenceBadge } from "@/components/EvidenceBadge";
+import { EvidenceBadge } from "@/components/EvidenceBadge";
 import { AppLogo } from "@/components/AppLogo";
 import { BlockedList, FaqList, WhoList } from "@/components/GuideExtras";
 import { HandoffButtons } from "@/components/HandoffButtons";
@@ -40,7 +40,7 @@ export function GuideBody({ guide: g, initialIds, initialExisting = false, baseU
           <div className="verdict-grade">
             <GradeMark difficulty={u.difficulty} size={44} />
             <div>
-              <div className="verdict-word">{GRADE_WORD[u.difficulty]}<EndpointCheck checks={g.checks} /></div>
+              <div className="verdict-word">{GRADE_WORD[u.difficulty]}</div>
               <div className="small muted">{GRADE_MEANING[u.difficulty]}</div>
             </div>
           </div>
@@ -125,7 +125,7 @@ export function GuideBody({ guide: g, initialIds, initialExisting = false, baseU
           {ex.steps.length > 0 && (
             <>
               <h2 className="label" style={{ marginTop: 32 }}>Steps</h2>
-              <StepTable steps={ex.steps} checks={g.checks} />
+              <StepTable steps={ex.steps} />
             </>
           )}
         </section>
@@ -133,7 +133,7 @@ export function GuideBody({ guide: g, initialIds, initialExisting = false, baseU
         <>
           <section className="block">
             <h2 className="label">Steps</h2>
-            <StepScroller steps={steps} checks={g.checks} />
+            <StepScroller steps={steps} />
           </section>
         </>
       )}

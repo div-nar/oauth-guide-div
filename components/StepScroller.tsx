@@ -1,9 +1,9 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { EvidenceBadge, StepCheck } from "@/components/EvidenceBadge";
+import { EvidenceBadge } from "@/components/EvidenceBadge";
 import { PathLegend, PathVisual } from "@/components/PathVisual";
-import type { Checks, Step } from "@/lib/guide-schema";
+import type { Step } from "@/lib/guide-schema";
 import { formatRange } from "@/lib/format";
 
 const OWNER = { agent: "Your agent", human: "You", waiting: "Waiting on the provider" } as const;
@@ -28,7 +28,7 @@ function Arrow({ left }: { left?: boolean }) {
 
 // The path strip doubles as a progress bar above one step card. Move with the
 // arrow keys while the steps are on screen, the arrow buttons, the dots, or a swipe.
-export function StepScroller({ steps, checks }: { steps: Step[]; checks?: Checks | null }) {
+export function StepScroller({ steps }: { steps: Step[] }) {
   const n = steps.length;
   const [active, setActive] = useState(0);
   const [dir, setDir] = useState<1 | -1>(1);
@@ -105,14 +105,11 @@ export function StepScroller({ steps, checks }: { steps: Step[]; checks?: Checks
         <p>{s.plain}</p>
         {s.whyHuman && <p className="why">{s.whyHuman}</p>}
         {s.link && (
-          <div className="step-cta-row">
-            <a className="step-cta" href={s.link.url} target="_blank" rel="noreferrer">
-              {s.link.label}
-              {s.link.prefilled && <span className="prefilled">pre-filled</span>}
-              <ExternalIcon />
-            </a>
-            <StepCheck step={s} checks={checks} />
-          </div>
+          <a className="step-cta" href={s.link.url} target="_blank" rel="noreferrer">
+            {s.link.label}
+            {s.link.prefilled && <span className="prefilled">pre-filled</span>}
+            <ExternalIcon />
+          </a>
         )}
         {s.owner === "waiting" && !s.link && <p className="why">Nothing to do but wait. The next step starts when the provider replies.</p>}
         {s.technical && <p className="tech-text">{s.technical}</p>}

@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { GuideBody } from "@/components/GuideBody";
 import { AppLogo } from "@/components/AppLogo";
 import { BlockedList, FaqList, WhoList } from "@/components/GuideExtras";
+import { GuideCheck } from "@/components/EvidenceBadge";
 import { HandoffButtons } from "@/components/HandoffButtons";
 import { StepTable } from "@/components/StepTable";
 import { ViewToggle } from "@/components/ViewToggle";
@@ -50,7 +51,7 @@ export default async function GuidePage({ params, searchParams }: PageProps<"/gu
       <header className="guide-head">
         <AppLogo name={g.app.name} website={g.app.website} logoUrl={g.app.logoUrl} size={56} />
         <div>
-          <h1>{g.app.name}</h1>
+          <h1>{g.app.name}<GuideCheck checks={g.checks} /></h1>
           <p className="small muted">
             {g.generatedBy === "agent" ? "Researched by the agent from public docs" : "Researched by hand from official docs"},
             last checked {g.lastChecked}
@@ -74,7 +75,7 @@ export default async function GuidePage({ params, searchParams }: PageProps<"/gu
           {g.steps.length > 0 && (
             <section className="block">
               <h2 className="label">Steps</h2>
-              <StepTable steps={g.steps} checks={g.checks} />
+              <StepTable steps={g.steps} />
             </section>
           )}
           <BlockedList guide={g} ids={null} />
