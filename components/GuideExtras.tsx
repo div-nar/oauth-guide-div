@@ -1,5 +1,4 @@
 import { AskBox } from "@/components/AskBox";
-import { EvidenceBadge } from "@/components/EvidenceBadge";
 import type { Guide } from "@/lib/guide-schema";
 import { appliesTo } from "@/lib/paths";
 
@@ -73,34 +72,32 @@ function Chevron() {
   );
 }
 
-// Ask anything first (answered from this guide), then up to four of this app's
-// questions. The rest stay in the Markdown that agents and the ask box read.
+// Questions every developer asks, whatever the app. Answers hold for any provider;
+// app-specific detail comes from the ask box above them.
+const GENERAL: [string, string][] = [
+  ["Can my agent create the app for me?", "Partly. Steps tagged Agent can be done in your signed-in browser or terminal. Signing in, accepting terms, verifying a domain and handling the client secret stay with you, and the agent stops and asks at each of those."],
+  ["Should I use one OAuth app for development and production?", "Most teams use two: one for local testing with a localhost callback, and one for production with an HTTPS callback. It keeps test users and real users apart, and a review only needs the production app."],
+  ["What if I need more permissions later?", "You can add scopes later, but people who already connected must approve again, and providers that review apps usually review the new scopes too. Ask for what you need now and plan larger changes ahead."],
+  ["Where should the client secret live?", "In your app's secret store or environment variables on the server, never in front-end code, a repository or a chat. If it leaks, rotate it in the provider's dashboard."],
+];
+
+// The ask box first (answered from this guide; this app's what-ifs are its starter
+// questions), then the general questions.
 export function FaqList({ guide: g, ids }: { guide: Guide; ids: string[] | null }) {
   const keep = (x: { useCaseIds?: string[] | null }) => !ids || appliesTo(x.useCaseIds, ids);
-  const faqs = [
-    ...g.forks.filter(keep).map((f) => ({ q: `What if ${f.condition.charAt(0).toLowerCase() + f.condition.slice(1)}?`, a: f.effect, stuck: null as string | null, evidence: f.evidence })),
-    // Gotchas are titled as statements ("Ask for the narrowest permission"); only real
-    // questions belong in this list. The rest stay with the ask box and the Markdown.
-    ...g.nuances.filter((n) => keep(n) && n.title.trim().endsWith("?")).map((n) => ({ q: n.title, a: n.detail, stuck: n.ifStuck, evidence: n.evidence })),
-  ].slice(0, 4);
+  const starters = g.forks.filter(keep).slice(0, 3).map((f) => `What if ${f.condition.charAt(0).toLowerCase() + f.condition.slice(1)}?`);
   return (
     <section className="block">
       <h2 className="label">Questions</h2>
-      <AskBox slug={g.slug} appName={g.app.name} access={ids} />
-      {faqs.length > 0 && (
-        <div className="faq faq-list">
-          {faqs.map((f) => (
-            <details key={f.q}>
-              <summary>{f.q}<Chevron /></summary>
-              <div className="faq-body">
-                <p>{f.a}</p>
-                {f.stuck && <p className="faq-stuck"><span>If you&apos;re stuck</span>{f.stuck}</p>}
-                {f.evidence && <EvidenceBadge evidence={f.evidence} />}
-              </div>
-            </details>
-          ))}
-        </div>
-      )}
+      <AskBox slug={g.slug} appName={g.app.name} access={ids} starters={starters} />
+      <div className="faq faq-list">
+        {GENERAL.map(([q, a]) => (
+          <details key={q}>
+            <summary>{q}<Chevron /></summary>
+            <div className="faq-body"><p>{a}</p></div>
+          </details>
+        ))}
+      </div>
     </section>
   );
 }
