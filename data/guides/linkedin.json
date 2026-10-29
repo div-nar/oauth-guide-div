@@ -2,7 +2,8 @@
   "slug": "linkedin",
   "app": {
     "name": "LinkedIn",
-    "website": "https://www.linkedin.com"
+    "website": "https://www.linkedin.com",
+    "canDo": "Sign people in and post as them; with partner approval, run company pages, ads and recruiting."
   },
   "lastChecked": "2026-10-28",
   "generatedBy": "library",

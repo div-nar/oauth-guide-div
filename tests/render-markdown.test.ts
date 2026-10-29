@@ -6,6 +6,18 @@ const gmail = getLibraryGuide("gmail")!;
 const md = guideToMarkdown(gmail, "https://example.test");
 
 describe("guideToMarkdown", () => {
+  test("says what an agent can do once connected", () => {
+    expect(md).toContain(`Once connected, an agent can: ${gmail.app.canDo}`);
+  });
+
+  test("every hand-checked guide says what an agent can do once connected", () => {
+    for (const slug of ["github", "slack", "gmail", "hubspot", "linkedin"]) {
+      const words = getLibraryGuide(slug)!.app.canDo?.split(/\s+/).length ?? 0;
+      expect(words, slug).toBeGreaterThan(5);
+      expect(words, slug).toBeLessThanOrEqual(20);
+    }
+  });
+
   test("titles OAuth apps and API-key apps differently", () => {
     expect(md.split("\n")[0]).toBe("# OAuth app setup: Gmail");
     const apiKey = { ...gmail, oauth: { supported: false }, useCases: [] };
