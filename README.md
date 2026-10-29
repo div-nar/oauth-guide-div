@@ -64,7 +64,7 @@ Building this changed how I think about development from here on out.
 
 Building and checking the guides changed my approach. The full record is in [`docs/evidence-log.md`](docs/evidence-log.md).
 
-- **Developers and non-developers want the same thing: minimum friction.** I first expected them to need different views: engineers wanting depth, everyone else wanting simplicity. Both asked for less: a quick overview, clear steps and no extra screens. So the page leads with the overview, and the technical detail sits one level down.
+- **Developers and non-developers want the same thing: minimum friction.** Both asked for less: a quick overview, clear steps and no extra screens. So the page leads with the overview, and the technical detail sits one level down.
 - **Not an MCP server.** I first assumed agents needed an MCP server. Setting up an OAuth app happens once per app, and the agent only reads, so a plain URL and `llms.txt` work with any agent and need nothing installed.
 - **Protocols differ for each app, and developers need to know them.** I first treated OAuth as one protocol. GitHub supports PKCE with S256 only, Slack makes it opt-in and irreversible, and LinkedIn allows it for native clients only. Every guide now has a sourced Protocol section.
 - **Slack's callback.** I first wrote "exact match" for every provider. Slack accepts a subdirectory of the registered URL; Google, GitHub and LinkedIn do not.
