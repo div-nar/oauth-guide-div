@@ -10,10 +10,17 @@ const nextConfig: NextConfig = {
     },
   },
   async rewrites() {
-    return [
-      { source: "/guides/:slug.md", destination: "/api/guides/:slug/md" },
-      { source: "/guides/:slug.json", destination: "/api/guides/:slug/json" },
-    ];
+    return {
+      // Agents asking for Markdown on a guide's web address get the Markdown guide.
+      beforeFiles: [
+        { source: "/guides/:slug", has: [{ type: "header", key: "accept", value: ".*text/markdown.*" }], destination: "/api/guides/:slug/md" },
+      ],
+      afterFiles: [
+        { source: "/guides/:slug.md", destination: "/api/guides/:slug/md" },
+        { source: "/guides/:slug.json", destination: "/api/guides/:slug/json" },
+      ],
+      fallback: [],
+    };
   },
 };
 

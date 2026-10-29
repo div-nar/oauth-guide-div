@@ -1,8 +1,10 @@
 import { AgentLaunchers } from "@/components/AgentLaunchers";
+import { AgentLinks } from "@/components/AgentLinks";
 import { CopyLine } from "@/components/CopyLine";
 import type { Guide, Step } from "@/lib/guide-schema";
 import type { Selection } from "@/lib/paths";
 import { handoffPrompt } from "@/lib/handoff";
+import { selectionQuery } from "@/lib/paths";
 
 export function HandoffButtons({ guide, baseUrl, sel, steps }: { guide: Guide; baseUrl: string; sel?: Selection; steps?: Step[] }) {
   const prompt = handoffPrompt(guide, baseUrl, sel);
@@ -19,6 +21,7 @@ export function HandoffButtons({ guide, baseUrl, sel, steps }: { guide: Guide; b
         </div>
       </div>
       <CopyLine text={prompt} />
+      <AgentLinks md={`/guides/${guide.slug}.md${sel ? selectionQuery(sel) : ""}`} json={`/guides/${guide.slug}.json`} />
     </section>
   );
 }

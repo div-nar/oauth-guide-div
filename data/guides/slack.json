@@ -277,23 +277,6 @@
         "post",
         "read"
       ]
-    },
-    {
-      "condition": "Your customer's workspace requires admin approval for apps",
-      "effect": "The user who connects can only request the app. Their workspace admin must approve it, so expect a short wait on the customer side.",
-      "evidence": {
-        "level": "sourced",
-        "sources": [
-          {
-            "url": "https://docs.slack.dev/distribution/",
-            "title": "Slack: Distributing your app"
-          }
-        ]
-      },
-      "useCaseIds": [
-        "post",
-        "read"
-      ]
     }
   ],
   "nuances": [
@@ -464,7 +447,7 @@
   ],
   "composio": {
     "managedApp": "yes",
-    "note": "You can connect users today with Composio's own Slack app while yours is set up or in review. Users see 'Composio' on the consent screen, rate limits are shared with other Composio customers, and polling triggers run at most every 15 minutes. Switch to your own app when it is ready. Check whether Composio's managed Slack app is Marketplace-listed before relying on it for reading history; we could not confirm that.",
+    "note": "You can connect users today with Composio's own Slack app while yours is set up or in review. Users see 'Composio' on the consent screen, rate limits are shared with other Composio customers, and polling triggers run at most every 15 minutes. Switch to your own app when it is ready.",
     "evidence": {
       "level": "sourced",
       "sources": [
@@ -477,7 +460,24 @@
           "title": "Composio: managed vs custom auth"
         }
       ]
-    }
+    },
+    "limits": [
+      {
+        "useCaseIds": [
+          "read"
+        ],
+        "note": "Composio's own Slack app is not Marketplace-listed yet (Composio says its review is in progress), so reading history through it hits the same limits as any unlisted app, including at most 15 messages per request. It does not get you around the wait for reading.",
+        "evidence": {
+          "level": "sourced",
+          "sources": [
+            {
+              "url": "https://docs.composio.dev/toolkits/slack",
+              "title": "Composio: Slack toolkit"
+            }
+          ]
+        }
+      }
+    ]
   },
   "existingApp": {
     "summary": "Add Composio's redirect address under OAuth & Permissions, then paste the existing client ID and secret into Composio. Existing installs keep working.",
@@ -523,5 +523,71 @@
         }
       }
     ]
-  }
+  },
+  "blockers": [
+    {
+      "symptom": "Slack won't let you submit to the Marketplace",
+      "cause": "Apps need at least 10 active workspace installs before they can be submitted.",
+      "fix": "Distribute the app directly (shareable install link) to customer workspaces until you reach 10 active installs, then submit.",
+      "escalate": {
+        "url": "https://docs.slack.dev/slack-marketplace/slack-marketplace-review-guide",
+        "label": "Slack Marketplace review guide"
+      },
+      "useCaseIds": [
+        "read"
+      ],
+      "evidence": {
+        "level": "sourced",
+        "sources": [
+          {
+            "url": "https://docs.slack.dev/slack-marketplace/slack-marketplace-review-guide",
+            "title": "Slack Marketplace review guide"
+          }
+        ]
+      }
+    },
+    {
+      "symptom": "Your Marketplace submission is sent back",
+      "cause": "Common reasons: scopes for features you have not built yet, scopes you cannot justify, install problems, or bugs that block testing. Reviewers cannot get into your workspaces.",
+      "fix": "Address each point of the feedback in your app settings and resubmit. Request only the scopes you use today, and give reviewers a test account and a way to install the app themselves. Your queue place resets if you resubmit during the preliminary review.",
+      "escalate": {
+        "url": "https://docs.slack.dev/slack-marketplace/slack-marketplace-review-guide",
+        "label": "Slack Marketplace review guide"
+      },
+      "useCaseIds": [
+        "read"
+      ],
+      "evidence": {
+        "level": "sourced",
+        "sources": [
+          {
+            "url": "https://docs.slack.dev/slack-marketplace/slack-marketplace-review-guide",
+            "title": "Slack Marketplace review guide"
+          }
+        ]
+      }
+    },
+    {
+      "symptom": "A customer can't install your app",
+      "cause": "Their workspace requires admin approval for apps, or has restricted yours.",
+      "fix": "Ask the customer to request the app and have a workspace owner or app manager approve it. Restricted apps cannot be requested at all.",
+      "escalate": {
+        "url": "https://slack.com/help/articles/222386767-Manage-app-approval-for-your-workspace",
+        "label": "Slack: app approval for workspaces"
+      },
+      "useCaseIds": [
+        "post",
+        "read"
+      ],
+      "evidence": {
+        "level": "sourced",
+        "sources": [
+          {
+            "url": "https://slack.com/help/articles/222386767-Manage-app-approval-for-your-workspace",
+            "title": "Slack: Manage app approval for your workspace"
+          }
+        ]
+      }
+    }
+  ]
 }

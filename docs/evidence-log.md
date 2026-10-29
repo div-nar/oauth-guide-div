@@ -27,6 +27,19 @@ What we read, what we tried, and what surprised us. Dates are when the check hap
 
 ## Hands-on attempts
 
+## 2026-10-29: "Blocked or rejected?" sections
+
+Read each provider's review or troubleshooting page for what happens after a rejection or a stall, and what to do next:
+- GitHub: OAuth app access restrictions are on by default for new organisations; `redirect_uri_mismatch` fix.
+- Google: brand verification requirements and manual review (2 to 3 business days); Trust & Safety follow-up emails pause review; Terms of Service and Safe Browsing flags need an appeal first.
+- Slack: 10 active workspace installs before Marketplace submission; preliminary review returns, queue resets; workspace app approval.
+- HubSpot: three active installs to list; Draft mode for incomplete listings; 10 business days first review, 60 days overall; unused scopes rejected.
+- LinkedIn: rejected Community Management requests cannot re-apply with the same app; Standard tier screencast rules.
+
+Composio's own apps, checked against each toolkit page (correction): the "Can't wait?" note promised Composio's app as a way round every review. Composio's Slack app is not Marketplace-listed yet ("working on Marketplace review"), so it does not avoid the reading limits. The Gmail and LinkedIn toolkit pages confirm a managed app but not its permissions, so those paths are now marked Unconfirmed.
+
+Forum and blog reports of Google homepage rejections were not used: none came from Google.
+
 - [ ] GitHub OAuth app on a free account (Div): time taken, screens, surprises.
 - [ ] Slack app with public distribution on a free workspace (Div): time taken, screens, surprises.
 

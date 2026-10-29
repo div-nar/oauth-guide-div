@@ -3,7 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { GuideBody } from "@/components/GuideBody";
 import { AppLogo } from "@/components/AppLogo";
-import { FaqList, WhoList } from "@/components/GuideExtras";
+import { BlockedList, FaqList, WhoList } from "@/components/GuideExtras";
 import { HandoffButtons } from "@/components/HandoffButtons";
 import { StepTable } from "@/components/StepTable";
 import { ViewToggle } from "@/components/ViewToggle";
@@ -14,7 +14,10 @@ import { getGuide } from "@/lib/guides";
 
 export async function generateMetadata({ params }: PageProps<"/guides/[slug]">): Promise<Metadata> {
   const g = await getGuide((await params).slug);
-  return g ? { title: `${g.app.name} OAuth app setup`, description: g.verdict.summary } : {};
+  // Agents that land on the web page can find the Markdown version from here.
+  return g
+    ? { title: `${g.app.name} OAuth app setup`, description: g.verdict.summary, alternates: { types: { "text/markdown": `/guides/${g.slug}.md` } } }
+    : {};
 }
 
 export default async function GuidePage({ params, searchParams }: PageProps<"/guides/[slug]">) {
@@ -74,6 +77,7 @@ export default async function GuidePage({ params, searchParams }: PageProps<"/gu
               <StepTable steps={g.steps} />
             </section>
           )}
+          <BlockedList guide={g} ids={null} />
           <FaqList guide={g} ids={null} />
         </>
       )}

@@ -4,10 +4,11 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { AccessModal } from "@/components/AccessModal";
 import { EvidenceBadge } from "@/components/EvidenceBadge";
-import { FaqList, WhoList } from "@/components/GuideExtras";
+import { AppLogo } from "@/components/AppLogo";
+import { BlockedList, FaqList, WhoList } from "@/components/GuideExtras";
 import { HandoffButtons } from "@/components/HandoffButtons";
 import { GRADE_MEANING, GRADE_WORD, GradeMark } from "@/components/GradeMark";
-import { PathVisual } from "@/components/PathVisual";
+import { StepScroller } from "@/components/StepScroller";
 import { StepTable } from "@/components/StepTable";
 import { formatHandsOn, formatWait } from "@/lib/format";
 import type { Guide } from "@/lib/guide-schema";
@@ -26,6 +27,9 @@ export function GuideBody({ guide: g, initialIds, initialExisting = false, baseU
   const ex = g.existingApp;
 
   const sel = { ids: u.ids, existing: existing && !!ex };
+  const composioRuledOut = (g.composio?.limits ?? []).some(
+    (l) => l.evidence.level === "sourced" && l.useCaseIds.some((id) => u.ids.includes(id)),
+  );
   return (
     <>
       <HandoffButtons guide={g} baseUrl={baseUrl} sel={sel} steps={existing && ex ? ex.steps : steps} />
@@ -64,11 +68,11 @@ export function GuideBody({ guide: g, initialIds, initialExisting = false, baseU
           )}
         </div>
 
-        {g.composio?.managedApp === "yes" && u.waitDays.max > 0 && !existing && (
-          <div className="managed-note">
-            <strong>Can&apos;t wait {formatWait(u.waitDays)}?</strong> {g.composio.note}
-            <EvidenceBadge evidence={g.composio.evidence} />
-          </div>
+        {g.composio?.managedApp === "yes" && u.waitDays.max > 0 && !existing && !composioRuledOut && (
+          <a className="btn secondary composio-btn" href={`https://docs.composio.dev/toolkits/${g.slug}`} target="_blank" rel="noreferrer" title={`Connect users today with Composio's own ${g.app.name} app, then switch to yours once it's approved.`}>
+            <AppLogo name="Composio" website="composio.dev" size={16} />
+            Can&apos;t wait? Connect on Composio
+          </a>
         )}
       </section>
 
@@ -89,6 +93,8 @@ export function GuideBody({ guide: g, initialIds, initialExisting = false, baseU
         />
       )}
 
+      {/* People to line up before starting, so it comes before the steps. */}
+      <WhoList guide={g} ids={u.ids} />
       {existing && ex ? (
         <section className="block">
           <h2 className="label">What could send you back to review</h2>
@@ -110,16 +116,12 @@ export function GuideBody({ guide: g, initialIds, initialExisting = false, baseU
       ) : (
         <>
           <section className="block">
-            <h2 className="label">The path</h2>
-            <PathVisual steps={steps} />
-          </section>
-          <section className="block">
             <h2 className="label">Steps</h2>
-            <StepTable steps={steps} />
+            <StepScroller steps={steps} />
           </section>
         </>
       )}
-      <WhoList guide={g} ids={u.ids} />
+      <BlockedList guide={g} ids={u.ids} />
       <FaqList guide={g} ids={u.ids} />
       <ViewToggle human={`/guides/${g.slug}${selectionQuery(sel)}`} machine={`/guides/${g.slug}/ai${selectionQuery(sel)}`} current="human" />
     </>

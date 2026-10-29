@@ -554,7 +554,7 @@
   ],
   "composio": {
     "managedApp": "yes",
-    "note": "You can connect users today with Composio's own Gmail app while yours is set up or in review. Users see 'Composio' on the consent screen, rate limits are shared with other Composio customers, and polling triggers run at most every 15 minutes. Switch to your own app when it is ready. This is the realistic way to pilot Gmail during Google's weeks of review.",
+    "note": "You can connect users today with Composio's own Gmail app while yours is set up or in review. Users see 'Composio' on the consent screen, rate limits are shared with other Composio customers, and polling triggers run at most every 15 minutes. Switch to your own app when it is ready.",
     "evidence": {
       "level": "sourced",
       "sources": [
@@ -567,7 +567,26 @@
           "title": "Composio: managed vs custom auth"
         }
       ]
-    }
+    },
+    "limits": [
+      {
+        "useCaseIds": [
+          "read",
+          "send"
+        ],
+        "note": "Composio's Gmail docs do not list which permissions its own app includes, and say Google blocks permissions it has not verified for that app. Connect a test account through Composio and check that your agent's actions work before relying on it.",
+        "evidence": {
+          "level": "uncertain",
+          "sources": [
+            {
+              "url": "https://docs.composio.dev/toolkits/gmail",
+              "title": "Composio: Gmail toolkit"
+            }
+          ],
+          "note": "The toolkit page confirms a managed app but not its permissions."
+        }
+      }
+    ]
   },
   "existingApp": {
     "summary": "Add Composio's redirect address to your existing OAuth client, or create a second client in the same project. Either way you keep the verification your project already has, as long as the permissions stay the same.",
@@ -609,5 +628,74 @@
         }
       }
     ]
-  }
+  },
+  "blockers": [
+    {
+      "symptom": "Google's automated brand check lists problems",
+      "cause": "Your home page must be public (not behind a login), describe the app and link to the privacy policy. The privacy policy must be on the same domain and explain how you use Google data. Your domain must be verified in Google Search Console.",
+      "fix": "Fix each listed issue and run verification again, or request a manual review (usually 2 to 3 business days). Cancel verification before changing branding, and publish within 7 days of a passing result.",
+      "escalate": {
+        "url": "https://developers.google.com/identity/protocols/oauth2/production-readiness/brand-verification",
+        "label": "Google: brand verification"
+      },
+      "useCaseIds": null,
+      "evidence": {
+        "level": "sourced",
+        "sources": [
+          {
+            "url": "https://developers.google.com/identity/protocols/oauth2/production-readiness/brand-verification",
+            "title": "Google: Brand verification"
+          }
+        ]
+      }
+    },
+    {
+      "symptom": "Your review seems stuck",
+      "cause": "Google's Trust & Safety team may email you for more information, and the review pauses until you answer.",
+      "fix": "Check the developer contact and support email addresses on your consent screen, including spam. Check the Verification Center for a paused status, and reply on the same email thread.",
+      "escalate": {
+        "url": "https://developers.google.com/identity/protocols/oauth2/production-readiness/sensitive-scope-verification",
+        "label": "Google: verification and Trust & Safety follow-up"
+      },
+      "useCaseIds": [
+        "read",
+        "send"
+      ],
+      "evidence": {
+        "level": "sourced",
+        "sources": [
+          {
+            "url": "https://developers.google.com/identity/protocols/oauth2/production-readiness/brand-verification",
+            "title": "Google: Brand verification"
+          },
+          {
+            "url": "https://developers.google.com/identity/protocols/oauth2/production-readiness/sensitive-scope-verification",
+            "title": "Google: Sensitive scope verification"
+          }
+        ]
+      }
+    },
+    {
+      "symptom": "Verification is refused because of a policy flag",
+      "cause": "A project on your account was flagged for a Terms of Service violation, or your domain is marked dangerous in Google Search.",
+      "fix": "Resolve the flagged project and appeal in the Google Cloud console, or fix the Search Console issues and request a security review. Resubmit only after that review finishes.",
+      "escalate": {
+        "url": "https://support.google.com/cloud/answer/13804782",
+        "label": "Google Cloud: common verification issues"
+      },
+      "useCaseIds": [
+        "read",
+        "send"
+      ],
+      "evidence": {
+        "level": "sourced",
+        "sources": [
+          {
+            "url": "https://support.google.com/cloud/answer/13804782",
+            "title": "Google Cloud: Examples of common issues"
+          }
+        ]
+      }
+    }
+  ]
 }

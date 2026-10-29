@@ -7,7 +7,9 @@ import "./globals.css";
 const mono = Geist_Mono({ variable: "--font-mono", subsets: ["latin"] });
 
 export const metadata: Metadata = {
+  metadataBase: process.env.SITE_URL ? new URL(process.env.SITE_URL) : undefined,
   title: "OAuth App Guides",
+  alternates: { types: { "text/plain": "/llms.txt" } },
   description:
     "How hard it is to get your own OAuth app approved, how long it takes, and which steps your agent can do for you.",
 };

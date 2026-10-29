@@ -1,10 +1,17 @@
 import { describe, expect, test } from "bun:test";
-import { parseGuide } from "@/lib/guide-schema";
+import { parseGuide, parseStoredGuide } from "@/lib/guide-schema";
 import { minimalGuide } from "./fixtures";
 
 describe("GuideSchema", () => {
   test("parses a minimal valid guide", () => {
     expect(parseGuide(minimalGuide()).slug).toBe("acme");
+  });
+
+  test("reads a stored guide saved before use cases had stepIds", () => {
+    const g = minimalGuide() as { useCases: { stepIds?: string[] }[] };
+    for (const u of g.useCases) delete u.stepIds;
+    expect(() => parseGuide(g)).toThrow();
+    expect(parseStoredGuide(g).useCases.every((u) => u.stepIds.length === 0)).toBe(true);
   });
 
   test("rejects sourced evidence with no sources", () => {

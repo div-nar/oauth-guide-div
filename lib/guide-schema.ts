@@ -76,6 +76,19 @@ export const GuideSchema = z
       useCaseIds: z.array(z.string()).nullish(),
     }),
   ),
+  // What a developer sees when they get stuck or rejected, why, and what to do.
+  blockers: z
+    .array(
+      z.object({
+        symptom: z.string(),
+        cause: z.string(),
+        fix: z.string(),
+        escalate: z.object({ url: z.string(), label: z.string() }).nullish(),
+        useCaseIds: z.array(z.string()).nullish(),
+        evidence: EvidenceSchema,
+      }),
+    )
+    .nullish(),
   config: z.object({
     consoleUrl: z.string().nullish(),
     redirectUriNote: z.string().nullish(),
@@ -89,7 +102,13 @@ export const GuideSchema = z
   }),
   // Whether Composio's own (managed) app can be used while yours is set up or in review.
   composio: z
-    .object({ managedApp: z.enum(["yes", "no", "unknown"]), note: z.string(), evidence: EvidenceSchema })
+    .object({
+      managedApp: z.enum(["yes", "no", "unknown"]),
+      note: z.string(),
+      evidence: EvidenceSchema,
+      // Access that Composio's app does not cover, or that its docs do not confirm.
+      limits: z.array(z.object({ useCaseIds: z.array(z.string()), note: z.string(), evidence: EvidenceSchema })).nullish(),
+    })
     .nullish(),
   // For teams that already have an OAuth app with this provider.
   existingApp: z
@@ -113,4 +132,12 @@ export type Difficulty = Guide["verdict"]["difficulty"];
 
 export function parseGuide(x: unknown): Guide {
   return GuideSchema.parse(x);
+}
+
+// Rows saved by older agent versions lack fields added since. An empty
+// stepIds list means "every step", so it is a safe default for them.
+export function parseStoredGuide(x: unknown): Guide {
+  const g = x as { useCases?: { stepIds?: unknown }[] };
+  const useCases = g.useCases?.map((u) => ({ ...u, stepIds: u.stepIds ?? [] }));
+  return parseGuide(useCases ? { ...g, useCases } : g);
 }
