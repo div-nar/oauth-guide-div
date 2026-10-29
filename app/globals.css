@@ -382,10 +382,10 @@ html { overflow-anchor: none; overflow-x: clip; }
 .blocker:last-child { border-bottom: 0; }
 .blocker p { margin: 0; }
 .blocker-icon { grid-row: 1; display: inline-grid; place-items: center; width: 16px; height: 16px; margin-top: 3px; border-radius: 50%; background: var(--error); color: #000; font-size: 11px; font-weight: 800; line-height: 1; }
-.blocker-where { grid-column: 2; font-size: 15px; font-weight: 600; line-height: 1.45; color: var(--ink); }
+.blocker-where { grid-column: 2; display: flex; align-items: baseline; justify-content: space-between; gap: 16px; font-size: 15px; font-weight: 600; line-height: 1.45; color: var(--ink); }
+.blocker-where a { flex: none; display: inline-flex; align-items: center; gap: 4px; color: var(--faint); font-size: 13px; font-weight: 400; text-decoration: none; }
+.blocker-where a:hover { color: var(--ink); }
 .blocker-fix { grid-column: 2; font-size: 14px; line-height: 1.55; color: var(--muted); max-width: 70ch; }
-.blocker-fix a { display: inline-flex; align-items: center; gap: 4px; margin-left: 6px; color: var(--faint); font-size: 13px; text-decoration: none; white-space: nowrap; vertical-align: baseline; }
-.blocker-fix a:hover { color: var(--ink); }
 
 /* what you'll need: who or what, then why */
 .need-list { list-style: none; margin: 0; padding: 0; }
@@ -458,7 +458,7 @@ html { overflow-anchor: none; overflow-x: clip; }
 .ask-go:disabled { background: rgba(255, 255, 255, 0.06); color: var(--faint); cursor: default; }
 .ask-go .pulse { background: var(--muted); }
 .ask-starters { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
-.ask-starters button { padding: 5px 11px; border-radius: 99px; border: 1px solid var(--border); background: rgba(255, 255, 255, 0.02); color: var(--muted); font-family: var(--font-mono), monospace; font-size: 12px; cursor: pointer; transition: border-color 120ms, color 120ms; }
+.ask-starters button { padding: 5px 11px; border-radius: 99px; border: 1px solid var(--border); background: rgba(255, 255, 255, 0.02); color: var(--muted); font-family: var(--font); font-size: 13px; cursor: pointer; transition: border-color 120ms, color 120ms; }
 .ask-starters button:hover { border-color: var(--border-strong); color: var(--ink); }
 .ask-answer { margin-top: 10px; padding: 14px 16px; border-radius: 12px; border: 1px solid var(--border); background: var(--card); font-size: 14.5px; line-height: 1.6; color: var(--ink); }
 .ask-answer p { margin: 0 0 8px; max-width: 68ch; }

@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 
-const DEFAULT_STARTERS = ["Can I test before my app is approved?", "Which permissions need a review?", "What do I do if I'm rejected?"];
+const DEFAULT_STARTERS = ["Can I test before approval?", "Which permissions need review?", "What if I'm rejected?"];
 
 // Any question about this app's OAuth setup, answered from the guide on this page.
 export function AskBox({ slug, appName, access, starters = [] }: { slug: string; appName: string; access: string[] | null; starters?: string[] }) {
