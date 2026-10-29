@@ -69,7 +69,7 @@ export function GuideBody({ guide: g, initialIds, initialExisting = false, baseU
         </div>
 
         {g.composio?.managedApp === "yes" && u.waitDays.max > 0 && !existing && !composioRuledOut && (
-          <a className="btn secondary composio-btn" href={`https://docs.composio.dev/toolkits/${g.slug}`} target="_blank" rel="noreferrer" title={g.composio.note}>
+          <a className="btn secondary composio-btn" href={`https://docs.composio.dev/toolkits/${g.slug}`} target="_blank" rel="noreferrer" title={`Connect users today with Composio's own ${g.app.name} app, then switch to yours once it's approved.`}>
             <AppLogo name="Composio" website="composio.dev" size={16} />
             Can&apos;t wait? Connect on Composio
           </a>
