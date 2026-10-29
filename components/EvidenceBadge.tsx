@@ -1,5 +1,4 @@
-import type { Check, Checks, Evidence, Step } from "@/lib/guide-schema";
-import { linkCheck } from "@/lib/render-markdown";
+import type { Check, Checks, Evidence } from "@/lib/guide-schema";
 
 const WORD = { tested: "Tested by hand", sourced: "Source", uncertain: "Unconfirmed" } as const;
 
@@ -38,14 +37,23 @@ export function CheckMark({ check, date, label }: { check: Check; date: string; 
   );
 }
 
-export function StepCheck({ step, checks }: { step: Step; checks?: Checks | null }) {
-  const c = checks && linkCheck(checks, step.link?.url);
-  return c && checks ? <CheckMark check={c} date={checks.date} label="Link checked by the agent" /> : null;
-}
-
-// The sign-in endpoint check, or the published configuration check when that disagrees.
-export function EndpointCheck({ checks }: { checks?: Checks | null }) {
-  const c = checks?.discovery?.outcome === "differs" ? checks.discovery : (checks?.authorize ?? checks?.discovery);
-  if (!c || !checks || c.outcome === "inconclusive") return null;
-  return <CheckMark check={c} date={checks.date} label="Sign-in endpoint checked by the agent" />;
+// Everything the agent checked, as one mark beside the guide's title.
+export function GuideCheck({ checks }: { checks?: Checks | null }) {
+  if (!checks) return null;
+  const endpoint = checks.discovery?.outcome === "differs" ? checks.discovery : (checks.authorize ?? checks.discovery);
+  const all = [...checks.links, ...(endpoint ? [endpoint] : [])];
+  if (!all.length || all.every((c) => c.outcome === "inconclusive")) return null;
+  const n = (o: Check["outcome"]) => checks.links.filter((l) => l.outcome === o).length;
+  const links = [
+    n("ok") && `${n("ok")} load`,
+    n("sign_in") && `${n("sign_in")} load behind a sign-in`,
+    n("broken") && `${n("broken")} not found`,
+    n("inconclusive") && `${n("inconclusive")} unclear`,
+  ].filter(Boolean).join(", ");
+  const detail = [
+    checks.links.length > 0 && `${checks.links.length} step links: ${links}.`,
+    endpoint && endpoint.outcome !== "inconclusive" && `Sign-in endpoint: ${endpoint.detail}`,
+  ].filter(Boolean).join(" ");
+  const outcome = all.some((c) => c.outcome === "broken" || c.outcome === "differs") ? "broken" : "ok";
+  return <CheckMark check={{ kind: "link", url: "", outcome, detail }} date={checks.date} label="Checked by the agent" />;
 }

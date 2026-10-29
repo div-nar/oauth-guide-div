@@ -39,7 +39,7 @@ export function guideToMarkdown(g: Guide, baseUrl: string, sel?: Selection): str
   const v = c ? { ...g.verdict, difficulty: c.difficulty, handsOnMinutes: c.handsOnMinutes, waitDays: c.waitDays, summary: c.summary } : g.verdict;
   const steps = c ? c.steps : g.steps;
   const out: string[] = [
-    `# OAuth app setup: ${g.app.name}`,
+    `# ${g.oauth.supported ? "OAuth app" : "API access"} setup: ${g.app.name}`,
     "",
     `Canonical: ${baseUrl}/guides/${g.slug} | Last checked: ${g.lastChecked} | Source: ${g.generatedBy}`,
     "",

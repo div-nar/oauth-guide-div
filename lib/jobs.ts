@@ -83,7 +83,7 @@ export async function startResearch(
   if (running) return { kind: "job", job: { id: running.id, slug, query: running.query } };
 
   // Rate limit before any model call, including the name check.
-  const limit = await checkRateLimit(ip, new Date());
+  const limit = await checkRateLimit(new Date());
   if (!limit.allowed) return { kind: "rejected", reason: limit.reason!, status: 429 };
 
   if (!opts.exact && !opts.refresh) {
