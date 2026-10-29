@@ -39,7 +39,7 @@ export default async function GuidePage({ params, searchParams }: PageProps<"/gu
       <main className="page">
         <nav className="crumbs small" aria-label="Breadcrumb"><Link href="/">guides</Link> <span aria-hidden>/</span> <span>{name}</span></nav>
         <h1 className="research-title">No guide for {name} yet</h1>
-        <p className="lede">An agent can research it from the official developer docs now. It takes about two minutes, and you can keep browsing while it works.</p>
+        <p className="lede">An agent can research it now from the official developer docs. This takes approximately two minutes. You can go to other pages while it works.</p>
         <p><Link className="btn" href={`/generate?q=${encodeURIComponent(name)}`}>Research {name}</Link></p>
       </main>
     );

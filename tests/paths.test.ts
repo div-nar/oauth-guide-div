@@ -138,9 +138,9 @@ describe("selection-aware markdown and hand-off", () => {
     const g = getLibraryGuide("slack")!;
     const md = guideToMarkdown(g, "https://x.test", { ids: ["post"], existing: false });
     expect(md).toContain("Access: Post messages and replies");
-    expect(md).not.toContain("Submit to the Slack Marketplace");
+    expect(md).not.toContain("Send the app to the Slack Marketplace");
     expect(md).not.toContain("10 or more real customer workspaces");
-    expect(guideToMarkdown(g, "https://x.test")).toContain("Submit to the Slack Marketplace");
+    expect(guideToMarkdown(g, "https://x.test")).toContain("Send the app to the Slack Marketplace");
   });
 
   test("markdown for an existing app lists re-review triggers instead of setup steps", () => {

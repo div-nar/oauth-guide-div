@@ -67,7 +67,7 @@ export function GuideBody({ guide: g, initialIds, initialExisting = false, baseU
           )}
           {(picked.length < g.useCases.length || ex) && (
             <button type="button" className="add-access" onClick={() => setEditing(true)}>
-              {existing ? "Reusing your existing app. Change" : picked.length < g.useCases.length ? "+ Add more access" : "Already have an app?"}
+              {existing ? "You use your existing app. Change" : picked.length < g.useCases.length ? "+ Add more access" : "Already have an app?"}
             </button>
           )}
           {!g.oauth.supported && g.oauth.notes && (
@@ -77,7 +77,7 @@ export function GuideBody({ guide: g, initialIds, initialExisting = false, baseU
             </details>
           )}
           {parallelNote && !existing && (
-            <p className="small muted">Waiting shows the longest single review, assuming separate reviews can run at the same time. We have not confirmed that for every provider.</p>
+            <p className="small muted">The wait is the longest single review. We think that different reviews can occur at the same time. We did not confirm this for each provider.</p>
           )}
           {u.scopes.length > 0 && (
             <p className="small muted">Permissions: {u.scopes.map((s) => <code key={s}>{s}</code>)}</p>
@@ -85,7 +85,7 @@ export function GuideBody({ guide: g, initialIds, initialExisting = false, baseU
         </div>
 
         {g.composio?.managedApp === "yes" && u.waitDays.max > 0 && !existing && !composioRuledOut && (
-          <a className="btn secondary composio-btn" href={`https://docs.composio.dev/toolkits/${g.slug}`} target="_blank" rel="noreferrer" title={`Connect users today with Composio's own ${g.app.name} app, then switch to yours once it's approved.`}>
+          <a className="btn secondary composio-btn" href={`https://docs.composio.dev/toolkits/${g.slug}`} target="_blank" rel="noreferrer" title={`Connect users today through the Composio ${g.app.name} app. Change to your own app after it gets approval.`}>
             <AppLogo name="Composio" website="composio.dev" size={16} />
             Can&apos;t wait? Connect on Composio
           </a>

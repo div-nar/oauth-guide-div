@@ -4,10 +4,10 @@ import { appliesTo } from "@/lib/paths";
 
 // The general OAuth questions every guide answers the same way.
 const BASICS: [string, string][] = [
-  ["What is an OAuth app?", "Your app's registration with the provider. It sets the name users see on the 'Allow?' screen and what you may ask for."],
-  ["What are the client ID and secret?", "Your app's username and password. The ID is public. Keep the secret private, in your app's secret store, and add it there yourself."],
-  ["What is a redirect address (redirect URI)?", "Where the provider sends people after they click Allow: a callback address in your own app, which must match what you register with the provider."],
-  ["What are scopes?", "The specific permissions you ask for, such as 'read email'. More powerful scopes mean more review."],
+  ["What is an OAuth app?", "It is the record of your app at the provider. It sets the name that users see on the 'Allow?' screen. It also sets the permissions that you can ask for."],
+  ["What are the client ID and secret?", "They are the username and password of your app. The ID is public. Keep the secret private in the secret store of your app. Add it there yourself."],
+  ["What is a callback address (redirect URI)?", "It is the address in your app where the provider sends users after they click Allow. It must be the same as the address that you register with the provider."],
+  ["What are scopes?", "They are the permissions that you ask for, for example 'read email'. Stronger scopes need more review."],
 ];
 
 // "A Super Admin in each account" reads better as a list item without the article.
@@ -64,25 +64,7 @@ export function BlockedList({ guide: g, ids }: { guide: Guide; ids: string[] | n
   );
 }
 
-function Chevron() {
-  return (
-    <svg className="faq-chevron" width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden>
-      <path d="M4 6l4 4 4-4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
-    </svg>
-  );
-}
-
-// Questions every developer asks, whatever the app. Answers hold for any provider;
-// app-specific detail comes from the ask box above them.
-const GENERAL: [string, string][] = [
-  ["Can my agent create the app for me?", "Partly. Steps tagged Agent can be done in your signed-in browser or terminal. Signing in, accepting terms, verifying a domain and handling the client secret stay with you, and the agent stops and asks at each of those."],
-  ["Should I use one OAuth app for development and production?", "Most teams use two: one for local testing with a localhost callback, and one for production with an HTTPS callback. It keeps test users and real users apart, and a review only needs the production app."],
-  ["What if I need more permissions later?", "You can add scopes later, but people who already connected must approve again, and providers that review apps usually review the new scopes too. Ask for what you need now and plan larger changes ahead."],
-  ["Where should the client secret live?", "In your app's secret store or environment variables on the server, never in front-end code, a repository or a chat. If it leaks, rotate it in the provider's dashboard."],
-];
-
-// The ask box first (answered from this guide; this app's what-ifs are its starter
-// questions), then the general questions.
+// The ask box, answered from this guide; this app's what-ifs are its starter questions.
 export function FaqList({ guide: g, ids }: { guide: Guide; ids: string[] | null }) {
   const keep = (x: { useCaseIds?: string[] | null }) => !ids || appliesTo(x.useCaseIds, ids);
   const starters = g.forks.filter(keep).slice(0, 3).map((f) => `What if ${f.condition.charAt(0).toLowerCase() + f.condition.slice(1)}?`);
@@ -90,14 +72,6 @@ export function FaqList({ guide: g, ids }: { guide: Guide; ids: string[] | null 
     <section className="block">
       <h2 className="label">Questions</h2>
       <AskBox slug={g.slug} appName={g.app.name} access={ids} starters={starters} />
-      <div className="faq faq-list">
-        {GENERAL.map(([q, a]) => (
-          <details key={q}>
-            <summary>{q}<Chevron /></summary>
-            <div className="faq-body"><p>{a}</p></div>
-          </details>
-        ))}
-      </div>
     </section>
   );
 }

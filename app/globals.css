@@ -165,7 +165,6 @@ section.block, details.block { margin-top: 48px; }
 .step-body { padding: 6px 0 4px; }
 .step-body p { margin: 4px 0; color: var(--muted); overflow-wrap: anywhere; }
 .step-body .why { font-size: 14px; color: var(--faint); }
-.step-body .tech-text { font-size: 13.5px; padding: 8px 10px; background: var(--card); border: 1px solid var(--border); border-radius: 6px; }
 .owner-chip { font-family: var(--font-mono), monospace; font-size: 11.5px; color: var(--c); background: var(--cw); padding: 2px 8px; border-radius: 4px; }
 .step-link { display: inline-grid; place-items: center; width: 30px; height: 26px; border-radius: 6px; border: 1px solid var(--c); color: var(--c); }
 .step-link:hover { background: var(--cw); }
@@ -196,7 +195,14 @@ html { overflow-anchor: none; overflow-x: clip; }
 .step-card-title { font-size: 20px; font-weight: 700; letter-spacing: -0.01em; margin: 16px 0 6px; }
 .step-card p { margin: 6px 0; color: var(--muted); max-width: 64ch; font-size: 15.5px; }
 .step-card .why { font-size: 14px; color: var(--faint); }
-.step-card .tech-text { font-family: var(--font-mono), monospace; font-size: 12.5px; line-height: 1.6; color: var(--muted); padding: 10px 12px; margin: 14px 0 0; background: rgba(255, 255, 255, 0.02); border: 1px solid var(--border); border-radius: 8px; }
+details.tech { margin: 14px 0 0; }
+details.tech summary { cursor: pointer; list-style: none; display: inline-flex; align-items: center; gap: 6px; font-size: 13.5px; color: var(--faint); }
+details.tech summary::-webkit-details-marker { display: none; }
+details.tech summary::before { content: "\25B8"; font-size: 11px; transition: transform 120ms; }
+details.tech[open] summary::before { transform: rotate(90deg); }
+details.tech summary:hover { color: var(--muted); }
+details.tech .tech-text { font-size: 14px; line-height: 1.65; color: var(--muted); padding: 10px 12px; margin: 8px 0 0; max-width: 64ch; background: rgba(255, 255, 255, 0.02); border: 1px solid var(--border); border-radius: 8px; }
+details.tech code { font-family: var(--font-mono), monospace; font-size: 12.5px; padding: 1px 4px; border-radius: 4px; background: rgba(255, 255, 255, 0.06); overflow-wrap: anywhere; }
 .step-card .ev { margin-top: 16px; padding-top: 12px; border-top: 1px solid var(--border); }
 .step-cta { display: inline-flex; gap: 8px; align-items: center; margin: 16px 0 2px; padding: 8px 14px; border-radius: 8px; background: var(--cw); border: 1px solid color-mix(in srgb, var(--c) 45%, transparent); color: var(--c); font-weight: 600; font-size: 14px; text-decoration: none; transition: background 120ms, border-color 120ms; }
 .step-cta svg { opacity: 0.8; }
@@ -447,7 +453,6 @@ html { overflow-anchor: none; overflow-x: clip; }
 
 /* ask anything about this app's setup, answered from the guide; same material as the copy pill */
 .ask { margin-top: 4px; }
-.faq-list { margin-top: 18px; border-top: 1px solid var(--border); }
 .ask-form { display: flex; align-items: center; gap: 10px; padding: 6px 6px 6px 12px; border-radius: 12px; border: 1px solid var(--border-strong); background: linear-gradient(180deg, #2a2a2a 0%, #141414 55%, #0d0d0d 100%); box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08), 0 1px 2px rgba(0, 0, 0, 0.6); transition: border-color 120ms; }
 .ask-form:focus-within { border-color: #555; }
 .ask-spark { flex: none; color: var(--muted); }

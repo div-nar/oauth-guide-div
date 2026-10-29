@@ -3,13 +3,13 @@
   "app": {
     "name": "Gmail",
     "website": "https://mail.google.com",
-    "canDo": "Read, sort and label email, draft replies and send messages from the inbox people connect."
+    "canDo": "Read, sort and label email, write draft replies and send messages from the inboxes that users connect."
   },
   "lastChecked": "2026-10-28",
   "generatedBy": "library",
   "oauth": {
     "supported": true,
-    "notes": "Set up in Google Cloud. The same steps apply to other Google APIs, but Gmail's reading permissions are among the most tightly controlled."
+    "notes": "You set up the app in Google Cloud. Other Google APIs use the same steps. But Google controls the Gmail permissions to read email more strictly than most."
   },
   "verdict": {
     "difficulty": "hard",
@@ -21,27 +21,27 @@
       "min": 14,
       "max": 60
     },
-    "summary": "Creating the app takes minutes, but reading or changing email counts as 'restricted' access. Google must verify your app, and if your servers handle that email, an approved security assessor must audit you every year. Expect weeks."
+    "summary": "You can make the app in minutes. But Google calls access to read or change email 'restricted'. Google must verify your app. If your servers get that email, an approved assessor must audit you each year. This takes weeks."
   },
   "whoYouNeed": [
     {
-      "role": "Someone who can edit DNS for your company domain",
-      "why": "Google requires proof that you own the domain on your homepage and privacy policy.",
+      "role": "A person who can change the DNS of your company domain",
+      "why": "Google must see proof that you own the domain of your home page and privacy policy.",
       "useCaseIds": [
         "read",
         "send"
       ]
     },
     {
-      "role": "Someone who can approve spend",
-      "why": "The yearly security assessment is done by a third-party assessor. Google does not publish a price.",
+      "role": "A person who can approve costs",
+      "why": "A third-party assessor does the security assessment each year. Google does not publish the cost.",
       "useCaseIds": [
         "read"
       ]
     },
     {
       "role": "A person to record a demo video",
-      "why": "Google wants a video of the sign-in flow and of each restricted permission in use.",
+      "why": "Google wants a video of the sign-in steps. The video must also show how you use each restricted permission.",
       "useCaseIds": [
         "read",
         "send"
@@ -53,8 +53,8 @@
       "id": "sign-in",
       "owner": "human",
       "title": "Sign in to Google Cloud and create a project",
-      "plain": "Log in to console.cloud.google.com with a company account and create a project for your app.",
-      "whyHuman": "Signing in and accepting Google Cloud's terms are yours to do.",
+      "plain": "Sign in to console.cloud.google.com with a company account. Create a project for your app.",
+      "whyHuman": "You must sign in yourself. You must also accept the Google Cloud terms yourself.",
       "minutes": {
         "min": 3,
         "max": 10
@@ -78,7 +78,7 @@
       "id": "enable-api",
       "owner": "agent",
       "title": "Turn on the Gmail API",
-      "plain": "In the project, open the API Library, search for Gmail API and enable it.",
+      "plain": "In the project, open the API Library. Find the Gmail API and enable it.",
       "minutes": {
         "min": 1,
         "max": 3
@@ -102,8 +102,8 @@
       "id": "consent-screen",
       "owner": "agent",
       "title": "Set up the consent screen",
-      "plain": "This is the 'Allow?' page your users will see. Enter your app's name, a support email, and choose 'External' so people outside your company can connect.",
-      "technical": "Google Auth Platform > Get started. Audience: External (any Google user) or Internal (your Workspace org only). Add your homepage, privacy policy and authorized domains.",
+      "plain": "Your users see this 'Allow?' page. Enter the name of your app and a support email. Select 'External', so that people outside your company can connect.",
+      "technical": "Go to Google Auth Platform > Get started. For Audience, select External (any Google user) or Internal (only your Workspace organisation). Add your home page, privacy policy and authorized domains.",
       "minutes": {
         "min": 5,
         "max": 15
@@ -127,8 +127,8 @@
       "id": "client",
       "owner": "agent",
       "title": "Create the OAuth client",
-      "plain": "Create a 'Web application' client and add your app's callback address as an authorized redirect URI.",
-      "technical": "Clients > Create client > Web application. Authorized redirect URIs: your callback URL, which must exactly match the redirect_uri your code sends.",
+      "plain": "Create a 'Web application' client. Add the callback address of your app as an authorized redirect URI.",
+      "technical": "Go to Clients > Create client > Web application. In Authorized redirect URIs, add your callback address. It must be exactly the same as the `redirect_uri` that your code sends.",
       "minutes": {
         "min": 2,
         "max": 5
@@ -155,9 +155,9 @@
     {
       "id": "secret",
       "owner": "human",
-      "title": "Store the client ID and secret in your app",
-      "plain": "Create a client secret and store it, with the client ID, in your app's secret store or environment variables.",
-      "whyHuman": "The secret is a password for your app. Pasting it yourself keeps it out of any agent's chat history.",
+      "title": "Keep the client ID and secret in your app",
+      "plain": "Create a client secret. Keep the secret and the client ID in the secret store or environment variables of your app.",
+      "whyHuman": "The secret is the password for your app. Paste it yourself. Then it does not go into the chat history of an agent.",
       "minutes": {
         "min": 1,
         "max": 3
@@ -181,7 +181,7 @@
       "id": "test-users",
       "owner": "agent",
       "title": "Add test users and try it",
-      "plain": "While the app is in 'Testing', only people you list can connect, and they see a warning screen. Add your team's emails and try a connection.",
+      "plain": "When the app is in 'Testing', only the people on your list can connect. They see a warning screen. Add the email addresses of your team. Then try a connection.",
       "minutes": {
         "min": 2,
         "max": 5
@@ -205,8 +205,8 @@
       "id": "domain",
       "owner": "human",
       "title": "Prove you own your domain",
-      "plain": "Verify your company domain in Google Search Console, usually by adding a DNS record.",
-      "whyHuman": "Needs access to your domain's DNS settings.",
+      "plain": "Verify your company domain in Google Search Console. Usually, you add a DNS record.",
+      "whyHuman": "This step needs access to the DNS settings of your domain.",
       "minutes": {
         "min": 10,
         "max": 30
@@ -230,8 +230,8 @@
       "id": "policy-video",
       "owner": "human",
       "title": "Publish a privacy policy and record a demo video",
-      "plain": "Your privacy policy must live on the same domain as your homepage and explain how you use Google data. Record a video showing the sign-in flow and how you use each restricted permission, and upload it to YouTube as Unlisted.",
-      "whyHuman": "The policy is a legal commitment, and the video needs a real walkthrough. An agent can draft both for you to review.",
+      "plain": "Put your privacy policy on the same domain as your home page. The policy must tell how you use Google data. Record a video of the sign-in steps. The video must show how you use each restricted permission. Upload it to YouTube as Unlisted.",
+      "whyHuman": "The policy is a legal promise. The video must show your real app. An agent can write a draft of both. You then examine them.",
       "minutes": {
         "min": 45,
         "max": 120
@@ -255,7 +255,7 @@
       "id": "submit",
       "owner": "agent",
       "title": "Submit for verification",
-      "plain": "Fill in the verification form: why you need each restricted permission and why a narrower one won't do. Attach the video link.",
+      "plain": "Fill in the verification form. For each restricted permission, tell why you need it. Tell why a smaller permission does not work. Attach the link to the video.",
       "minutes": {
         "min": 15,
         "max": 30
@@ -279,7 +279,7 @@
       "id": "review",
       "owner": "waiting",
       "title": "Google reviews your app",
-      "plain": "Google checks your branding, then the restricted permissions. Branding takes 2 to 3 business days. The restricted review 'can potentially take several weeks'.",
+      "plain": "First, Google examines your branding. This takes 2 to 3 business days. Then Google examines the restricted permissions. Google says that this 'can potentially take several weeks'.",
       "waitDays": {
         "min": 14,
         "max": 42
@@ -292,15 +292,15 @@
             "title": "Google: Restricted scope verification"
           }
         ],
-        "note": "Google says 'several weeks'. The 14 to 42 day range is our reading of that, not a Google number."
+        "note": "Google says 'several weeks'. The range of 14 to 42 days is our estimate. It is not a Google number."
       }
     },
     {
       "id": "casa",
       "owner": "waiting",
-      "title": "Security assessment (yearly)",
-      "plain": "Apps that reach restricted Gmail data through a server, not just the user's browser, need an assessment by a Google-approved assessor. If your backend fetches email for your agent, this applies. Google's Trust and Safety team contacts you when it's time, and you repeat it every 12 months.",
-      "whyHuman": "You choose and pay an assessor, and answer their questions.",
+      "title": "Get a security assessment (each year)",
+      "plain": "Some apps get restricted Gmail data through a server, not only in the browser of the user. These apps need an assessment by an assessor that Google approves. If your server gets email for your agent, this applies to you. The Google Trust and Safety team tells you when to start. You do the assessment again each 12 months.",
+      "whyHuman": "You select and pay an assessor. You answer the questions of the assessor.",
       "waitDays": {
         "min": 7,
         "max": 30
@@ -317,14 +317,14 @@
             "title": "Google: Restricted scope verification"
           }
         ],
-        "note": "Google gives no price or duration; 7 to 30 days is our estimate."
+        "note": "Google gives no cost or duration. The range of 7 to 30 days is our estimate."
       }
     }
   ],
   "forks": [
     {
       "condition": "Your agent only sends email (gmail.send)",
-      "effect": "Sending is 'sensitive', not 'restricted'. You still need Google's app verification, but no security assessment. This is much faster.",
+      "effect": "Google calls permission to send 'sensitive', not 'restricted'. Google must still verify your app. But you do not need a security assessment. This is much faster.",
       "evidence": {
         "level": "sourced",
         "sources": [
@@ -337,7 +337,7 @@
     },
     {
       "condition": "Only people inside your own Google Workspace will connect",
-      "effect": "Choose 'Internal' on the consent screen. No verification is needed.",
+      "effect": "Select 'Internal' on the consent screen. Google does not verify the app.",
       "evidence": {
         "level": "sourced",
         "sources": [
@@ -349,8 +349,8 @@
       }
     },
     {
-      "condition": "You stay unverified (pilot with a few users)",
-      "effect": "Users see an 'unverified app' warning, and the app is capped at 100 new users in total. Sign-ins in Testing mode also expire sooner.",
+      "condition": "You do not verify the app (a test with a small number of users)",
+      "effect": "Users see an 'unverified app' warning. A maximum of 100 new users can connect in total. In Testing mode, sign-ins also expire sooner.",
       "evidence": {
         "level": "sourced",
         "sources": [
@@ -363,15 +363,15 @@
             "title": "Google: Restricted scope verification"
           }
         ],
-        "note": "Google says Testing-mode refresh tokens have limited lifetimes. The commonly quoted 7 days was not re-checked."
+        "note": "Google says that refresh tokens in Testing mode have a limited life. We did not check the usual value of 7 days again."
       }
     }
   ],
   "nuances": [
     {
-      "title": "Ask for the narrowest Gmail permission",
-      "detail": "gmail.readonly, gmail.modify, gmail.compose, gmail.metadata and full mail access are all restricted. gmail.send is only sensitive. Google asks you to justify why a narrower permission won't work.",
-      "ifStuck": "If your agent only drafts or sends, drop the reading permissions to skip the security assessment.",
+      "title": "Ask for the smallest Gmail permission",
+      "detail": "Google calls these permissions restricted: gmail.readonly, gmail.modify, gmail.compose, gmail.metadata and full mail access. gmail.send is only sensitive. Google asks you to tell why a smaller permission does not work.",
+      "ifStuck": "If your agent only writes drafts or sends email, remove the permissions to read. Then you do not need the security assessment.",
       "evidence": {
         "level": "sourced",
         "sources": [
@@ -383,9 +383,9 @@
       }
     },
     {
-      "title": "Re-verification every year",
-      "detail": "Restricted-scope apps must be reassessed at least every 12 months, and adding a new restricted permission can trigger a new assessment.",
-      "ifStuck": "Put the renewal in the calendar the day your approval letter arrives.",
+      "title": "Verification again each year",
+      "detail": "Apps with restricted permissions must get a new assessment each 12 months. If you add a new restricted permission, you can need a new assessment.",
+      "ifStuck": "When your approval letter comes, put the renewal date in your calendar.",
       "evidence": {
         "level": "sourced",
         "sources": [
@@ -400,9 +400,9 @@
       ]
     },
     {
-      "title": "Unverified while you wait",
-      "detail": "Until approval, you are limited to listed test users or 100 new users behind a warning screen.",
-      "ifStuck": "Start verification early, and run pilots with listed test users while you wait.",
+      "title": "Your app is unverified during the review",
+      "detail": "Until Google approves the app, only test users on your list can connect. Or, a maximum of 100 new users can connect after a warning screen.",
+      "ifStuck": "Start the verification early. During the wait, do pilots with the test users on your list.",
       "evidence": {
         "level": "sourced",
         "sources": [
@@ -421,7 +421,7 @@
   "config": {
     "consoleUrl": "https://console.cloud.google.com/auth/overview",
     "authorizeUrl": "https://accounts.google.com/o/oauth2/v2/auth",
-    "redirectUriNote": "Your app's callback URL, added as an authorized redirect URI on the OAuth client.",
+    "redirectUriNote": "Add the callback address of your app as an authorized redirect URI on the OAuth client.",
     "scopes": [
       {
         "name": "https://www.googleapis.com/auth/gmail.readonly",
@@ -430,7 +430,7 @@
       },
       {
         "name": "https://www.googleapis.com/auth/gmail.modify",
-        "plain": "Read, change and delete email (not permanent deletion).",
+        "plain": "Read, change and delete email. It cannot delete email permanently.",
         "sensitivity": "restricted"
       },
       {
@@ -458,7 +458,7 @@
         "min": 14,
         "max": 60
       },
-      "summary": "Restricted access: Google verification plus a yearly third-party security assessment.",
+      "summary": "Restricted access. Google verifies the app. A third party also does a security assessment each year.",
       "scopes": [
         "gmail.readonly",
         "gmail.modify",
@@ -491,7 +491,7 @@
         "min": 3,
         "max": 21
       },
-      "summary": "gmail.send is sensitive, not restricted: Google verification but no security assessment.",
+      "summary": "gmail.send is sensitive, not restricted. Google verifies the app. You do not need a security assessment.",
       "scopes": [
         "gmail.send"
       ],
@@ -503,7 +503,7 @@
             "title": "Gmail API scopes"
           }
         ],
-        "note": "The scope class is sourced. Google gives no duration for sensitive-scope verification, so the wait is our estimate."
+        "note": "Google gives the permission class. Google gives no duration for this verification. The wait is our estimate."
       },
       "stepIds": [
         "sign-in",
@@ -530,7 +530,7 @@
         "min": 0,
         "max": 0
       },
-      "summary": "Mark the app Internal. No verification needed.",
+      "summary": "Set the app to Internal. Google does not verify the app.",
       "scopes": [
         "gmail.readonly"
       ],
@@ -555,7 +555,7 @@
   ],
   "composio": {
     "managedApp": "yes",
-    "note": "You can connect users today with Composio's own Gmail app while yours is set up or in review. Users see 'Composio' on the consent screen, rate limits are shared with other Composio customers, and polling triggers run at most every 15 minutes. Switch to your own app when it is ready.",
+    "note": "Users can connect today through the Composio Gmail app. Use it while you set up your own app or wait for the review. Users see 'Composio' on the approval screen. Other Composio customers share the same rate limits. Polling triggers run a maximum of one time in 15 minutes. Change to your own app when it is ready.",
     "evidence": {
       "level": "sourced",
       "sources": [
@@ -575,7 +575,7 @@
           "read",
           "send"
         ],
-        "note": "Composio's Gmail docs do not list which permissions its own app includes, and say Google blocks permissions it has not verified for that app. Connect a test account through Composio and check that your agent's actions work before relying on it.",
+        "note": "The Composio Gmail docs do not list the permissions of the Composio app. The docs say that Google blocks permissions that it did not verify for that app. Connect a test account through Composio. Make sure that the actions of your agent work before you use it.",
         "evidence": {
           "level": "uncertain",
           "sources": [
@@ -584,18 +584,18 @@
               "title": "Composio: Gmail toolkit"
             }
           ],
-          "note": "The toolkit page confirms a managed app but not its permissions."
+          "note": "The toolkit page shows that Composio has its own app. It does not show the permissions of that app."
         }
       }
     ]
   },
   "existingApp": {
-    "summary": "Add your agent's callback address to your existing OAuth client, or create a second client in the same project. Either way you keep the verification your project already has, as long as the permissions stay the same.",
+    "summary": "Add the callback address of your agent to your existing OAuth client. Or, create a second client in the same project. With the two methods, you keep the verification of your project. This is true only if you do not change the permissions.",
     "steps": [],
     "reReviewTriggers": [
       {
-        "trigger": "You add a restricted permission you were not verified for",
-        "effect": "Google re-verifies the app, and a new restricted scope can require a new security assessment.",
+        "trigger": "You add a restricted permission that Google did not verify",
+        "effect": "Google verifies the app again. A new restricted permission can also need a new security assessment.",
         "evidence": {
           "level": "sourced",
           "sources": [
@@ -607,8 +607,8 @@
         }
       },
       {
-        "trigger": "You change the app name, logo or domains users see",
-        "effect": "Brand verification runs again, typically 2 to 3 business days.",
+        "trigger": "You change the app name, logo or domains that users see",
+        "effect": "Google does the brand verification again. This usually takes 2 to 3 business days.",
         "evidence": {
           "level": "sourced",
           "sources": [
@@ -620,21 +620,21 @@
         }
       },
       {
-        "trigger": "A second client in the same project",
-        "effect": "It sits under the same consent screen, so it should not need its own verification.",
+        "trigger": "You add a second client in the same project",
+        "effect": "The second client uses the same consent screen. Thus, it probably does not need its own verification.",
         "evidence": {
           "level": "uncertain",
           "sources": [],
-          "note": "Our reading of how verification attaches to the project's consent screen; not stated outright on the page."
+          "note": "This is our conclusion about how verification applies to the consent screen of the project. The page does not say it directly."
         }
       }
     ]
   },
   "blockers": [
     {
-      "symptom": "Google's automated brand check lists problems",
-      "cause": "Your home page must be public (not behind a login), describe the app and link to the privacy policy. The privacy policy must be on the same domain and explain how you use Google data. Your domain must be verified in Google Search Console.",
-      "fix": "Fix each listed issue and run verification again, or request a manual review (usually 2 to 3 business days). Cancel verification before changing branding, and publish within 7 days of a passing result.",
+      "symptom": "The automatic brand check of Google shows problems",
+      "cause": "Your home page must be public, with no login. It must tell what the app does and link to the privacy policy. The privacy policy must be on the same domain. It must tell how you use Google data. You must verify your domain in Google Search Console.",
+      "fix": "Correct each problem on the list. Then start the verification again. Or, request a manual review. This usually takes 2 to 3 business days. Before you change your branding, cancel the verification. After a pass, publish the app in 7 days or less.",
       "escalate": {
         "url": "https://developers.google.com/identity/protocols/oauth2/production-readiness/brand-verification",
         "label": "Google: brand verification"
@@ -651,9 +651,9 @@
       }
     },
     {
-      "symptom": "Your review seems stuck",
-      "cause": "Google's Trust & Safety team may email you for more information, and the review pauses until you answer.",
-      "fix": "Check the developer contact and support email addresses on your consent screen, including spam. Check the Verification Center for a paused status, and reply on the same email thread.",
+      "symptom": "Your review does not move",
+      "cause": "The Google Trust & Safety team can send you an email to get more data. The review stops until you reply.",
+      "fix": "Examine the inbox of the developer contact and support addresses on your consent screen. Examine the spam folder too. In the Verification Center, look for a paused status. Reply in the same email thread.",
       "escalate": {
         "url": "https://developers.google.com/identity/protocols/oauth2/production-readiness/sensitive-scope-verification",
         "label": "Google: verification and Trust & Safety follow-up"
@@ -677,9 +677,9 @@
       }
     },
     {
-      "symptom": "Verification is refused because of a policy flag",
-      "cause": "A project on your account was flagged for a Terms of Service violation, or your domain is marked dangerous in Google Search.",
-      "fix": "Resolve the flagged project and appeal in the Google Cloud console, or fix the Search Console issues and request a security review. Resubmit only after that review finishes.",
+      "symptom": "Google refuses verification because of a policy flag",
+      "cause": "Google flagged a project on your account for a Terms of Service violation. Or, Google Search marks your domain as dangerous.",
+      "fix": "Correct the flagged project and send an appeal in the Google Cloud console. Or, correct the problems in Search Console and request a security review. Send the app again only after that review is complete.",
       "escalate": {
         "url": "https://support.google.com/cloud/answer/13804782",
         "label": "Google Cloud: common verification issues"

@@ -98,7 +98,7 @@ export function AccessModal({
         </header>
 
         <h3 className="picker-q">
-          What access do you need? <span className="hint">Pick all that apply</span>
+          What access do you need? <span className="hint">Select all that apply</span>
           {options.length > 1 && (
             <button type="button" className="select-all" onClick={() => setAccess(allPicked ? [options[0].id] : options.map((o) => o.id))}>
               {allPicked ? "Clear" : "Select all"}
@@ -122,7 +122,7 @@ export function AccessModal({
             <div className="seg" role="radiogroup">
               {[false, true].map((v) => (
                 <button key={String(v)} type="button" role="radio" aria-checked={existing === v} onClick={() => setExisting(v)}>
-                  {v ? "Yes, reuse it" : "No, starting fresh"}
+                  {v ? "Yes, reuse it" : "No, make a new app"}
                 </button>
               ))}
             </div>

@@ -90,7 +90,7 @@ export async function startResearch(
       [slug],
     );
     const e = miss?.events.find((x) => x.notFound);
-    if (e) return { kind: "rejected", reason: e.message ?? "We couldn't find that app.", status: 404 };
+    if (e) return { kind: "rejected", reason: e.message ?? "We did not find that app.", status: 404 };
   }
 
   const [running] = await query<{ id: number; query: string }>(
