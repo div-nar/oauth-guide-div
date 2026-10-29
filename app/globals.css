@@ -450,17 +450,21 @@ html { overflow-anchor: none; overflow-x: clip; }
 /* the step card is dragged and sprung by script; vertical moves stay with the page */
 .step-card { touch-action: pan-y; will-change: transform; }
 
-/* ask anything about this app's setup, answered from the guide */
+/* ask anything about this app's setup, answered from the guide; same material as the copy pill */
 .ask { margin-top: 28px; }
-.ask-form { display: flex; gap: 8px; }
-.ask-input { flex: 1; min-width: 0; padding: 10px 12px; border-radius: 8px; border: 1px solid var(--border-strong); background: var(--card); color: var(--ink); font: inherit; font-size: 14.5px; }
-.ask-input:focus { outline: none; border-color: var(--muted); }
-.ask-go { padding: 0 16px; border-radius: 8px; border: 0; background: var(--ink); color: var(--bg); font: inherit; font-size: 14px; font-weight: 600; cursor: pointer; }
-.ask-go:disabled { opacity: 0.4; cursor: default; }
+.ask-form { display: flex; align-items: center; gap: 10px; padding: 6px 6px 6px 12px; border-radius: 12px; border: 1px solid var(--border-strong); background: linear-gradient(180deg, #2a2a2a 0%, #141414 55%, #0d0d0d 100%); box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08), 0 1px 2px rgba(0, 0, 0, 0.6); transition: border-color 120ms; }
+.ask-form:focus-within { border-color: #555; }
+.ask-spark { flex: none; color: var(--muted); }
+.ask-input { flex: 1; min-width: 0; padding: 7px 0; border: 0; background: none; color: var(--ink); font-family: var(--font-mono), monospace; font-size: 13px; }
+.ask-input::placeholder { color: var(--faint); }
+.ask-input:focus { outline: none; }
+.ask-go { flex: none; display: inline-grid; place-items: center; width: 32px; height: 32px; padding: 0; border-radius: 8px; border: 0; background: var(--ink); color: var(--bg); cursor: pointer; transition: background 120ms, color 120ms, opacity 120ms; }
+.ask-go:disabled { background: rgba(255, 255, 255, 0.06); color: var(--faint); cursor: default; }
+.ask-go .pulse { background: var(--muted); }
 .ask-starters { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
-.ask-starters button { padding: 5px 10px; border-radius: 99px; border: 1px solid var(--border); background: none; color: var(--muted); font: inherit; font-size: 13px; cursor: pointer; }
+.ask-starters button { padding: 5px 11px; border-radius: 99px; border: 1px solid var(--border); background: rgba(255, 255, 255, 0.02); color: var(--muted); font-family: var(--font-mono), monospace; font-size: 12px; cursor: pointer; transition: border-color 120ms, color 120ms; }
 .ask-starters button:hover { border-color: var(--border-strong); color: var(--ink); }
-.ask-answer { margin-top: 12px; padding: 14px 16px; border-radius: 10px; border: 1px solid var(--border); background: var(--card); font-size: 14.5px; line-height: 1.6; color: var(--ink); }
+.ask-answer { margin-top: 10px; padding: 14px 16px; border-radius: 12px; border: 1px solid var(--border); background: var(--card); font-size: 14.5px; line-height: 1.6; color: var(--ink); }
 .ask-answer p { margin: 0 0 8px; max-width: 68ch; }
 .ask-q { color: var(--muted); font-size: 13.5px; }
 .ask-wait { display: flex; align-items: center; gap: 8px; color: var(--muted); }

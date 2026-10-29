@@ -37,15 +37,27 @@ export function AskBox({ slug, appName, access }: { slug: string; appName: strin
           void ask(question);
         }}
       >
+        <svg className="ask-spark" width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden>
+          <path d="M12 3l1.8 4.9L19 9.7l-5.2 1.8L12 16.4l-1.8-4.9L5 9.7l5.2-1.8z" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round" />
+          <path d="M18.5 15.5l.7 1.8 1.8.7-1.8.7-.7 1.8-.7-1.8-1.8-.7 1.8-.7z" fill="currentColor" />
+        </svg>
         <input
           className="ask-input"
           value={question}
           onChange={(e) => setQuestion(e.target.value)}
-          placeholder={`Anything about getting a ${appName} OAuth app approved…`}
+          placeholder={`Ask anything about ${appName}'s OAuth setup`}
           maxLength={300}
           aria-label={`Ask a question about ${appName}'s OAuth setup`}
         />
-        <button type="submit" className="ask-go" disabled={busy || question.trim().length < 3}>{busy ? "Asking…" : "Ask"}</button>
+        <button type="submit" className="ask-go" disabled={busy || question.trim().length < 3} aria-label={busy ? "Asking" : "Ask"}>
+          {busy ? (
+            <span className="pulse" aria-hidden />
+          ) : (
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden>
+              <path d="M12 19V5M6 11l6-6 6 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+          )}
+        </button>
       </form>
       {!state && (
         <div className="ask-starters">
