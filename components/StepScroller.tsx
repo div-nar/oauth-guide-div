@@ -26,22 +26,118 @@ function Arrow({ left }: { left?: boolean }) {
   );
 }
 
-// The path strip doubles as a progress bar above one step card. Move with the
-// arrow keys while the steps are on screen, the arrow buttons, the dots, or a swipe.
+// Critically damped spring (Apple's default: damping 1, response ~0.38s). Starts from
+// wherever the card is and whatever speed it has, so any move can interrupt another.
+const OMEGA = (2 * Math.PI) / 0.38;
+// Where a flick would come to rest (Apple's projection, scroll-like deceleration).
+const project = (v: number, rate = 0.998) => ((v / 1000) * rate) / (1 - rate);
+// Past the first or last step the card resists more the further it is pulled.
+const rubberband = (x: number, size: number, c = 0.55) => (x * size * c) / (size + c * Math.abs(x));
+
+// The path strip doubles as a progress bar above one step card. Drag or flick the card,
+// scroll over it, or use the arrow keys, the arrow buttons or the dots.
 export function StepScroller({ steps }: { steps: Step[] }) {
   const n = steps.length;
   const [active, setActive] = useState(0);
-  const [dir, setDir] = useState<1 | -1>(1);
   const root = useRef<HTMLDivElement>(null);
+  const card = useRef<HTMLElement>(null);
   const onScreen = useRef(false);
-  const touchX = useRef<number | null>(null);
   const activeNow = useRef(0);
   useEffect(() => { activeNow.current = active; }, [active]);
 
-  const go = (i: number) => {
+  // The card's live offset and speed, written straight to the DOM every frame.
+  const pos = useRef({ x: 0, v: 0, raf: 0 });
+  const reduce = () => window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const paint = (x: number) => {
+    const el = card.current;
+    if (!el) return;
+    pos.current.x = x;
+    el.style.transform = x ? `translate3d(${x}px, 0, 0)` : "";
+    el.style.opacity = x ? String(1 - Math.min(Math.abs(x) / (el.offsetWidth || 1), 1) * 0.5) : "";
+  };
+  const settle = (v0: number) => {
+    cancelAnimationFrame(pos.current.raf);
+    if (reduce()) { pos.current.v = 0; paint(0); return; }
+    const x0 = pos.current.x;
+    const b = v0 + OMEGA * x0;
+    const t0 = performance.now();
+    const frame = (now: number) => {
+      const t = (now - t0) / 1000;
+      const e = Math.exp(-OMEGA * t);
+      const x = (x0 + b * t) * e;
+      const v = (b - OMEGA * (x0 + b * t)) * e;
+      pos.current.v = v;
+      if (Math.abs(x) < 0.5 && Math.abs(v) < 5) { pos.current.v = 0; paint(0); return; }
+      paint(x);
+      pos.current.raf = requestAnimationFrame(frame);
+    };
+    pos.current.raf = requestAnimationFrame(frame);
+  };
+
+  // Every way of moving lands here. The new step's card enters from the side it is
+  // coming from, carrying the gesture's speed (0 for clicks and keys).
+  const go = (i: number, v0 = 0, fromDrag = false) => {
+    const from = activeNow.current;
     const k = Math.max(0, Math.min(n - 1, i));
-    setDir(k >= active ? 1 : -1);
+    if (k === from) { settle(v0); return; }
+    const dir = k > from ? 1 : -1;
+    const w = card.current?.offsetWidth ?? 600;
+    const carry = Math.sign(pos.current.x) === dir ? pos.current.x : 0;
+    paint(fromDrag ? dir * Math.min(w * 0.3, 140) : Math.max(-140, Math.min(140, carry + dir * 56)));
+    activeNow.current = k;
     setActive(k);
+    settle(v0);
+  };
+  const goRef = useRef(go);
+  useEffect(() => { goRef.current = go; });
+  useEffect(() => () => cancelAnimationFrame(pos.current.raf), []);
+
+  // Drag with a finger or pen: the card tracks 1:1 once the move is clearly sideways;
+  // vertical moves are left to the page (touch-action: pan-y).
+  const drag = useRef<{ id: number; x0: number; y0: number; base: number; on: boolean; moved: boolean; hist: { x: number; t: number }[] } | null>(null);
+  const onPointerDown = (e: React.PointerEvent) => {
+    if (e.pointerType === "mouse") return;
+    cancelAnimationFrame(pos.current.raf); // grab it mid-flight
+    drag.current = { id: e.pointerId, x0: e.clientX, y0: e.clientY, base: pos.current.x, on: false, moved: false, hist: [{ x: e.clientX, t: e.timeStamp }] };
+  };
+  const onPointerMove = (e: React.PointerEvent) => {
+    const d = drag.current;
+    if (!d || d.id !== e.pointerId) return;
+    const dx = e.clientX - d.x0;
+    const dy = e.clientY - d.y0;
+    if (!d.on) {
+      if (Math.abs(dy) > 10 && Math.abs(dy) > Math.abs(dx)) { drag.current = null; settle(0); return; }
+      if (Math.abs(dx) < 10) return;
+      d.on = d.moved = true;
+      card.current?.setPointerCapture(e.pointerId);
+    }
+    d.hist.push({ x: e.clientX, t: e.timeStamp });
+    d.hist = d.hist.filter((h) => e.timeStamp - h.t < 100);
+    if (reduce()) return;
+    let x = d.base + dx;
+    const i = activeNow.current;
+    if ((x > 0 && i === 0) || (x < 0 && i === n - 1)) x = rubberband(x, card.current?.offsetWidth ?? 600);
+    paint(x);
+  };
+  const justDragged = useRef(false);
+  const onPointerUp = (e: React.PointerEvent) => {
+    const d = drag.current;
+    drag.current = null;
+    if (!d || d.id !== e.pointerId) return;
+    if (d.moved) {
+      justDragged.current = true;
+      setTimeout(() => { justDragged.current = false; }, 0);
+    }
+    if (!d.on) { settle(0); return; }
+    const first = d.hist[0];
+    const last = d.hist[d.hist.length - 1];
+    const v = last.t > first.t ? ((last.x - first.x) / (last.t - first.t)) * 1000 : 0;
+    const w = card.current?.offsetWidth ?? 600;
+    const end = (reduce() ? e.clientX - d.x0 : pos.current.x) + project(v);
+    const i = activeNow.current;
+    if (end < -w * 0.35 && i < n - 1) go(i + 1, v, true);
+    else if (end > w * 0.35 && i > 0) go(i - 1, v, true);
+    else settle(v);
   };
 
   // Arrow keys work while the steps are visible, unless you are typing somewhere.
@@ -54,8 +150,8 @@ export function StepScroller({ steps }: { steps: Step[] }) {
       if (!onScreen.current || e.metaKey || e.ctrlKey || e.altKey) return;
       const t = e.target as HTMLElement;
       if (t.closest("input, textarea, select, [contenteditable], dialog")) return;
-      if (e.key === "ArrowRight") { e.preventDefault(); setDir(1); setActive((a) => Math.min(n - 1, a + 1)); }
-      if (e.key === "ArrowLeft") { e.preventDefault(); setDir(-1); setActive((a) => Math.max(0, a - 1)); }
+      if (e.key === "ArrowRight") { e.preventDefault(); goRef.current(activeNow.current + 1); }
+      if (e.key === "ArrowLeft") { e.preventDefault(); goRef.current(activeNow.current - 1); }
     };
     window.addEventListener("keydown", onKey);
     return () => { io.disconnect(); window.removeEventListener("keydown", onKey); };
@@ -81,8 +177,7 @@ export function StepScroller({ steps }: { steps: Step[] }) {
       if (Math.abs(acc) < 40) return;
       acc = 0;
       lockedUntil = performance.now() + 450;
-      setDir(step);
-      setActive(next);
+      goRef.current(next);
     };
     el.addEventListener("wheel", onWheel, { passive: false });
     return () => el.removeEventListener("wheel", onWheel);
@@ -124,24 +219,28 @@ export function StepScroller({ steps }: { steps: Step[] }) {
     <div
       ref={root}
       className="step-viewer"
-      onTouchStart={(e) => { touchX.current = e.touches[0].clientX; }}
-      onTouchEnd={(e) => {
-        const x0 = touchX.current;
-        touchX.current = null;
-        if (x0 === null) return;
-        const dx = e.changedTouches[0].clientX - x0;
-        if (Math.abs(dx) > 50) go(active + (dx < 0 ? 1 : -1));
-      }}
     >
       {steps.map((x) => <span key={x.id} id={`step-${x.id}`} className="step-anchor" aria-hidden />)}
-      <PathVisual steps={steps} active={active} onSelect={go} legend={false} />
-      <article className={`step-card ${s.owner} from-${dir > 0 ? "right" : "left"}`} aria-live="polite" key={s.id}>
+      <PathVisual steps={steps} active={active} onSelect={(i) => go(i)} legend={false} />
+      <article
+        ref={card}
+        className={`step-card ${s.owner}`}
+        aria-live="polite"
+        onPointerDown={onPointerDown}
+        onPointerMove={onPointerMove}
+        onPointerUp={onPointerUp}
+        onPointerCancel={onPointerUp}
+        onClickCapture={(e) => {
+          // A drag that started on a link or button must not also click it.
+          if (justDragged.current) { e.preventDefault(); e.stopPropagation(); }
+        }}
+      >
         <header className="step-card-head">
           <span className="owner-chip">{OWNER[s.owner]}</span>
           <span className="step-card-count">{active + 1} / {n}{timeOf(s) && <span className="step-card-time">, {timeOf(s)}</span>}</span>
           <span className="step-arrows">
-            <button type="button" onClick={() => go(active - 1)} disabled={active === 0} aria-label="Previous step" title="Previous step (←)"><Arrow left /></button>
-            <button type="button" onClick={() => go(active + 1)} disabled={active === n - 1} aria-label="Next step" title="Next step (→)"><Arrow /></button>
+            <button type="button" onClick={() => go(activeNow.current - 1)} disabled={active === 0} aria-label="Previous step" title="Previous step (←)"><Arrow left /></button>
+            <button type="button" onClick={() => go(activeNow.current + 1)} disabled={active === n - 1} aria-label="Next step" title="Next step (→)"><Arrow /></button>
           </span>
         </header>
         <h3 className="step-card-title">{s.title}</h3>

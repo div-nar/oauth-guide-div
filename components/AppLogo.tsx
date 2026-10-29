@@ -31,6 +31,6 @@ export function AppLogo({ name, website, logoUrl, size = 40 }: { name: string; w
   }
   return (
     // eslint-disable-next-line @next/next/no-img-element
-    <img className="logo" src={src} alt="" width={size} height={size} onError={() => setFailed(true)} />
+    <img className={bundled ? "logo" : "logo logo-fetched"} src={src} alt="" width={size} height={size} onError={() => setFailed(true)} />
   );
 }

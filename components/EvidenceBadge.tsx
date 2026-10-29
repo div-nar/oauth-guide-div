@@ -37,7 +37,7 @@ export function CheckMark({ check, date, label }: { check: Check; date: string; 
   return (
     <button type="button" className={`check-badge ${ok ? "ok" : "bad"}`} aria-label={`${label}: ${check.detail}`}>
       <SealIcon ok={ok} />
-      <span>{ok ? "Agent Certified" : "Check failed"}</span>
+      <span>{ok ? "Agent checked" : "Check failed"}</span>
       <span className="check-tip" role="tooltip">
         <strong>{label}</strong> {date}, without an account: {check.detail}
       </span>

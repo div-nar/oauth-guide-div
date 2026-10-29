@@ -23,7 +23,7 @@
   --gated: #fb923c;
   --error: #f87171;
   --na: #8a8a8a;
-  --font: Arial, "Helvetica Neue", Helvetica, sans-serif;
+  --font: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   /* aliases used by components */
   --surface: var(--card);
   --wash: #161616;
@@ -185,8 +185,6 @@ html { overflow-anchor: none; overflow-x: clip; }
 .step-card { --c: var(--agent); --cw: var(--agent-wash); position: relative; padding: 22px 24px 18px; border: 1px solid var(--border); border-radius: 12px; background: radial-gradient(120% 90% at 0% 0%, var(--cw), transparent 55%), var(--card); overflow-wrap: anywhere; }
 .step-card.human { --c: var(--you); --cw: var(--you-wash); }
 .step-card.waiting { --c: var(--wait); --cw: var(--wait-wash); }
-.step-card.from-right { animation: from-right 220ms ease-out; }
-.step-card.from-left { animation: from-left 220ms ease-out; }
 .step-card-head { display: flex; align-items: center; gap: 12px; }
 .step-card-count { font-family: var(--font-mono), monospace; font-size: 12px; color: var(--faint); white-space: nowrap; }
 .step-card-head .owner-chip { white-space: nowrap; }
@@ -207,9 +205,6 @@ html { overflow-anchor: none; overflow-x: clip; }
 .step-foot { margin-top: -16px; display: flex; justify-content: space-between; align-items: center; gap: 8px 20px; flex-wrap: wrap; }
 .step-foot .journey-legend { margin: 0; }
 .step-hint { margin: 0; font-size: 12.5px; color: var(--faint); }
-@keyframes from-right { from { opacity: 0; transform: translateX(12px); } to { opacity: 1; transform: none; } }
-@keyframes from-left { from { opacity: 0; transform: translateX(-12px); } to { opacity: 1; transform: none; } }
-@media (prefers-reduced-motion: reduce) { .step-card.from-right, .step-card.from-left { animation: none; } }
 @media (max-width: 760px) {
   .step-card { padding: 18px 16px 14px; }
   .step-hint, .step-card-time { display: none; }
@@ -234,7 +229,7 @@ html { overflow-anchor: none; overflow-x: clip; }
 .faq-body { padding: 0 0 16px; color: var(--muted); max-width: 68ch; }
 
 /* human / machine toggle */
-.view-toggle { position: fixed; bottom: 18px; left: 50%; transform: translateX(-50%); display: flex; gap: 2px; padding: 3px; background: #0a0a0a; border: 1px solid var(--border-strong); border-radius: 8px; font-family: var(--font-mono), monospace; font-size: 12.5px; z-index: 10; }
+.view-toggle { position: fixed; bottom: 18px; left: 50%; transform: translateX(-50%); display: flex; gap: 2px; padding: 3px; background: rgba(10, 10, 10, 0.62); -webkit-backdrop-filter: blur(16px) saturate(160%); backdrop-filter: blur(16px) saturate(160%); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 10px; box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45); font-family: var(--font-mono), monospace; font-size: 12.5px; z-index: 10; }
 .view-toggle a { color: var(--muted); text-decoration: none; padding: 5px 12px; border-radius: 6px; text-transform: uppercase; letter-spacing: 0.04em; }
 .view-toggle a[aria-current="page"] { background: var(--ink); color: var(--bg); }
 
@@ -421,3 +416,24 @@ html { overflow-anchor: none; overflow-x: clip; }
 .verdict-path-summary { grid-column: 2; font-size: 14px; line-height: 1.55; color: var(--muted); max-width: 66ch; }
 .add-access { justify-self: start; width: auto; display: inline-flex; align-items: center; margin-top: 4px; padding: 5px 10px; border-radius: 7px; border: 1px dashed var(--border-strong); background: none; color: var(--muted); font: inherit; font-size: 13px; cursor: pointer; transition: border-color 120ms, color 120ms; }
 .add-access:hover { border-color: var(--muted); color: var(--ink); }
+
+/* fetched logos (favicons, agent-found) sit on a light tile so dark marks show */
+.logo-fetched { background: #f4f4f5; padding: 2px; box-sizing: border-box; }
+
+/* press feedback: everything clickable answers on pointer-down, not on release */
+:where(button, .btn, .card, .step-cta, .agent-links a, .add-access, .modal-option, .step-arrows button, .view-toggle a, .stop a):active:not(:disabled) { transform: scale(0.97); transition: transform 100ms ease-out; }
+.card:active { transform: scale(0.99); }
+
+/* sub-group headings read as text, not as more mono section labels */
+.picker-q, .faq-group { font-family: var(--font); text-transform: none; letter-spacing: 0; font-size: 13px; font-weight: 600; color: var(--muted); }
+
+/* reduced transparency and higher contrast */
+@media (prefers-reduced-transparency: reduce) { .view-toggle { background: #0a0a0a; backdrop-filter: none; -webkit-backdrop-filter: none; } }
+@media (prefers-contrast: more) {
+  :root { --muted: #c8c8c8; --faint: #9a9a9a; --border: #4a4a4a; --border-strong: #6a6a6a; }
+  .view-toggle { background: #000; backdrop-filter: none; -webkit-backdrop-filter: none; border-color: #8a8a8a; }
+}
+@media (prefers-reduced-motion: reduce) { :where(button, .btn, .card, .step-cta, .agent-links a, .add-access, .modal-option, .view-toggle a, .stop a):active { transform: none; } }
+
+/* the step card is dragged and sprung by script; vertical moves stay with the page */
+.step-card { touch-action: pan-y; will-change: transform; }

@@ -12,6 +12,11 @@ export const dynamic = "force-dynamic";
 
 const ORDER: Difficulty[] = ["easy", "moderate", "hard", "gated", "not_applicable"];
 
+// Cards hold one thought; a long agent-written summary is cut to its first sentence.
+function firstSentence(text: string): string {
+  return text.match(/^.+?[.!?](?=\s|$)/)?.[0] ?? text;
+}
+
 function toRow(g: Guide): GuideRow {
   const v = g.verdict;
   const easiest = [...g.useCases].sort((a, b) => ORDER.indexOf(a.difficulty) - ORDER.indexOf(b.difficulty))[0];
@@ -21,7 +26,7 @@ function toRow(g: Guide): GuideRow {
     website: g.app.website,
     logoUrl: g.app.logoUrl,
     difficulty: v.difficulty,
-    summary: g.app.canDo ?? v.summary,
+    summary: g.app.canDo ?? firstSentence(v.summary),
     handsOn: formatHandsOn(v.handsOnMinutes),
     waiting: formatWait(v.waitDays),
     handsOnMax: v.handsOnMinutes.max,
