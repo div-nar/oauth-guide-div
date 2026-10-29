@@ -6,7 +6,9 @@ Built for the Composio APM Integrations take-home.
 
 ## 1. Problem
 
-Before an AI agent can act in someone's Gmail or Slack, the developer needs their own **OAuth app** with that provider: the registration that holds the name on the "Allow?" screen, the callback address and the permissions (scopes). Each of their users then connects through that one app. Getting it ready takes five minutes for GitHub and months for some apps (Gmail's restricted scopes need verification and a yearly security assessment). Developers find out by piecing docs together. This site tells them up front: how hard, how long including the wait, what can block them, and which steps their agent can do.
+Before an AI agent can act in someone's Gmail or Slack, the developer needs their own **OAuth app** with that provider: the registration that holds the name on the "Allow?" screen, the callback address and the permissions (scopes). Each of their users then connects through that one app. Getting it ready takes five minutes for GitHub and months for some apps (Gmail's restricted scopes need verification and a yearly security assessment). Developers find out by piecing docs together.
+
+I spoke to developers about their workflows and realised that they increasingly rely on AI agents to hand-hold them through the process. Rather than navigating documentation, developers rely on agents to find information, direct them to the right configuration dashboards, guide them step by step, and troubleshoot errors along the way. This led me to frame the problem as both an information discovery and navigation problem.
 
 **Scope** is the problem, not a list of apps: getting *your own* OAuth app created and approved, for any app, used from your own code. Five apps are curated because each shows a different challenge (self-serve, marketplace review, security audit, CLI setup, partner gate); any other app is researched live into the same structure. Difficulty is set per kind of access, because the same app can be both: Slack is Easy if your agent only posts and Hard if it reads messages.
 
@@ -19,11 +21,19 @@ Before an AI agent can act in someone's Gmail or Slack, the developer needs thei
 
 Proficiency varies, so a guide asks what access you need, shows the verdict, then the steps, with jargon and technical detail one level down. The agent gets everything at once in Markdown.
 
-## 3. How I built it
+## 3. What did I build?
 
-- **Agent-first.** Every guide is Markdown at a stable URL (`/guides/<app>.md`, listed in `/llms.txt`). **Copy prompt** gives one line to paste into an agent, pointing at the exact path picked. Steps are tagged `[AGENT]`, `[YOU]` or `[WAIT]`; the agent stops at every `[YOU]` step and never asks for a secret. The website is the human fallback, with an ask box limited to that app's setup.
-- **Evidence on every claim:** `Source` (linked official page), `Unconfirmed` (with the reason) or `Tested by hand`. Guides are **Curated** (written by a person from official docs) or **Agentic Search** (researched by the agent, not reviewed).
-- **Code checks the agent.** The research agent reads the provider's own docs. Before saving, code removes citations to pages it never opened, never lets it claim `Tested`, keeps step links on the app's own site, and rejects a guide with nothing from the app's own site as "not found". After saving, code opens every step link and asks the sign-in endpoint about a made-up app ID; that shows as **Agent checked**, apart from the evidence labels.
+Much of this work is handled by agents, but the experience is fragmented. This realisation led me to construct a two-sided website, with a default preference for agents, so they can pick up information as easily as developers would.
+
+**The developer's side** is a guide they can read and share. They first pick the access their agent needs, because that, not the app, decides how hard the setup is: Slack takes minutes if the agent only posts, and months if it reads messages. The guide then shows how long setup takes including any wait for approval, who needs to be involved, the steps in order, and what to do when they get blocked or rejected.
+
+**The agent's side** is the same guide, without the layout around it. Each guide is plain Markdown at a stable address, and `llms.txt` lists every guide, so an agent finds and reads the right one in a single fetch. A developer copies one prompt into their agent, and the agent takes it from there. It does the steps it can in the developer's signed-in browser or terminal, and stops at the ones only the developer can do, such as signing in, accepting terms, or handling the client secret.
+
+Both sides come from the same guide, so the developer and their agent never disagree about what to do next.
+
+**Any app, not just a list.** Five guides are curated by hand, each showing a different kind of challenge. For any other app, an agent reads the provider's own developer docs in real time and writes a guide in the same structure, usually in about two minutes. If it can't confirm the app exists, it says so rather than making one up.
+
+**Evidence the developer can trust.** Every claim links to the provider page that supports it, or is marked as unconfirmed with the reason. Code, not the model, checks that the agent actually read what it cites, and that each step's link points at the provider's own site. After research, code also opens every step link and asks the provider's sign-in endpoint about a made-up app; that shows as **Agent checked**, apart from the evidence labels. Guides are labelled **Curated** or **Agentic Search** so readers know who wrote them.
 
 Next.js, Postgres, bun, OpenRouter. Composio appears once: "Can't wait?" offers its managed app during a review, read by code from Composio's toolkit page.
 
