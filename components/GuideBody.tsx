@@ -5,7 +5,7 @@ import { useState } from "react";
 import { AccessModal } from "@/components/AccessModal";
 import { EvidenceBadge } from "@/components/EvidenceBadge";
 import { AppLogo } from "@/components/AppLogo";
-import { BlockedList, FaqList, WhoList } from "@/components/GuideExtras";
+import { BlockedList, CheckedList, FaqList, WhoList } from "@/components/GuideExtras";
 import { HandoffButtons } from "@/components/HandoffButtons";
 import { GRADE_MEANING, GRADE_WORD, GradeMark } from "@/components/GradeMark";
 import { StepScroller } from "@/components/StepScroller";
@@ -109,7 +109,7 @@ export function GuideBody({ guide: g, initialIds, initialExisting = false, baseU
           {ex.steps.length > 0 && (
             <>
               <h2 className="label" style={{ marginTop: 32 }}>Steps</h2>
-              <StepTable steps={ex.steps} />
+              <StepTable steps={ex.steps} checks={g.checks} />
             </>
           )}
         </section>
@@ -117,11 +117,12 @@ export function GuideBody({ guide: g, initialIds, initialExisting = false, baseU
         <>
           <section className="block">
             <h2 className="label">Steps</h2>
-            <StepScroller steps={steps} />
+            <StepScroller steps={steps} checks={g.checks} />
           </section>
         </>
       )}
       <BlockedList guide={g} ids={u.ids} />
+      <CheckedList guide={g} />
       <FaqList guide={g} ids={u.ids} />
       <ViewToggle human={`/guides/${g.slug}${selectionQuery(sel)}`} machine={`/guides/${g.slug}/ai${selectionQuery(sel)}`} current="human" />
     </>

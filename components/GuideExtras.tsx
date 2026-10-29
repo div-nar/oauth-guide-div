@@ -1,4 +1,4 @@
-import { EvidenceBadge } from "@/components/EvidenceBadge";
+import { CheckLine, EvidenceBadge } from "@/components/EvidenceBadge";
 import type { Guide } from "@/lib/guide-schema";
 import { appliesTo } from "@/lib/paths";
 
@@ -21,6 +21,36 @@ export function WhoList({ guide: g, ids }: { guide: Guide; ids: string[] | null 
           <li key={w.role}><strong>{w.role}</strong><span className="muted">{w.why}</span></li>
         ))}
       </ul>
+    </section>
+  );
+}
+
+// Checks run by code without an account: they show the pages and the sign-in
+// endpoint are live, not that the whole setup works.
+export function CheckedList({ guide: g }: { guide: Guide }) {
+  const c = g.checks;
+  if (!c) return null;
+  const n = (o: string) => c.links.filter((l) => l.outcome === o).length;
+  const parts = [
+    n("ok") && `${n("ok")} load`,
+    n("sign_in") && `${n("sign_in")} load behind a sign-in`,
+    n("broken") && `${n("broken")} not found`,
+    n("inconclusive") && `${n("inconclusive")} gave no clear answer`,
+  ].filter(Boolean);
+  return (
+    <section className="block">
+      <h2 className="label">What the agent checked</h2>
+      <p className="muted small">
+        Without an account, so this shows the pages and the sign-in endpoint are live, not that the setup works end to end.
+      </p>
+      {c.links.length > 0 && (
+        <CheckLine
+          check={{ kind: "link", url: "", outcome: n("broken") ? "broken" : "ok", detail: `${c.links.length} step links: ${parts.join(", ")}` }}
+          date={c.date}
+        />
+      )}
+      {c.authorize && <CheckLine check={c.authorize} date={c.date} />}
+      {c.discovery && <CheckLine check={c.discovery} date={c.date} />}
     </section>
   );
 }

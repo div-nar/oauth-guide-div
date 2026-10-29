@@ -1,6 +1,7 @@
 import { after } from "next/server";
 import { disambiguate, type Option } from "@/lib/agent/disambiguate";
 import type { AgentEvent } from "@/lib/agent/events";
+import { runChecks } from "@/lib/agent/checks";
 import { runGuideAgent } from "@/lib/agent/run";
 import { query } from "@/lib/db";
 import { getGuide, saveGuide } from "@/lib/guides";
@@ -39,7 +40,13 @@ async function runJob(id: number, q: string) {
   const emit = (e: AgentEvent) => void appendEvent(id, started, e).catch(() => {});
   try {
     await appendEvent(id, started, { type: "status", text: `Researching ${q}` });
-    const guide = await runGuideAgent(q, emit);
+    const researched = await runGuideAgent(q, emit);
+    // A failed check run never loses the guide; it is saved without checks.
+    const checks = await runChecks(researched, emit).catch((err) => {
+      console.error("checks failed", id, err);
+      return null;
+    });
+    const guide = { ...researched, checks };
     await saveGuide(guide, q);
     await appendEvent(id, started, { type: "done", slug: guide.slug });
     await query("UPDATE generations SET status = 'done', finished_at = now() WHERE id = $1", [id]);

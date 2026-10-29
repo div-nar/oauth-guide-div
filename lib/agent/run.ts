@@ -2,7 +2,7 @@ import { z } from "zod";
 import type { AgentEvent } from "@/lib/agent/events";
 import { SYSTEM_PROMPT, userPrompt } from "@/lib/agent/prompt";
 import { toStrictSchema } from "@/lib/agent/strict-schema";
-import { type Evidence, type Guide, GuideSchema } from "@/lib/guide-schema";
+import { AgentGuideSchema, type Evidence, type Guide } from "@/lib/guide-schema";
 import { resolveSlug } from "@/lib/slug";
 
 // OpenAI chat-completions shapes (sent through OpenRouter).
@@ -51,7 +51,7 @@ const TOOLS = [
       name: "submit_guide",
       description: "Submit the finished guide. Call exactly once, after research is done.",
       strict: true,
-      parameters: toStrictSchema(z.toJSONSchema(GuideSchema, { io: "input" })),
+      parameters: toStrictSchema(z.toJSONSchema(AgentGuideSchema, { io: "input" })),
     },
   },
 ];
@@ -111,10 +111,11 @@ function safeLink(url: string, appWebsite: string, seen: Set<string>): boolean {
 
 function finalize(raw: unknown, query: string, today: string, seen: Set<string>): Guide {
   const fixed = repair(raw) as object;
-  const g = GuideSchema.parse({ ...fixed, slug: resolveSlug(query), generatedBy: "agent", lastChecked: today });
+  const g = AgentGuideSchema.parse({ ...fixed, slug: resolveSlug(query), generatedBy: "agent", lastChecked: today });
   const fix = <T extends { evidence: Evidence }>(xs: T[]) => xs.map((x) => ({ ...x, evidence: sanitizeEvidence(x.evidence, seen) }));
   const steps = fix(g.steps).map((st) => (st.link && !safeLink(st.link.url, g.app.website, seen) ? { ...st, link: null } : st));
-  return { ...g, useCases: fix(g.useCases), steps, forks: fix(g.forks), nuances: fix(g.nuances) };
+  // Checks are recorded by code after research (lib/agent/checks.ts), never by the model.
+  return { ...g, useCases: fix(g.useCases), steps, forks: fix(g.forks), nuances: fix(g.nuances), checks: null };
 }
 
 export async function runGuideAgent(query: string, emit: (e: AgentEvent) => void, deps: AgentDeps = {}): Promise<Guide> {

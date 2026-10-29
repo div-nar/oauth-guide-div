@@ -211,6 +211,7 @@
   ],
   "config": {
     "consoleUrl": "https://github.com/settings/developers",
+    "authorizeUrl": "https://github.com/login/oauth/authorize",
     "redirectUriNote": "Use the redirect URI shown in your Composio auth config (documented as https://backend.composio.dev/api/v3/toolkits/auth/callback).",
     "scopes": [
       {
@@ -352,5 +353,41 @@
         ]
       }
     }
-  ]
+  ],
+  "checks": {
+    "date": "2026-10-29",
+    "links": [
+      {
+        "kind": "link",
+        "url": "https://github.com/settings/developers",
+        "outcome": "sign_in",
+        "detail": "Loads, sign-in required"
+      },
+      {
+        "kind": "link",
+        "url": "https://github.com/login",
+        "outcome": "ok",
+        "detail": "Sign-in page loads"
+      },
+      {
+        "kind": "link",
+        "url": "https://dashboard.composio.dev/~/project/auth-configs",
+        "outcome": "sign_in",
+        "detail": "Loads, sign-in required"
+      },
+      {
+        "kind": "link",
+        "url": "https://github.com/settings/applications/new",
+        "outcome": "sign_in",
+        "detail": "Loads, sign-in required"
+      }
+    ],
+    "authorize": {
+      "kind": "authorize",
+      "url": "https://github.com/login/oauth/authorize",
+      "outcome": "ok",
+      "detail": "Sign-in endpoint answers by asking the user to sign in first"
+    },
+    "discovery": null
+  }
 }

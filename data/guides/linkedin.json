@@ -365,6 +365,7 @@
   ],
   "config": {
     "consoleUrl": "https://www.linkedin.com/developers/apps",
+    "authorizeUrl": "https://www.linkedin.com/oauth/v2/authorization",
     "redirectUriNote": "Add the redirect URI shown in your Composio auth config on the app's Auth tab.",
     "scopes": [
       {
@@ -631,5 +632,41 @@
         ]
       }
     }
-  ]
+  ],
+  "checks": {
+    "date": "2026-10-29",
+    "links": [
+      {
+        "kind": "link",
+        "url": "https://www.linkedin.com/developers/apps",
+        "outcome": "ok",
+        "detail": "Page loads"
+      },
+      {
+        "kind": "link",
+        "url": "https://www.linkedin.com/developers/apps/new",
+        "outcome": "ok",
+        "detail": "Page loads"
+      },
+      {
+        "kind": "link",
+        "url": "https://learn.microsoft.com/en-us/linkedin/marketing/quick-start",
+        "outcome": "ok",
+        "detail": "Page loads"
+      },
+      {
+        "kind": "link",
+        "url": "https://learn.microsoft.com/en-us/linkedin/marketing/community-management/community-management-overview",
+        "outcome": "ok",
+        "detail": "Page loads"
+      }
+    ],
+    "authorize": {
+      "kind": "authorize",
+      "url": "https://www.linkedin.com/oauth/v2/authorization",
+      "outcome": "ok",
+      "detail": "Sign-in endpoint answers and rejects a made-up app ID: \"Authorize LinkedIn LinkedIn The passed in client_id is invalid oauth-guides-check-not-a-real-app\""
+    },
+    "discovery": null
+  }
 }

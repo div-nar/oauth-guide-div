@@ -113,3 +113,24 @@ describe("easier for agents", () => {
     expect(md).toContain(`- [ ] 1. ${OWNER_TAG[gmail.steps[0].owner]} ${gmail.steps[0].title}`);
   });
 });
+
+describe("checks by the agent", () => {
+  test("a checked step link gets an Observed line, apart from its evidence", () => {
+    const g = getLibraryGuide("github")!;
+    const out = guideToMarkdown(g, "https://example.test");
+    const linked = g.steps.find((st) => st.link && g.checks?.links.some((c) => c.url === st.link!.url))!;
+    const block = out.slice(out.indexOf(`#step-${linked.id}`));
+    expect(block.slice(0, block.indexOf("- [ ]") > 0 ? block.indexOf("- [ ]") : undefined)).toMatch(/Observed \(checked by the agent \d{4}-\d{2}-\d{2}\): /);
+  });
+
+  test("the configuration lists the sign-in endpoint and what it answered", () => {
+    const out = guideToMarkdown(getLibraryGuide("gmail")!, "https://example.test");
+    expect(out).toContain("- Sign-in (authorization) endpoint: https://accounts.google.com/o/oauth2/v2/auth");
+    expect(out).toMatch(/- Observed \(checked by the agent [\d-]+\): Sign-in endpoint answers/);
+  });
+
+  test("a guide without checks has no Observed lines", () => {
+    const g = { ...getLibraryGuide("github")!, checks: null };
+    expect(guideToMarkdown(g, "https://example.test")).not.toContain("Observed");
+  });
+});

@@ -420,6 +420,7 @@
   ],
   "config": {
     "consoleUrl": "https://console.cloud.google.com/auth/overview",
+    "authorizeUrl": "https://accounts.google.com/o/oauth2/v2/auth",
     "redirectUriNote": "Use the redirect URI shown in your Composio auth config.",
     "scopes": [
       {
@@ -697,5 +698,82 @@
         ]
       }
     }
-  ]
+  ],
+  "checks": {
+    "date": "2026-10-29",
+    "links": [
+      {
+        "kind": "link",
+        "url": "https://console.cloud.google.com/auth/overview",
+        "outcome": "sign_in",
+        "detail": "Loads, sign-in required"
+      },
+      {
+        "kind": "link",
+        "url": "https://console.cloud.google.com/projectcreate",
+        "outcome": "sign_in",
+        "detail": "Loads, sign-in required"
+      },
+      {
+        "kind": "link",
+        "url": "https://console.cloud.google.com/apis/library/gmail.googleapis.com",
+        "outcome": "ok",
+        "detail": "Page loads"
+      },
+      {
+        "kind": "link",
+        "url": "https://console.cloud.google.com/auth/branding",
+        "outcome": "sign_in",
+        "detail": "Loads, sign-in required"
+      },
+      {
+        "kind": "link",
+        "url": "https://console.cloud.google.com/auth/clients/create",
+        "outcome": "sign_in",
+        "detail": "Loads, sign-in required"
+      },
+      {
+        "kind": "link",
+        "url": "https://console.cloud.google.com/auth/clients",
+        "outcome": "sign_in",
+        "detail": "Loads, sign-in required"
+      },
+      {
+        "kind": "link",
+        "url": "https://console.cloud.google.com/auth/audience",
+        "outcome": "sign_in",
+        "detail": "Loads, sign-in required"
+      },
+      {
+        "kind": "link",
+        "url": "https://search.google.com/search-console",
+        "outcome": "ok",
+        "detail": "Page loads"
+      },
+      {
+        "kind": "link",
+        "url": "https://studio.youtube.com",
+        "outcome": "sign_in",
+        "detail": "Loads, sign-in required"
+      },
+      {
+        "kind": "link",
+        "url": "https://console.cloud.google.com/auth/verification",
+        "outcome": "sign_in",
+        "detail": "Loads, sign-in required"
+      }
+    ],
+    "authorize": {
+      "kind": "authorize",
+      "url": "https://accounts.google.com/o/oauth2/v2/auth",
+      "outcome": "ok",
+      "detail": "Sign-in endpoint answers and rejects a made-up app ID: \"Authorization Error The OAuth client was not found.\""
+    },
+    "discovery": {
+      "kind": "discovery",
+      "url": "https://accounts.google.com/.well-known/openid-configuration",
+      "outcome": "ok",
+      "detail": "The provider's published OAuth configuration lists the same sign-in address."
+    }
+  }
 }

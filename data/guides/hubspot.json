@@ -306,6 +306,7 @@
   ],
   "config": {
     "consoleUrl": "https://app.hubspot.com/developer",
+    "authorizeUrl": "https://app.hubspot.com/oauth/authorize",
     "redirectUriNote": "Add the Composio redirect URI to auth.redirectUrls in app-hsmeta.json.",
     "scopes": [
       {
@@ -486,5 +487,46 @@
         ]
       }
     }
-  ]
+  ],
+  "checks": {
+    "date": "2026-10-29",
+    "links": [
+      {
+        "kind": "link",
+        "url": "https://app.hubspot.com/developer",
+        "outcome": "ok",
+        "detail": "Page loads"
+      },
+      {
+        "kind": "link",
+        "url": "https://developers.hubspot.com/get-started",
+        "outcome": "ok",
+        "detail": "Page loads"
+      },
+      {
+        "kind": "link",
+        "url": "https://developers.hubspot.com/docs/apps/developer-platform/build-apps/create-an-app",
+        "outcome": "ok",
+        "detail": "Page loads"
+      },
+      {
+        "kind": "link",
+        "url": "https://dashboard.composio.dev/~/project/auth-configs",
+        "outcome": "sign_in",
+        "detail": "Loads, sign-in required"
+      }
+    ],
+    "authorize": {
+      "kind": "authorize",
+      "url": "https://app.hubspot.com/oauth/authorize",
+      "outcome": "inconclusive",
+      "detail": "Sign-in endpoint responds (HTTP 200) but gave no clear error for a made-up app"
+    },
+    "discovery": {
+      "kind": "discovery",
+      "url": "https://app.hubspot.com/.well-known/oauth-authorization-server",
+      "outcome": "ok",
+      "detail": "The provider's published OAuth configuration lists the same sign-in address."
+    }
+  }
 }

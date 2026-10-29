@@ -12,6 +12,7 @@ Built for the Composio APM Integrations take-home.
 - **"Can't wait?"** When there is a review wait, the guide says you can connect users today with Composio's own managed app, with its trade-offs.
 - **Agent-first.** Every guide has a plain-text version that coding agents read. "Hand this to your agent" opens Claude Code, Cursor or ChatGPT with a prompt that points at the exact path you picked. Steps are tagged `[AGENT]`, `[YOU]` or `[WAIT]`, and the agent stops at yours.
 - **Evidence on every claim**: `Source` (linked official page), `Unconfirmed` (with the reason), or `Tested by hand`.
+- **Checked by the agent**: after research, code opens every step link and asks the provider's sign-in endpoint about a made-up app. What it saw is shown under each step, kept apart from the evidence label so it never reads as `Tested`.
 
 ## For agents
 
@@ -43,7 +44,7 @@ bun run dev
 | `DAILY_GENERATION_CAP`, `PER_IP_HOURLY_CAP` | Spend limits. Default 10 per day, 3 per person per hour |
 | `SITE_URL` | Optional public base URL used in links for agents |
 
-Checks: `bun test`, `bunx tsc --noEmit`, `bun run lint`, `bun run build`.
+Checks: `bun test`, `bunx tsc --noEmit` (run `bunx next typegen` first on a fresh clone), `bun run lint`, `bun run build`.
 
 ## How the research agent works
 
@@ -54,7 +55,12 @@ Checks: `bun test`, `bunx tsc --noEmit`, `bun run lint`, `bun run build`.
    - The agent can never mark anything `Tested`.
    - Step links must point at the app's own site, Composio, or a page the agent saw, so a poisoned page cannot plant a link.
    - Things the structure cannot express (a reversed range, a "sourced" claim with no source) are repaired, not rejected.
-4. Page text is treated as data. The page reader refuses private and local network addresses.
+4. Code then runs checks that need no account, and records them with the date:
+   - Every step link is opened: it loads, loads behind a sign-in, is not found, or gives no clear answer (a site that blocks bots is "unclear", never "broken").
+   - The sign-in endpoint (`config.authorizeUrl`) is asked to start a flow for a made-up app ID. An answer such as "The OAuth client was not found" confirms the endpoint is real. Pages built in the browser (Slack, HubSpot) give no readable answer, so they stay "unclear".
+   - Where the provider publishes its OAuth configuration (`/.well-known/openid-configuration`), the endpoint is compared with it.
+   The model cannot submit checks; a failed check run saves the guide without them. `bun run scripts/check-library.ts` re-runs them for the hand-checked guides.
+5. Page text is treated as data. The page reader and the checks refuse private and local network addresses.
 
 ## Key decisions
 
@@ -79,6 +85,7 @@ Checks: `bun test`, `bunx tsc --noEmit`, `bun run lint`, `bun run build`.
 **Still uncertain:**
 
 - Nothing is `Tested by hand` yet. Creating a GitHub OAuth app and a Slack app on free accounts is the next check.
+- The agent's checks (29 Oct 2026) found no broken step links across the five guides. The sign-in endpoints of GitHub, Gmail and LinkedIn answered; Slack's and HubSpot's gave no readable answer. Google and HubSpot publish OAuth configurations that list the same endpoint.
 - Google publishes no price or duration for the security assessment.
 - LinkedIn's company Page requirement comes from third-party guides.
 - Whether HubSpot caps installs for unlisted apps.
@@ -88,6 +95,6 @@ Checks: `bun test`, `bunx tsc --noEmit`, `bun run lint`, `bun run build`.
 ## Limitations
 
 - Five hand-checked guides, not 100.
-- No hands-on setup attempts by an agent in a browser yet; the agent researches but does not click through providers' consoles.
+- No hands-on setup attempts by an agent in a browser yet. The agent's checks show that pages and endpoints are live, not that the setup works end to end.
 - Agent-written guides can be re-checked but not corrected by hand in the UI.
 - Self-hosted or regional instances (Salesforce custom domains, Jira Server) and plan-gated app creation are only described when the agent finds them, not modelled.

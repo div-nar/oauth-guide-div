@@ -329,6 +329,7 @@
   ],
   "config": {
     "consoleUrl": "https://api.slack.com/apps",
+    "authorizeUrl": "https://slack.com/oauth/v2/authorize",
     "redirectUriNote": "Use the HTTPS redirect URI shown in your Composio auth config.",
     "scopes": [
       {
@@ -589,5 +590,46 @@
         ]
       }
     }
-  ]
+  ],
+  "checks": {
+    "date": "2026-10-29",
+    "links": [
+      {
+        "kind": "link",
+        "url": "https://api.slack.com/apps",
+        "outcome": "ok",
+        "detail": "Page loads"
+      },
+      {
+        "kind": "link",
+        "url": "https://api.slack.com/apps?new_app=1&manifest_json=%7B%22display_information%22%3A%7B%22name%22%3A%22Your%20agent%27s%20name%22%7D%2C%22oauth_config%22%3A%7B%22redirect_urls%22%3A%5B%22https%3A//backend.composio.dev/api/v3/toolkits/auth/callback%22%5D%2C%22scopes%22%3A%7B%22bot%22%3A%5B%22chat%3Awrite%22%2C%22channels%3Aread%22%2C%22channels%3Ahistory%22%2C%22users%3Aread%22%5D%7D%7D%2C%22settings%22%3A%7B%22org_deploy_enabled%22%3Afalse%2C%22token_rotation_enabled%22%3Afalse%7D%7D",
+        "outcome": "ok",
+        "detail": "Page loads"
+      },
+      {
+        "kind": "link",
+        "url": "https://dashboard.composio.dev/~/project/auth-configs",
+        "outcome": "sign_in",
+        "detail": "Loads, sign-in required"
+      },
+      {
+        "kind": "link",
+        "url": "https://docs.slack.dev/slack-marketplace/slack-marketplace-review-guide",
+        "outcome": "ok",
+        "detail": "Page loads"
+      }
+    ],
+    "authorize": {
+      "kind": "authorize",
+      "url": "https://slack.com/oauth/v2/authorize",
+      "outcome": "inconclusive",
+      "detail": "Sign-in endpoint responds (HTTP 200) but gave no clear error for a made-up app"
+    },
+    "discovery": {
+      "kind": "discovery",
+      "url": "https://slack.com/.well-known/openid-configuration",
+      "outcome": "inconclusive",
+      "detail": "The provider's published configuration names a different sign-in address (https://slack.com/openid/connect/authorize), possibly for a separate \"Sign in with\" flow."
+    }
+  }
 }

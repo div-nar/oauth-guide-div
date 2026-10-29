@@ -3,7 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { GuideBody } from "@/components/GuideBody";
 import { AppLogo } from "@/components/AppLogo";
-import { BlockedList, FaqList, WhoList } from "@/components/GuideExtras";
+import { BlockedList, CheckedList, FaqList, WhoList } from "@/components/GuideExtras";
 import { HandoffButtons } from "@/components/HandoffButtons";
 import { StepTable } from "@/components/StepTable";
 import { ViewToggle } from "@/components/ViewToggle";
@@ -74,10 +74,11 @@ export default async function GuidePage({ params, searchParams }: PageProps<"/gu
           {g.steps.length > 0 && (
             <section className="block">
               <h2 className="label">Steps</h2>
-              <StepTable steps={g.steps} />
+              <StepTable steps={g.steps} checks={g.checks} />
             </section>
           )}
           <BlockedList guide={g} ids={null} />
+          <CheckedList guide={g} />
           <FaqList guide={g} ids={null} />
         </>
       )}
