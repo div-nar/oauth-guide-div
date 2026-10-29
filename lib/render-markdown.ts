@@ -63,7 +63,10 @@ export function guideToMarkdown(g: Guide, baseUrl: string, sel?: Selection): str
     }
   }
   for (const line of composioOffer(g, picked, v.waitDays.max > 0 && !existing)) out.push(line);
-  if (existing && g.existingApp) {
+  if (g.whoYouNeed.some((x) => appliesTo(x.useCaseIds, picked))) {
+    out.push("", "## Who you need");
+    for (const w of g.whoYouNeed.filter((x) => appliesTo(x.useCaseIds, picked))) out.push(`- ${w.role}: ${w.why}`);
+  }  if (existing && g.existingApp) {
     out.push("", "## You already have an app", g.existingApp.summary, "", "## What could send you back to review");
     for (const t of g.existingApp.reReviewTriggers) out.push(`- ${t.trigger}: ${t.effect} ${evidenceLine(t.evidence)}`);
   }
@@ -76,10 +79,7 @@ export function guideToMarkdown(g: Guide, baseUrl: string, sel?: Selection): str
     if (s.link) out.push(`   Link${s.link.prefilled ? " (pre-filled)" : ""}: ${s.link.url}`);
     out.push(`   ${evidenceLine(s.evidence)}`);
   });
-  if (g.whoYouNeed.some((x) => appliesTo(x.useCaseIds, picked))) {
-    out.push("", "## Who you need");
-    for (const w of g.whoYouNeed.filter((x) => appliesTo(x.useCaseIds, picked))) out.push(`- ${w.role}: ${w.why}`);
-  }
+
   const blockers = (g.blockers ?? []).filter((x) => appliesTo(x.useCaseIds, picked));
   if (blockers.length) {
     out.push("", "## If you get blocked or rejected");

@@ -17,7 +17,7 @@ export async function buildIndex(base: string): Promise<string> {
     "",
     `- ${base}/guides/<app-name>.md is the whole guide. Difficulty depends on the access the agent needs: add ?access=<id> (ids are listed below, combine with commas) for one path, and &existing=1 if the user already has an OAuth app.`,
     `- ${base}/guides/<app-name>.json is the same guide as structured data.`,
-    "- Sections, in the same order as the web page: First, ask the user (when no access is chosen), difficulty per access, Can't wait? Connect on Composio, Steps, Who you need, If you get blocked or rejected, Questions, Configuration.",
+    "- Sections, in the same order as the web page: First, ask the user (when no access is chosen), difficulty per access, Can't wait? Connect on Composio, Who you need, Steps, If you get blocked or rejected, Questions, Configuration.",
     "- Every claim carries evidence: sourced (with links), uncertain (with the reason), or tested.",
     "",
     "## Checked by hand",

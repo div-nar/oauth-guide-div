@@ -93,6 +93,8 @@ export function GuideBody({ guide: g, initialIds, initialExisting = false, baseU
         />
       )}
 
+      {/* People to line up before starting, so it comes before the steps. */}
+      <WhoList guide={g} ids={u.ids} />
       {existing && ex ? (
         <section className="block">
           <h2 className="label">What could send you back to review</h2>
@@ -119,7 +121,6 @@ export function GuideBody({ guide: g, initialIds, initialExisting = false, baseU
           </section>
         </>
       )}
-      <WhoList guide={g} ids={u.ids} />
       <BlockedList guide={g} ids={u.ids} />
       <FaqList guide={g} ids={u.ids} />
       <ViewToggle human={`/guides/${g.slug}${selectionQuery(sel)}`} machine={`/guides/${g.slug}/ai${selectionQuery(sel)}`} current="human" />
