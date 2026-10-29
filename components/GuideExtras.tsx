@@ -1,3 +1,4 @@
+import { AskBox } from "@/components/AskBox";
 import { EvidenceBadge } from "@/components/EvidenceBadge";
 import type { Guide } from "@/lib/guide-schema";
 import { appliesTo } from "@/lib/paths";
@@ -99,6 +100,7 @@ export function FaqList({ guide: g, ids }: { guide: Guide; ids: string[] | null 
           </div>
         </>
       )}
+      <AskBox slug={g.slug} appName={g.app.name} access={ids} />
       <h3 className="faq-group">OAuth basics</h3>
       <dl className="glossary">
         {GLOSSARY.map(([term, def]) => (

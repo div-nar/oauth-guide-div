@@ -449,3 +449,19 @@ html { overflow-anchor: none; overflow-x: clip; }
 
 /* the step card is dragged and sprung by script; vertical moves stay with the page */
 .step-card { touch-action: pan-y; will-change: transform; }
+
+/* ask anything about this app's setup, answered from the guide */
+.ask { margin-top: 28px; }
+.ask-form { display: flex; gap: 8px; }
+.ask-input { flex: 1; min-width: 0; padding: 10px 12px; border-radius: 8px; border: 1px solid var(--border-strong); background: var(--card); color: var(--ink); font: inherit; font-size: 14.5px; }
+.ask-input:focus { outline: none; border-color: var(--muted); }
+.ask-go { padding: 0 16px; border-radius: 8px; border: 0; background: var(--ink); color: var(--bg); font: inherit; font-size: 14px; font-weight: 600; cursor: pointer; }
+.ask-go:disabled { opacity: 0.4; cursor: default; }
+.ask-starters { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+.ask-starters button { padding: 5px 10px; border-radius: 99px; border: 1px solid var(--border); background: none; color: var(--muted); font: inherit; font-size: 13px; cursor: pointer; }
+.ask-starters button:hover { border-color: var(--border-strong); color: var(--ink); }
+.ask-answer { margin-top: 12px; padding: 14px 16px; border-radius: 10px; border: 1px solid var(--border); background: var(--card); font-size: 14.5px; line-height: 1.6; color: var(--ink); }
+.ask-answer p { margin: 0 0 8px; max-width: 68ch; }
+.ask-q { color: var(--muted); font-size: 13.5px; }
+.ask-wait { display: flex; align-items: center; gap: 8px; color: var(--muted); }
+.ask-note { color: var(--faint); font-size: 12.5px; margin: 4px 0 0 !important; }
