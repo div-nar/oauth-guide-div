@@ -9,7 +9,7 @@ export async function buildIndex(base: string): Promise<string> {
   return [
     "# OAuth App Guides",
     "",
-    "> How to create and get approval for your own OAuth app with each provider, for use with Composio. Each guide tags steps [AGENT] (an agent can do it in the user's signed-in browser or CLI), [YOU] (a person must) and [WAIT] (provider review).",
+    "> How to create and get approval for your own OAuth app with each provider, for use in your own code. Each guide tags steps [AGENT] (an agent can do it in the user's signed-in browser or CLI), [YOU] (a person must) and [WAIT] (provider review).",
     "",
     "Agents: fetch a guide's Markdown, do the [AGENT] steps, and stop to ask the user at each [YOU] step. Never ask the user to paste secrets into chat.",
     "",

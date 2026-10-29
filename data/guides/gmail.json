@@ -62,8 +62,8 @@
         "level": "sourced",
         "sources": [
           {
-            "url": "https://composio.dev/auth/googleapps",
-            "title": "Composio: Google OAuth guide"
+            "url": "https://developers.google.com/workspace/guides/create-project",
+            "title": "Google: Create a Google Cloud project"
           }
         ]
       },
@@ -86,8 +86,8 @@
         "level": "sourced",
         "sources": [
           {
-            "url": "https://composio.dev/auth/googleapps",
-            "title": "Composio: Google OAuth guide"
+            "url": "https://developers.google.com/workspace/guides/enable-apis",
+            "title": "Google: Enable Google Workspace APIs"
           }
         ]
       },
@@ -111,8 +111,8 @@
         "level": "sourced",
         "sources": [
           {
-            "url": "https://composio.dev/auth/googleapps",
-            "title": "Composio: Google OAuth guide"
+            "url": "https://developers.google.com/workspace/guides/configure-oauth-consent",
+            "title": "Google: Configure the OAuth consent screen"
           }
         ]
       },
@@ -126,8 +126,8 @@
       "id": "client",
       "owner": "agent",
       "title": "Create the OAuth client",
-      "plain": "Create a 'Web application' client and paste in the redirect address from your Composio Gmail auth config.",
-      "technical": "Clients > Create client > Web application. Authorized redirect URIs: the value your Composio auth config shows. Composio's Google guide still shows the older https://backend.composio.dev/api/v1/auth-apps/add.",
+      "plain": "Create a 'Web application' client and add your app's callback address as an authorized redirect URI.",
+      "technical": "Clients > Create client > Web application. Authorized redirect URIs: your callback URL, which must exactly match the redirect_uri your code sends.",
       "minutes": {
         "min": 2,
         "max": 5
@@ -136,15 +136,14 @@
         "level": "sourced",
         "sources": [
           {
-            "url": "https://composio.dev/auth/googleapps",
-            "title": "Composio: Google OAuth guide"
+            "url": "https://developers.google.com/workspace/guides/create-credentials",
+            "title": "Google: Create access credentials"
           },
           {
-            "url": "https://composio.dev/auth/github",
-            "title": "Composio: GitHub OAuth guide (notes the v3 address)"
+            "url": "https://developers.google.com/identity/protocols/oauth2/web-server",
+            "title": "Google: OAuth 2.0 for web server apps"
           }
-        ],
-        "note": "Composio's own guides disagree on the redirect address. Use the dashboard value."
+        ]
       },
       "link": {
         "url": "https://console.cloud.google.com/auth/clients/create",
@@ -155,8 +154,8 @@
     {
       "id": "secret",
       "owner": "human",
-      "title": "Copy the client ID and secret into Composio",
-      "plain": "Create a client secret and paste it, with the client ID, into your Composio auth config.",
+      "title": "Store the client ID and secret in your app",
+      "plain": "Create a client secret and store it, with the client ID, in your app's secret store or environment variables.",
       "whyHuman": "The secret is a password for your app. Pasting it yourself keeps it out of any agent's chat history.",
       "minutes": {
         "min": 1,
@@ -166,8 +165,8 @@
         "level": "sourced",
         "sources": [
           {
-            "url": "https://composio.dev/auth/googleapps",
-            "title": "Composio: Google OAuth guide"
+            "url": "https://developers.google.com/workspace/guides/create-credentials",
+            "title": "Google: Create access credentials"
           }
         ]
       },
@@ -299,14 +298,14 @@
       "id": "casa",
       "owner": "waiting",
       "title": "Security assessment (yearly)",
-      "plain": "Apps that reach restricted Gmail data through a server, not just the user's browser, need an assessment by a Google-approved assessor. When Composio fetches email for your agent, the data passes through Composio's servers under your app, so expect this to apply. Google's Trust and Safety team contacts you when it's time, and you repeat it every 12 months.",
+      "plain": "Apps that reach restricted Gmail data through a server, not just the user's browser, need an assessment by a Google-approved assessor. If your backend fetches email for your agent, this applies. Google's Trust and Safety team contacts you when it's time, and you repeat it every 12 months.",
       "whyHuman": "You choose and pay an assessor, and answer their questions.",
       "waitDays": {
         "min": 7,
         "max": 30
       },
       "evidence": {
-        "level": "uncertain",
+        "level": "sourced",
         "sources": [
           {
             "url": "https://support.google.com/cloud/answer/13465431",
@@ -317,7 +316,7 @@
             "title": "Google: Restricted scope verification"
           }
         ],
-        "note": "The requirement and yearly repeat are sourced. That Composio relaying data triggers it for your app is our reading, not confirmed by Google or Composio. Google gives no price or duration; 7 to 30 days is a guess."
+        "note": "Google gives no price or duration; 7 to 30 days is our estimate."
       }
     }
   ],
@@ -402,13 +401,13 @@
     {
       "title": "Unverified while you wait",
       "detail": "Until approval, you are limited to listed test users or 100 new users behind a warning screen.",
-      "ifStuck": "Run pilots with Composio's managed Gmail app (it shows 'Composio' on the consent screen) while your own app is in review.",
+      "ifStuck": "Start verification early, and run pilots with listed test users while you wait.",
       "evidence": {
         "level": "sourced",
         "sources": [
           {
-            "url": "https://docs.composio.dev/docs/authentication/custom-app-vs-managed-app",
-            "title": "Composio: Managed vs custom auth"
+            "url": "https://support.google.com/cloud/answer/7454865",
+            "title": "Google: Unverified apps"
           }
         ]
       },
@@ -421,7 +420,7 @@
   "config": {
     "consoleUrl": "https://console.cloud.google.com/auth/overview",
     "authorizeUrl": "https://accounts.google.com/o/oauth2/v2/auth",
-    "redirectUriNote": "Use the redirect URI shown in your Composio auth config.",
+    "redirectUriNote": "Your app's callback URL, added as an authorized redirect URI on the OAuth client.",
     "scopes": [
       {
         "name": "https://www.googleapis.com/auth/gmail.readonly",
@@ -590,7 +589,7 @@
     ]
   },
   "existingApp": {
-    "summary": "Add Composio's redirect address to your existing OAuth client, or create a second client in the same project. Either way you keep the verification your project already has, as long as the permissions stay the same.",
+    "summary": "Add your agent's callback address to your existing OAuth client, or create a second client in the same project. Either way you keep the verification your project already has, as long as the permissions stay the same.",
     "steps": [],
     "reReviewTriggers": [
       {

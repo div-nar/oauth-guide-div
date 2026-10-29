@@ -129,13 +129,13 @@ describe("link safety", () => {
     g.steps[0].link = { url: "https://evil.example/phish", label: "Create your app", prefilled: false };
     g.steps.push({ ...g.steps[0], id: "own", link: { url: "https://dashboard.acme.example/apps/new", label: "Open", prefilled: false } });
     g.steps.push({ ...g.steps[0], id: "seen", link: { url: "https://acme.example/docs", label: "Docs", prefilled: false } });
-    g.steps.push({ ...g.steps[0], id: "composio", link: { url: "https://dashboard.composio.dev/~/project/auth-configs", label: "Composio", prefilled: false } });
+    g.steps.push({ ...g.steps[0], id: "unseen", link: { url: "https://dashboard.composio.dev/~/project/auth-configs", label: "Composio", prefilled: false } });
     const out = await runGuideAgent("Acme", () => {}, deps([turn([{ name: "web_search", args: { query: "q" } }]), submit(g)]));
     const link = (id: string) => out.steps.find((s) => s.id === id)?.link?.url ?? null;
     expect(link("create-app")).toBeNull();
     expect(link("own")).toBe("https://dashboard.acme.example/apps/new");
     expect(link("seen")).toBe("https://acme.example/docs");
-    expect(link("composio")).toBe("https://dashboard.composio.dev/~/project/auth-configs");
+    expect(link("unseen")).toBeNull();
   });
 });
 

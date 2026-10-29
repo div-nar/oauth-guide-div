@@ -46,12 +46,20 @@ describe("library", () => {
     }
   });
 
-  test("slack's create-app link is a pre-filled manifest with Composio's redirect URI", () => {
+  test("slack's create-app link is a pre-filled manifest with permissions and no redirect URI to edit out", () => {
     const step = getLibraryGuide("slack")!.steps.find((s) => s.link?.prefilled)!;
     const url = new URL(step.link!.url);
     expect(url.origin + url.pathname).toBe("https://api.slack.com/apps");
     const manifest = JSON.parse(url.searchParams.get("manifest_json")!);
-    expect(manifest.oauth_config.redirect_urls).toContain("https://backend.composio.dev/api/v3/toolkits/auth/callback");
+    expect(manifest.oauth_config.scopes.bot).toContain("chat:write");
+    expect(manifest.oauth_config.redirect_urls).toBeUndefined();
+  });
+
+  test("Composio appears only in the managed-app offer, never in the setup", () => {
+    for (const g of listLibraryGuides()) {
+      const setup = JSON.stringify(g, (k, v) => (k === "composio" || k === "checks" ? undefined : v));
+      expect(setup.toLowerCase(), g.slug).not.toContain("composio");
+    }
   });
 
   test("unknown slug returns null", () => {

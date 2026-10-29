@@ -96,14 +96,14 @@ function baseDomain(host: string): string {
 }
 
 // A step link is clickable on our site, so only keep it if it points at the app's own
-// domain, Composio, or a host the agent actually saw. A poisoned page cannot plant one.
+// domain or a host the agent actually saw. A poisoned page cannot plant one.
 function safeLink(url: string, appWebsite: string, seen: Set<string>): boolean {
   try {
     const host = new URL(url).hostname.toLowerCase().replace(/^www\./, "");
     if (new URL(url).protocol !== "https:") return false;
     const appBase = baseDomain(new URL(appWebsite.startsWith("http") ? appWebsite : `https://${appWebsite}`).hostname);
     const seenHosts = new Set([...seen].map((u) => u.split("/")[0]));
-    return baseDomain(host) === appBase || baseDomain(host) === "composio.dev" || seenHosts.has(host);
+    return baseDomain(host) === appBase || seenHosts.has(host);
   } catch {
     return false;
   }

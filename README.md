@@ -53,7 +53,7 @@ Checks: `bun test`, `bunx tsc --noEmit` (run `bunx next typegen` first on a fres
 3. Before saving, code (not the model) checks the result:
    - Citations to pages the agent never saw are removed; a claim left with none becomes `Unconfirmed`.
    - The agent can never mark anything `Tested`.
-   - Step links must point at the app's own site, Composio, or a page the agent saw, so a poisoned page cannot plant a link.
+   - Step links must point at the app's own site or a page the agent saw, so a poisoned page cannot plant a link.
    - Things the structure cannot express (a reversed range, a "sourced" claim with no source) are repaired, not rejected.
 4. Code then runs checks that need no account, and records them with the date:
    - Every step link is opened: it loads, loads behind a sign-in, is not found, or gives no clear answer (a site that blocks bots is "unclear", never "broken").
@@ -64,6 +64,7 @@ Checks: `bun test`, `bunx tsc --noEmit` (run `bunx next typegen` first on a fres
 
 ## Key decisions
 
+- **Your own code, not a platform.** The brief is about getting the developer's own OAuth app created and approved, whatever they connect it through. So the steps assume the developer runs the OAuth flow in their own code: their callback address, their secret store. Composio appears in one place only: "Can't wait?", a stopgap while a review is pending.
 - **Agents are the main reader; the website is the fallback.** Developers ask their coding agent first, so every guide is plain text at a stable URL. We chose plain URLs over an MCP server: nothing to install or sign in to, and no tool definitions sitting in the agent's context.
 - **Verdict per kind of access.** Our first Slack guide said Easy; it is Hard for agents that read messages. The same app can be both.
 - **Honest numbers.** Providers rarely publish review times. Where a range is our estimate, the guide says so.
@@ -78,9 +79,8 @@ Checks: `bun test`, `bunx tsc --noEmit` (run `bunx next typegen` first on a fres
 
 1. **Slack is not Easy for agents that read.** Slack's changelog: commercially distributed apps outside the Marketplace created after May 29, 2025 get 1 request a minute and 15 messages per call on `conversations.history` and `conversations.replies`. Reading now needs a Marketplace listing (10 active installs, then up to 10 business days plus up to 10 weeks of review). We had read Slack's distribution pages but not its rate-limit changelog; the research agent now looks for limits on unlisted apps.
 2. **LinkedIn's verdict misled the common case.** It is Gated for company pages, ads, sales and recruiting, but signing people in and posting as them is self-serve.
-3. **Gmail's security assessment** applies when data passes through a server, and with Composio it passes through Composio's. Marked `Unconfirmed` until Google or Composio confirm.
+3. **Gmail's security assessment** was marked `Unconfirmed`, because we could not tell whether it applied to the setup we first assumed. Google's restricted scope page states it directly: apps that reach restricted data "from or through a third-party server" need a yearly assessment. A backend that reads email for your agent is such a server, so the step is now sourced.
 4. **The research agent cited pages it never opened** (on Zoom). Citations are now checked in code.
-5. **Composio's own guides disagree on the redirect URI** (`/api/v3/toolkits/auth/callback` in the GitHub guide, `/api/v1/auth-apps/add` in the Google one). Guides say to copy it from your Composio auth config.
 
 **Still uncertain:**
 

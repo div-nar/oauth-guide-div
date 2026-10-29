@@ -4,8 +4,8 @@ import { appliesTo } from "@/lib/paths";
 
 const GLOSSARY: [string, string][] = [
   ["What is an OAuth app?", "Your app's registration with the provider. It sets the name users see on the 'Allow?' screen and what you may ask for."],
-  ["What are the client ID and secret?", "Your app's username and password. The ID is public. Keep the secret private, and paste it into Composio yourself."],
-  ["What is a redirect address (redirect URI)?", "Where the provider sends people after they click Allow. With Composio, you copy it from your auth config."],
+  ["What are the client ID and secret?", "Your app's username and password. The ID is public. Keep the secret private, in your app's secret store, and add it there yourself."],
+  ["What is a redirect address (redirect URI)?", "Where the provider sends people after they click Allow: a callback address in your own app, which must match what you register with the provider."],
   ["What are scopes?", "The specific permissions you ask for, such as 'read email'. More powerful scopes mean more review."],
 ];
 
