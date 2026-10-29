@@ -1,69 +1,77 @@
-import Image from "next/image";
+import { AgentLaunchers } from "@/components/AgentLaunchers";
+import { ViewToggle } from "@/components/ViewToggle";
+import { CopyLine } from "@/components/CopyLine";
+import { GRADE_WORD } from "@/components/GradeMark";
+import { type GuideRow, GuideTable } from "@/components/GuideTable";
+import { getBaseUrl } from "@/lib/base-url";
+import { formatHandsOn, formatWait } from "@/lib/format";
+import type { Difficulty, Guide } from "@/lib/guide-schema";
+import { listGeneratedGuides } from "@/lib/guides";
+import { listLibraryGuides } from "@/lib/library";
 
-export default function Home() {
+export const dynamic = "force-dynamic";
+
+const ORDER: Difficulty[] = ["easy", "moderate", "hard", "gated", "not_applicable"];
+
+function toRow(g: Guide): GuideRow {
+  const v = g.verdict;
+  const easiest = [...g.useCases].sort((a, b) => ORDER.indexOf(a.difficulty) - ORDER.indexOf(b.difficulty))[0];
+  return {
+    slug: g.slug,
+    name: g.app.name,
+    website: g.app.website,
+    logoUrl: g.app.logoUrl,
+    difficulty: v.difficulty,
+    summary: v.summary,
+    handsOn: formatHandsOn(v.handsOnMinutes),
+    waiting: formatWait(v.waitDays),
+    handsOnMax: v.handsOnMinutes.max,
+    waitMax: v.waitDays.max,
+    source: g.generatedBy,
+    easier: easiest && easiest.difficulty !== v.difficulty ? `${GRADE_WORD[easiest.difficulty]} for: ${easiest.label}` : null,
+    options: g.useCases.map((u) => ({ id: u.id, label: u.label, difficulty: u.difficulty })),
+    defaultAccess: (g.useCases.find((u) => u.difficulty === v.difficulty) ?? g.useCases[0])?.id ?? null,
+    hasExisting: !!g.existingApp,
+  };
+}
+
+export default async function Home() {
+  const base = await getBaseUrl();
+  const library = listLibraryGuides();
+  const generated = await listGeneratedGuides(20).catch(() => []);
+  const rows = [...library, ...generated]
+    .map(toRow)
+    .sort((a, b) => a.handsOnMax + a.waitMax * 1440 - (b.handsOnMax + b.waitMax * 1440));
+  const prompt = `Read ${base}/llms.txt, then help me set up my own Gmail OAuth app for Composio.`;
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert h-5 w-[100px]"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the{" "}
-            <code className="rounded bg-black/[.06] px-1.5 py-0.5 font-mono text-[0.9em] dark:bg-white/[.08]">
-              page.tsx
-            </code>{" "}
-            file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+    <main className="page wide">
+      <nav className="crumbs small" aria-label="Breadcrumb">guides</nav>
+      <section className="home-hero">
+        <h1>OAuth app guides</h1>
+        <p className="lede">
+          Before your agent can act in someone&apos;s Gmail, Slack or HubSpot, you need your own OAuth app with
+          that provider. Some take five minutes, some take weeks of review. Pick the app, see what blocks you,
+          and hand the setup to your coding agent.
+        </p>
+      </section>
+
+
+      <section className="handoff home-handoff" aria-label="Use with your agent">
+        <div className="handoff-head">
+          <div>
+            <h2 className="handoff-title">Hand it to your agent</h2>
+            <p>Agents read the plain-text version of every guide. Click the prompt to copy it, or pick your agent.</p>
+          </div>
+          <div className="handoff-actions">
+            <AgentLaunchers prompt={prompt} />
+          </div>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert h-[14px] w-4"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={14}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
-    </div>
+        <CopyLine text={prompt} />
+      </section>
+
+      <GuideTable rows={rows} />
+      <ViewToggle human="/" machine="/ai" current="human" />
+    </main>
   );
 }

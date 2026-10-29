@@ -28,11 +28,26 @@ export const StepSchema = z.object({
   minutes: Range.nullish(),
   waitDays: Range.nullish(),
   whyHuman: z.string().nullish(),
-  url: z.string().nullish(),
+  // Deep link to the exact page for this step; prefilled when the provider supports it.
+  link: z.object({ url: z.string(), label: z.string(), prefilled: z.boolean() }).nullish(),
   evidence: EvidenceSchema,
 });
 
-export const GuideSchema = z.object({
+export const UseCaseSchema = z.object({
+  id: z.string(),
+  label: z.string(),
+  difficulty: z.enum(["easy", "moderate", "hard", "gated", "not_applicable"]),
+  handsOnMinutes: Range,
+  waitDays: Range,
+  summary: z.string(),
+  scopes: z.array(z.string()),
+  // Which steps make up this path; empty means all steps.
+  stepIds: z.array(z.string()),
+  evidence: EvidenceSchema,
+});
+
+export const GuideSchema = z
+  .object({
   slug: z.string(),
   app: z.object({ name: z.string(), website: z.string(), logoUrl: z.string().nullish() }),
   lastChecked: z.string(),
@@ -44,11 +59,22 @@ export const GuideSchema = z.object({
     waitDays: Range,
     summary: z.string(),
   }),
-  whoYouNeed: z.array(z.object({ role: z.string(), why: z.string() })),
+  // What the agent will do decides difficulty; verdict is the most common agent case.
+  useCases: z.array(UseCaseSchema),
+  // useCaseIds on people, forks and gotchas: which paths they belong to (empty or null = all).
+  whoYouNeed: z.array(z.object({ role: z.string(), why: z.string(), useCaseIds: z.array(z.string()).nullish() })),
   steps: z.array(StepSchema),
-  forks: z.array(z.object({ condition: z.string(), effect: z.string(), evidence: EvidenceSchema })),
+  forks: z.array(
+    z.object({ condition: z.string(), effect: z.string(), evidence: EvidenceSchema, useCaseIds: z.array(z.string()).nullish() }),
+  ),
   nuances: z.array(
-    z.object({ title: z.string(), detail: z.string(), ifStuck: z.string(), evidence: EvidenceSchema }),
+    z.object({
+      title: z.string(),
+      detail: z.string(),
+      ifStuck: z.string(),
+      evidence: EvidenceSchema,
+      useCaseIds: z.array(z.string()).nullish(),
+    }),
   ),
   config: z.object({
     consoleUrl: z.string().nullish(),
@@ -61,11 +87,28 @@ export const GuideSchema = z.object({
       }),
     ),
   }),
-});
+  // Whether Composio's own (managed) app can be used while yours is set up or in review.
+  composio: z
+    .object({ managedApp: z.enum(["yes", "no", "unknown"]), note: z.string(), evidence: EvidenceSchema })
+    .nullish(),
+  // For teams that already have an OAuth app with this provider.
+  existingApp: z
+    .object({
+      summary: z.string(),
+      steps: z.array(StepSchema),
+      reReviewTriggers: z.array(z.object({ trigger: z.string(), effect: z.string(), evidence: EvidenceSchema })),
+    })
+    .nullish(),
+  })
+  .refine((g) => !g.oauth.supported || g.useCases.length > 0, {
+    message: "a guide for an OAuth app needs at least one use case",
+    path: ["useCases"],
+  });
 
 export type Guide = z.infer<typeof GuideSchema>;
 export type Step = z.infer<typeof StepSchema>;
 export type Evidence = z.infer<typeof EvidenceSchema>;
+export type UseCase = z.infer<typeof UseCaseSchema>;
 export type Difficulty = Guide["verdict"]["difficulty"];
 
 export function parseGuide(x: unknown): Guide {

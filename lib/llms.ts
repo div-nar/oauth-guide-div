@@ -1,0 +1,27 @@
+import { listGeneratedGuides } from "@/lib/guides";
+import { listLibraryGuides } from "@/lib/library";
+
+// The agent-facing index: served at /llms.txt and shown in the home page's Machine view.
+export async function buildIndex(base: string): Promise<string> {
+  const generated = await listGeneratedGuides(50).catch(() => []);
+  const line = (g: { slug: string; app: { name: string }; verdict: { difficulty: string; summary: string } }) =>
+    `- [${g.app.name}](${base}/guides/${g.slug}.md): ${g.verdict.difficulty}. ${g.verdict.summary}`;
+  return [
+    "# OAuth App Guides",
+    "",
+    "> How to create and get approval for your own OAuth app with each provider, for use with Composio. Each guide tags steps [AGENT] (an agent can do it in the user's signed-in browser or CLI), [YOU] (a person must) and [WAIT] (provider review).",
+    "",
+    "Agents: fetch a guide's Markdown, do the [AGENT] steps, and stop to ask the user at each [YOU] step. Never ask the user to paste secrets into chat.",
+    "",
+    "## Checked by hand",
+    "",
+    ...listLibraryGuides().map(line),
+    ...(generated.length ? ["", "## Researched by the agent (not yet reviewed by a person)", "", ...generated.map(line)] : []),
+    "",
+    "## Any other app",
+    "",
+    `- Fetch ${base}/guides/<app-name>.md for any app. If there is no guide yet, research starts automatically and the response (HTTP 202) says when to fetch again, usually about 2 minutes.`,
+    `- Or POST ${base}/api/generate with JSON {"query": "<app name or website>"}; poll the returned statusUrl until status is "done".`,
+    "",
+  ].join("\n");
+}
