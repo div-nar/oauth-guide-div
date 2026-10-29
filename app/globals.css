@@ -197,7 +197,7 @@ section.block, details.block { margin-top: 48px; }
 .step-card .tech-text { font-family: var(--font-mono), monospace; font-size: 12.5px; line-height: 1.6; color: var(--muted); padding: 10px 12px; margin: 14px 0 0; background: rgba(255, 255, 255, 0.02); border: 1px solid var(--border); border-radius: 8px; }
 .step-card .ev { margin-top: 16px; padding-top: 12px; border-top: 1px solid var(--border); }
 .step-cta { display: inline-flex; gap: 8px; align-items: center; margin: 16px 0 2px; padding: 8px 14px; border-radius: 8px; background: var(--cw); border: 1px solid color-mix(in srgb, var(--c) 45%, transparent); color: var(--c); font-weight: 600; font-size: 14px; text-decoration: none; transition: background 120ms, border-color 120ms; }
-.step-cta::after { content: "\2197"; font-size: 13px; }
+.step-cta svg { opacity: 0.8; }
 .step-cta:hover { background: color-mix(in srgb, var(--c) 22%, transparent); border-color: var(--c); }
 .step-cta .prefilled { font-size: 11px; padding: 1px 6px; border-radius: 4px; background: rgba(0, 0, 0, 0.25); }
 .step-foot { margin-top: -16px; display: flex; justify-content: space-between; align-items: center; gap: 8px 20px; flex-wrap: wrap; }
