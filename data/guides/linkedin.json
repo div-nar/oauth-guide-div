@@ -535,7 +535,26 @@
           "title": "Composio: managed vs custom auth"
         }
       ]
-    }
+    },
+    "limits": [
+      {
+        "useCaseIds": [
+          "pages",
+          "partners"
+        ],
+        "note": "Composio's LinkedIn docs list company-page actions but do not say whether its own app includes company-page permissions, and some permissions cannot be combined in one app. Check before relying on it for company pages or partner-only APIs.",
+        "evidence": {
+          "level": "uncertain",
+          "sources": [
+            {
+              "url": "https://docs.composio.dev/toolkits/linkedin",
+              "title": "Composio: LinkedIn toolkit"
+            }
+          ],
+          "note": "The toolkit page confirms a managed app but not its permissions."
+        }
+      }
+    ]
   },
   "existingApp": {
     "summary": "Add Composio's redirect address on your app's Auth tab and paste the client ID and secret into Composio. Products you already have approved carry over.",

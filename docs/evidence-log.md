@@ -36,6 +36,8 @@ Read each provider's review or troubleshooting page for what happens after a rej
 - HubSpot: three active installs to list; Draft mode for incomplete listings; 10 business days first review, 60 days overall; unused scopes rejected.
 - LinkedIn: rejected Community Management requests cannot re-apply with the same app; Standard tier screencast rules.
 
+Composio's own apps, checked against each toolkit page (correction): the "Can't wait?" note promised Composio's app as a way round every review. Composio's Slack app is not Marketplace-listed yet ("working on Marketplace review"), so it does not avoid the reading limits. The Gmail and LinkedIn toolkit pages confirm a managed app but not its permissions, so those paths are now marked Unconfirmed.
+
 Forum and blog reports of Google homepage rejections were not used: none came from Google.
 
 - [ ] GitHub OAuth app on a free account (Div): time taken, screens, surprises.

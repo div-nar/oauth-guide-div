@@ -554,7 +554,7 @@
   ],
   "composio": {
     "managedApp": "yes",
-    "note": "You can connect users today with Composio's own Gmail app while yours is set up or in review. Users see 'Composio' on the consent screen, rate limits are shared with other Composio customers, and polling triggers run at most every 15 minutes. Switch to your own app when it is ready. This is the realistic way to pilot Gmail during Google's weeks of review.",
+    "note": "You can connect users today with Composio's own Gmail app while yours is set up or in review. Users see 'Composio' on the consent screen, rate limits are shared with other Composio customers, and polling triggers run at most every 15 minutes. Switch to your own app when it is ready.",
     "evidence": {
       "level": "sourced",
       "sources": [
@@ -567,7 +567,26 @@
           "title": "Composio: managed vs custom auth"
         }
       ]
-    }
+    },
+    "limits": [
+      {
+        "useCaseIds": [
+          "read",
+          "send"
+        ],
+        "note": "Composio's Gmail docs do not list which permissions its own app includes, and say Google blocks permissions it has not verified for that app. Connect a test account through Composio and check that your agent's actions work before relying on it.",
+        "evidence": {
+          "level": "uncertain",
+          "sources": [
+            {
+              "url": "https://docs.composio.dev/toolkits/gmail",
+              "title": "Composio: Gmail toolkit"
+            }
+          ],
+          "note": "The toolkit page confirms a managed app but not its permissions."
+        }
+      }
+    ]
   },
   "existingApp": {
     "summary": "Add Composio's redirect address to your existing OAuth client, or create a second client in the same project. Either way you keep the verification your project already has, as long as the permissions stay the same.",

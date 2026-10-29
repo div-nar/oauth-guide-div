@@ -146,6 +146,38 @@ BLOCKERS = {
     ],
 }
 
+C_SLACK = src("https://docs.composio.dev/toolkits/slack", "Composio: Slack toolkit")
+C_GMAIL = src("https://docs.composio.dev/toolkits/gmail", "Composio: Gmail toolkit")
+C_LINKEDIN = src("https://docs.composio.dev/toolkits/linkedin", "Composio: LinkedIn toolkit")
+
+# Which access Composio's own app does not cover, or its docs do not confirm.
+COMPOSIO = {
+    "slack": {
+        "drop": " Check whether Composio's managed Slack app is Marketplace-listed before relying on it for reading history; we could not confirm that.",
+        "limits": [{
+            "useCaseIds": ["read"],
+            "note": "Composio's own Slack app is not Marketplace-listed yet (Composio says its review is in progress), so reading history through it hits the same limits as any unlisted app, including at most 15 messages per request. It does not get you around the wait for reading.",
+            "evidence": ev(C_SLACK),
+        }],
+    },
+    "gmail": {
+        "drop": " This is the realistic way to pilot Gmail during Google's weeks of review.",
+        "limits": [{
+            "useCaseIds": ["read", "send"],
+            "note": "Composio's Gmail docs do not list which permissions its own app includes, and say Google blocks permissions it has not verified for that app. Connect a test account through Composio and check that your agent's actions work before relying on it.",
+            "evidence": {"level": "uncertain", "sources": [C_GMAIL], "note": "The toolkit page confirms a managed app but not its permissions."},
+        }],
+    },
+    "linkedin": {
+        "drop": "",
+        "limits": [{
+            "useCaseIds": ["pages", "partners"],
+            "note": "Composio's LinkedIn docs list company-page actions but do not say whether its own app includes company-page permissions, and some permissions cannot be combined in one app. Check before relying on it for company pages or partner-only APIs.",
+            "evidence": {"level": "uncertain", "sources": [C_LINKEDIN], "note": "The toolkit page confirms a managed app but not its permissions."},
+        }],
+    },
+}
+
 # Forks that the blockers above now cover, phrased from what the developer sees.
 REPLACED_FORKS = {
     "slack": "Your customer's workspace requires admin approval for apps",
@@ -157,5 +189,9 @@ for slug, items in BLOCKERS.items():
     g = json.loads(p.read_text())
     g["blockers"] = items
     g["forks"] = [f for f in g["forks"] if f["condition"] != REPLACED_FORKS.get(slug)]
+    if slug in COMPOSIO:
+        c = COMPOSIO[slug]
+        g["composio"]["note"] = g["composio"]["note"].replace(c["drop"], "") if c["drop"] else g["composio"]["note"]
+        g["composio"]["limits"] = c["limits"]
     p.write_text(json.dumps(g, indent=2, ensure_ascii=False) + "\n")
     print(slug, len(items))

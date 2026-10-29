@@ -9,7 +9,6 @@ type Agent = { name: string; site: string; action: string; href?: (p: string) =>
 const AGENTS: Agent[] = [
   { name: "Claude Code", site: "claude.ai", action: "Open in Claude Code", href: claudeCodeLink },
   { name: "Cursor", site: "cursor.com", action: "Open in Cursor", href: cursorLink },
-  { name: "ChatGPT", site: "chatgpt.com", action: "Open in ChatGPT", href: (p) => `https://chatgpt.com/?q=${encodeURIComponent(p)}` },
   { name: "Codex", site: "openai.com", action: "Copy prompt for Codex" },
   { name: "Gemini", site: "gemini.google.com", action: "Copy prompt for Gemini" },
   { name: "Windsurf", site: "windsurf.com", action: "Copy prompt for Windsurf" },

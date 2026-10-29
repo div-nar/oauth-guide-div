@@ -15,6 +15,16 @@ function evidenceLine(e: Evidence): string {
   return `Evidence: ${e.level}${src ? ` (${src})` : ""}${e.note ? `. Note: ${e.note}` : ""}`;
 }
 
+// Composio's own app lets people connect while their app waits for review.
+function composioOffer(g: Guide, picked: string[], waiting: boolean): string[] {
+  if (!waiting || g.composio?.managedApp !== "yes") return [];
+  const out = ["", "## Can't wait? Connect on Composio", `${g.composio.note} ${evidenceLine(g.composio.evidence)}`];
+  for (const l of g.composio.limits ?? []) {
+    if (l.useCaseIds.some((id) => picked.includes(id))) out.push(`- Limit: ${l.note} ${evidenceLine(l.evidence)}`);
+  }
+  return out;
+}
+
 export function guideToMarkdown(g: Guide, baseUrl: string, sel?: Selection): string {
   const c = sel && g.useCases.length ? combine(g, sel.ids) : null;
   const picked = c?.ids ?? g.useCases.map((u) => u.id);
@@ -44,6 +54,7 @@ export function guideToMarkdown(g: Guide, baseUrl: string, sel?: Selection): str
       );
     }
   }
+  for (const line of composioOffer(g, picked, v.waitDays.max > 0 && !existing)) out.push(line);
   if (g.whoYouNeed.some((x) => appliesTo(x.useCaseIds, picked))) {
     out.push("", "## Who you need");
     for (const w of g.whoYouNeed.filter((x) => appliesTo(x.useCaseIds, picked))) out.push(`- ${w.role}: ${w.why}`);

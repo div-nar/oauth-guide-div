@@ -61,3 +61,24 @@ describe("blockers", () => {
     expect(guideToMarkdown(g, "https://example.test", { ids: ["post"], existing: false })).not.toContain(onlyRead!.symptom);
   });
 });
+
+describe("composio managed app", () => {
+  const slack = getLibraryGuide("slack")!;
+
+  test("markdown offers Composio's app when the path has a wait", () => {
+    const out = guideToMarkdown(slack, "https://example.test", { ids: ["read"], existing: false });
+    expect(out).toContain("## Can't wait? Connect on Composio");
+  });
+
+  test("a limit for the selected access is shown with the offer", () => {
+    const limit = slack.composio!.limits!.find((l) => l.useCaseIds.includes("read"))!;
+    expect(limit.evidence.level).toBe("sourced");
+    const out = guideToMarkdown(slack, "https://example.test", { ids: ["read"], existing: false });
+    expect(out).toContain(limit.note);
+  });
+
+  test("no offer when the selected path has no wait", () => {
+    const out = guideToMarkdown(slack, "https://example.test", { ids: ["post"], existing: false });
+    expect(out).not.toContain("Connect on Composio");
+  });
+});

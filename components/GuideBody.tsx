@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { AccessModal } from "@/components/AccessModal";
 import { EvidenceBadge } from "@/components/EvidenceBadge";
+import { AppLogo } from "@/components/AppLogo";
 import { BlockedList, FaqList, WhoList } from "@/components/GuideExtras";
 import { HandoffButtons } from "@/components/HandoffButtons";
 import { GRADE_MEANING, GRADE_WORD, GradeMark } from "@/components/GradeMark";
@@ -66,8 +67,20 @@ export function GuideBody({ guide: g, initialIds, initialExisting = false, baseU
 
         {g.composio?.managedApp === "yes" && u.waitDays.max > 0 && !existing && (
           <div className="managed-note">
-            <strong>Can&apos;t wait {formatWait(u.waitDays)}?</strong> {g.composio.note}
+            <p className="managed-head">
+              <AppLogo name="Composio" website="composio.dev" size={20} />
+              <strong>Can&apos;t wait? Connect on Composio</strong>
+            </p>
+            <p>{g.composio.note}</p>
             <EvidenceBadge evidence={g.composio.evidence} />
+            {(g.composio.limits ?? [])
+              .filter((l) => l.useCaseIds.some((id) => u.ids.includes(id)))
+              .map((l) => (
+                <div key={l.note} className="managed-limit">
+                  <p><strong>Limit:</strong> {l.note}</p>
+                  <EvidenceBadge evidence={l.evidence} />
+                </div>
+              ))}
           </div>
         )}
       </section>

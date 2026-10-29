@@ -102,7 +102,13 @@ export const GuideSchema = z
   }),
   // Whether Composio's own (managed) app can be used while yours is set up or in review.
   composio: z
-    .object({ managedApp: z.enum(["yes", "no", "unknown"]), note: z.string(), evidence: EvidenceSchema })
+    .object({
+      managedApp: z.enum(["yes", "no", "unknown"]),
+      note: z.string(),
+      evidence: EvidenceSchema,
+      // Access that Composio's app does not cover, or that its docs do not confirm.
+      limits: z.array(z.object({ useCaseIds: z.array(z.string()), note: z.string(), evidence: EvidenceSchema })).nullish(),
+    })
     .nullish(),
   // For teams that already have an OAuth app with this provider.
   existingApp: z

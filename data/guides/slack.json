@@ -447,7 +447,7 @@
   ],
   "composio": {
     "managedApp": "yes",
-    "note": "You can connect users today with Composio's own Slack app while yours is set up or in review. Users see 'Composio' on the consent screen, rate limits are shared with other Composio customers, and polling triggers run at most every 15 minutes. Switch to your own app when it is ready. Check whether Composio's managed Slack app is Marketplace-listed before relying on it for reading history; we could not confirm that.",
+    "note": "You can connect users today with Composio's own Slack app while yours is set up or in review. Users see 'Composio' on the consent screen, rate limits are shared with other Composio customers, and polling triggers run at most every 15 minutes. Switch to your own app when it is ready.",
     "evidence": {
       "level": "sourced",
       "sources": [
@@ -460,7 +460,24 @@
           "title": "Composio: managed vs custom auth"
         }
       ]
-    }
+    },
+    "limits": [
+      {
+        "useCaseIds": [
+          "read"
+        ],
+        "note": "Composio's own Slack app is not Marketplace-listed yet (Composio says its review is in progress), so reading history through it hits the same limits as any unlisted app, including at most 15 messages per request. It does not get you around the wait for reading.",
+        "evidence": {
+          "level": "sourced",
+          "sources": [
+            {
+              "url": "https://docs.composio.dev/toolkits/slack",
+              "title": "Composio: Slack toolkit"
+            }
+          ]
+        }
+      }
+    ]
   },
   "existingApp": {
     "summary": "Add Composio's redirect address under OAuth & Permissions, then paste the existing client ID and secret into Composio. Existing installs keep working.",
