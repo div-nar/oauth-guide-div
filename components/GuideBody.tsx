@@ -27,6 +27,9 @@ export function GuideBody({ guide: g, initialIds, initialExisting = false, baseU
   const ex = g.existingApp;
 
   const sel = { ids: u.ids, existing: existing && !!ex };
+  const composioRuledOut = (g.composio?.limits ?? []).some(
+    (l) => l.evidence.level === "sourced" && l.useCaseIds.some((id) => u.ids.includes(id)),
+  );
   return (
     <>
       <HandoffButtons guide={g} baseUrl={baseUrl} sel={sel} steps={existing && ex ? ex.steps : steps} />
@@ -65,23 +68,11 @@ export function GuideBody({ guide: g, initialIds, initialExisting = false, baseU
           )}
         </div>
 
-        {g.composio?.managedApp === "yes" && u.waitDays.max > 0 && !existing && (
-          <div className="managed-note">
-            <p className="managed-head">
-              <AppLogo name="Composio" website="composio.dev" size={20} />
-              <strong>Can&apos;t wait? Connect on Composio</strong>
-            </p>
-            <p>{g.composio.note}</p>
-            <EvidenceBadge evidence={g.composio.evidence} />
-            {(g.composio.limits ?? [])
-              .filter((l) => l.useCaseIds.some((id) => u.ids.includes(id)))
-              .map((l) => (
-                <div key={l.note} className="managed-limit">
-                  <p><strong>Limit:</strong> {l.note}</p>
-                  <EvidenceBadge evidence={l.evidence} />
-                </div>
-              ))}
-          </div>
+        {g.composio?.managedApp === "yes" && u.waitDays.max > 0 && !existing && !composioRuledOut && (
+          <a className="btn secondary composio-btn" href={`https://docs.composio.dev/toolkits/${g.slug}`} target="_blank" rel="noreferrer" title={g.composio.note}>
+            <AppLogo name="Composio" website="composio.dev" size={16} />
+            Can&apos;t wait? Connect on Composio
+          </a>
         )}
       </section>
 

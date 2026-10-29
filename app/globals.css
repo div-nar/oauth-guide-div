@@ -286,11 +286,7 @@ details.tech div { margin-top: 6px; padding: 10px 12px; background: var(--card);
 .copy-line:hover .copy-icon { color: var(--ink); }
 
 .picker-q.second { margin-top: 18px; }
-.managed-note { margin-top: 16px; padding: 14px 16px; border: 1px dashed var(--border-strong); border-radius: 6px; font-size: 14.5px; color: var(--muted); }
-.managed-note strong { color: var(--ink); }
-.managed-note p { margin: 0 0 8px; }
-.managed-head { display: flex; align-items: center; gap: 8px; }
-.managed-limit { margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--border); }
+.composio-btn { margin-top: 16px; font-size: 13px; padding: 6px 12px; font-weight: 500; }
 
 .choices { display: grid; gap: 10px; margin-top: 8px; }
 .choice { gap: 2px; padding: 14px 16px; }
