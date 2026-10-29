@@ -41,7 +41,7 @@ bun run dev
 | `OPENROUTER_API_KEY` | Model and web search access for the research agent |
 | `AGENT_MODEL` | Optional. Defaults to `openai/gpt-5.6-terra` |
 | `SEARCH_MODEL` | Optional. Defaults to `openai/gpt-5.6-luna` (search helper and name check) |
-| `DAILY_GENERATION_CAP`, `PER_IP_HOURLY_CAP` | Spend limits. Default 10 per day, 3 per person per hour |
+| `DAILY_GENERATION_CAP` | Spend limit: research runs per day across everyone. Default 10 |
 | `SITE_URL` | Optional public base URL used in links for agents |
 
 Checks: `bun test`, `bunx tsc --noEmit` (run `bunx next typegen` first on a fresh clone), `bun run lint`, `bun run build`.

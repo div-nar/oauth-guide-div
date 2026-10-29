@@ -6,6 +6,12 @@ const gmail = getLibraryGuide("gmail")!;
 const md = guideToMarkdown(gmail, "https://example.test");
 
 describe("guideToMarkdown", () => {
+  test("titles OAuth apps and API-key apps differently", () => {
+    expect(md.split("\n")[0]).toBe("# OAuth app setup: Gmail");
+    const apiKey = { ...gmail, oauth: { supported: false }, useCases: [] };
+    expect(guideToMarkdown(apiKey, "https://example.test").split("\n")[0]).toBe("# API access setup: Gmail");
+  });
+
   test("contains the verdict line", () => {
     expect(md).toContain("Difficulty: hard");
     expect(md).toContain(gmail.verdict.summary);
