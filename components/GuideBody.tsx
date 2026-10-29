@@ -14,6 +14,10 @@ import { formatHandsOn, formatWait } from "@/lib/format";
 import type { Guide } from "@/lib/guide-schema";
 import { combine, selectionQuery } from "@/lib/paths";
 
+// Gated access with no time and no wait is closed, not instant (LinkedIn r_member_social).
+const closed = (x: { difficulty: string; handsOnMinutes: { max: number }; waitDays: { max: number } }) =>
+  x.difficulty === "gated" && x.handsOnMinutes.max === 0 && x.waitDays.max === 0;
+
 // The first sentence of the verdict in bold, the rest after it.
 function Lede({ text }: { text: string }) {
   const m = text.match(/^([^]+?[.!?])\s+([^]*)$/);
@@ -95,8 +99,14 @@ export function GuideBody({ guide: g, initialIds, initialExisting = false, baseU
                       )}
                     </td>
                     <td><span className={`grade-chip ${x.difficulty}`}><GradeMark difficulty={x.difficulty} size={10} /> {GRADE_WORD[x.difficulty]}</span></td>
-                    <td className="num">{formatHandsOn(x.handsOnMinutes)}</td>
-                    <td className="num">{formatWait(x.waitDays)}</td>
+                    {closed(x) ? (
+                      <td className="num" colSpan={2}>Not available to new apps</td>
+                    ) : (
+                      <>
+                        <td className="num">{formatHandsOn(x.handsOnMinutes)}</td>
+                        <td className="num">{formatWait(x.waitDays)}</td>
+                      </>
+                    )}
                   </tr>
                 );
               })}
