@@ -69,6 +69,15 @@ export function guideToMarkdown(g: Guide, baseUrl: string, sel?: Selection): str
     out.push("", "## Nuances and blockers");
     for (const n of g.nuances.filter((x) => appliesTo(x.useCaseIds, picked))) out.push(`- ${n.title}: ${n.detail} If stuck: ${n.ifStuck} ${evidenceLine(n.evidence)}`);
   }
+  const blockers = (g.blockers ?? []).filter((x) => appliesTo(x.useCaseIds, picked));
+  if (blockers.length) {
+    out.push("", "## If you get blocked or rejected");
+    for (const b of blockers) {
+      out.push(`- ${b.symptom}`, `  Why: ${b.cause}`, `  What to do: ${b.fix}`);
+      if (b.escalate) out.push(`  Escalate: ${b.escalate.label} ${b.escalate.url}`);
+      out.push(`  ${evidenceLine(b.evidence)}`);
+    }
+  }
   out.push("", "## Configuration");
   if (g.config.consoleUrl) out.push(`- Console: ${g.config.consoleUrl}`);
   if (g.config.redirectUriNote) out.push(`- Redirect URI: ${g.config.redirectUriNote}`);

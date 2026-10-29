@@ -76,6 +76,19 @@ export const GuideSchema = z
       useCaseIds: z.array(z.string()).nullish(),
     }),
   ),
+  // What a developer sees when they get stuck or rejected, why, and what to do.
+  blockers: z
+    .array(
+      z.object({
+        symptom: z.string(),
+        cause: z.string(),
+        fix: z.string(),
+        escalate: z.object({ url: z.string(), label: z.string() }).nullish(),
+        useCaseIds: z.array(z.string()).nullish(),
+        evidence: EvidenceSchema,
+      }),
+    )
+    .nullish(),
   config: z.object({
     consoleUrl: z.string().nullish(),
     redirectUriNote: z.string().nullish(),

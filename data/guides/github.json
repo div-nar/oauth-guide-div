@@ -164,21 +164,7 @@
       }
     }
   ],
-  "forks": [
-    {
-      "condition": "Your users connect accounts that belong to a GitHub organisation",
-      "effect": "New organisations restrict OAuth apps by default. Each user's organisation owner must approve your app before it can see that organisation's private repositories.",
-      "evidence": {
-        "level": "sourced",
-        "sources": [
-          {
-            "url": "https://docs.github.com/en/organizations/managing-oauth-access-to-your-organizations-data/about-oauth-app-access-restrictions",
-            "title": "GitHub Docs: OAuth app access restrictions"
-          }
-        ]
-      }
-    }
-  ],
+  "forks": [],
   "nuances": [
     {
       "title": "Everything on the form is public",
@@ -322,5 +308,49 @@
         }
       }
     ]
-  }
+  },
+  "blockers": [
+    {
+      "symptom": "Your app only sees an organisation's public repositories",
+      "cause": "New GitHub organisations turn on OAuth app access restrictions by default. Until an owner approves your app, members cannot grant it access to the organisation's private data.",
+      "fix": "Each user requests approval for your app when they authorise it. An organisation owner approves it under the organisation's Third-party access settings. Tell users this before they connect.",
+      "escalate": {
+        "url": "https://docs.github.com/en/organizations/managing-oauth-access-to-your-organizations-data/approving-oauth-apps-for-your-organization",
+        "label": "GitHub: how owners approve an OAuth app"
+      },
+      "useCaseIds": null,
+      "evidence": {
+        "level": "sourced",
+        "sources": [
+          {
+            "url": "https://docs.github.com/en/organizations/managing-oauth-access-to-your-organizations-data/about-oauth-app-access-restrictions",
+            "title": "GitHub: About OAuth app access restrictions"
+          },
+          {
+            "url": "https://docs.github.com/en/organizations/managing-oauth-access-to-your-organizations-data/approving-oauth-apps-for-your-organization",
+            "title": "GitHub: Approving OAuth apps for your organization"
+          }
+        ]
+      }
+    },
+    {
+      "symptom": "Sign-in fails with redirect_uri_mismatch",
+      "cause": "The redirect address sent during sign-in does not match the callback URL registered on your OAuth app.",
+      "fix": "Copy the redirect URI from your Composio auth config into the app's Authorization callback URL field exactly, then try again.",
+      "escalate": {
+        "url": "https://docs.github.com/en/apps/oauth-apps/maintaining-oauth-apps/troubleshooting-authorization-request-errors",
+        "label": "GitHub: authorization request errors"
+      },
+      "useCaseIds": null,
+      "evidence": {
+        "level": "sourced",
+        "sources": [
+          {
+            "url": "https://docs.github.com/en/apps/oauth-apps/maintaining-oauth-apps/troubleshooting-authorization-request-errors",
+            "title": "GitHub: Troubleshooting authorization request errors"
+          }
+        ]
+      }
+    }
+  ]
 }

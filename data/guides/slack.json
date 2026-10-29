@@ -277,23 +277,6 @@
         "post",
         "read"
       ]
-    },
-    {
-      "condition": "Your customer's workspace requires admin approval for apps",
-      "effect": "The user who connects can only request the app. Their workspace admin must approve it, so expect a short wait on the customer side.",
-      "evidence": {
-        "level": "sourced",
-        "sources": [
-          {
-            "url": "https://docs.slack.dev/distribution/",
-            "title": "Slack: Distributing your app"
-          }
-        ]
-      },
-      "useCaseIds": [
-        "post",
-        "read"
-      ]
     }
   ],
   "nuances": [
@@ -523,5 +506,71 @@
         }
       }
     ]
-  }
+  },
+  "blockers": [
+    {
+      "symptom": "Slack won't let you submit to the Marketplace",
+      "cause": "Apps need at least 10 active workspace installs before they can be submitted.",
+      "fix": "Distribute the app directly (shareable install link) to customer workspaces until you reach 10 active installs, then submit.",
+      "escalate": {
+        "url": "https://docs.slack.dev/slack-marketplace/slack-marketplace-review-guide",
+        "label": "Slack Marketplace review guide"
+      },
+      "useCaseIds": [
+        "read"
+      ],
+      "evidence": {
+        "level": "sourced",
+        "sources": [
+          {
+            "url": "https://docs.slack.dev/slack-marketplace/slack-marketplace-review-guide",
+            "title": "Slack Marketplace review guide"
+          }
+        ]
+      }
+    },
+    {
+      "symptom": "Your Marketplace submission is sent back",
+      "cause": "Common reasons: scopes for features you have not built yet, scopes you cannot justify, install problems, or bugs that block testing. Reviewers cannot get into your workspaces.",
+      "fix": "Address each point of the feedback in your app settings and resubmit. Request only the scopes you use today, and give reviewers a test account and a way to install the app themselves. Your queue place resets if you resubmit during the preliminary review.",
+      "escalate": {
+        "url": "https://docs.slack.dev/slack-marketplace/slack-marketplace-review-guide",
+        "label": "Slack Marketplace review guide"
+      },
+      "useCaseIds": [
+        "read"
+      ],
+      "evidence": {
+        "level": "sourced",
+        "sources": [
+          {
+            "url": "https://docs.slack.dev/slack-marketplace/slack-marketplace-review-guide",
+            "title": "Slack Marketplace review guide"
+          }
+        ]
+      }
+    },
+    {
+      "symptom": "A customer can't install your app",
+      "cause": "Their workspace requires admin approval for apps, or has restricted yours.",
+      "fix": "Ask the customer to request the app and have a workspace owner or app manager approve it. Restricted apps cannot be requested at all.",
+      "escalate": {
+        "url": "https://slack.com/help/articles/222386767-Manage-app-approval-for-your-workspace",
+        "label": "Slack: app approval for workspaces"
+      },
+      "useCaseIds": [
+        "post",
+        "read"
+      ],
+      "evidence": {
+        "level": "sourced",
+        "sources": [
+          {
+            "url": "https://slack.com/help/articles/222386767-Manage-app-approval-for-your-workspace",
+            "title": "Slack: Manage app approval for your workspace"
+          }
+        ]
+      }
+    }
+  ]
 }

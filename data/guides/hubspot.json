@@ -442,5 +442,49 @@
         }
       }
     ]
-  }
+  },
+  "blockers": [
+    {
+      "symptom": "You can't list on the App Marketplace yet",
+      "cause": "Listing needs at least three active installs: HubSpot accounts unconnected to your company that made successful API calls through your app in the last 30 days.",
+      "fix": "Install the app directly for three customer accounts first, using your install link, and keep them active before you submit.",
+      "escalate": {
+        "url": "https://developers.hubspot.com/docs/apps/developer-platform/list-apps/listing-your-app/app-marketplace-listing-requirements",
+        "label": "HubSpot: listing requirements"
+      },
+      "useCaseIds": [
+        "customers"
+      ],
+      "evidence": {
+        "level": "sourced",
+        "sources": [
+          {
+            "url": "https://developers.hubspot.com/docs/apps/developer-platform/list-apps/listing-your-app/app-marketplace-listing-requirements",
+            "title": "HubSpot: App Marketplace listing requirements"
+          }
+        ]
+      }
+    },
+    {
+      "symptom": "Your listing is set back to Draft or rejected",
+      "cause": "Missing, incorrect or misleading listing details, dead links, or scopes your app requests but does not use.",
+      "fix": "Apply the feedback from the Ecosystem Quality team, remove unused scopes or mark them optional, and resubmit. The first review takes up to 10 business days; the whole cycle should finish within 60 days. Submit one app at a time: extra submissions are rejected automatically.",
+      "escalate": {
+        "url": "https://community.hubspot.com/c/develop-build-integrate/apis-integrations/80",
+        "label": "HubSpot developer community"
+      },
+      "useCaseIds": [
+        "customers"
+      ],
+      "evidence": {
+        "level": "sourced",
+        "sources": [
+          {
+            "url": "https://developers.hubspot.com/docs/apps/developer-platform/list-apps/listing-your-app/app-marketplace-listing-requirements",
+            "title": "HubSpot: App Marketplace listing requirements"
+          }
+        ]
+      }
+    }
+  ]
 }

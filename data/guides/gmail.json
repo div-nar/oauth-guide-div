@@ -609,5 +609,74 @@
         }
       }
     ]
-  }
+  },
+  "blockers": [
+    {
+      "symptom": "Google's automated brand check lists problems",
+      "cause": "Your home page must be public (not behind a login), describe the app and link to the privacy policy. The privacy policy must be on the same domain and explain how you use Google data. Your domain must be verified in Google Search Console.",
+      "fix": "Fix each listed issue and run verification again, or request a manual review (usually 2 to 3 business days). Cancel verification before changing branding, and publish within 7 days of a passing result.",
+      "escalate": {
+        "url": "https://developers.google.com/identity/protocols/oauth2/production-readiness/brand-verification",
+        "label": "Google: brand verification"
+      },
+      "useCaseIds": null,
+      "evidence": {
+        "level": "sourced",
+        "sources": [
+          {
+            "url": "https://developers.google.com/identity/protocols/oauth2/production-readiness/brand-verification",
+            "title": "Google: Brand verification"
+          }
+        ]
+      }
+    },
+    {
+      "symptom": "Your review seems stuck",
+      "cause": "Google's Trust & Safety team may email you for more information, and the review pauses until you answer.",
+      "fix": "Check the developer contact and support email addresses on your consent screen, including spam. Check the Verification Center for a paused status, and reply on the same email thread.",
+      "escalate": {
+        "url": "https://developers.google.com/identity/protocols/oauth2/production-readiness/sensitive-scope-verification",
+        "label": "Google: verification and Trust & Safety follow-up"
+      },
+      "useCaseIds": [
+        "read",
+        "send"
+      ],
+      "evidence": {
+        "level": "sourced",
+        "sources": [
+          {
+            "url": "https://developers.google.com/identity/protocols/oauth2/production-readiness/brand-verification",
+            "title": "Google: Brand verification"
+          },
+          {
+            "url": "https://developers.google.com/identity/protocols/oauth2/production-readiness/sensitive-scope-verification",
+            "title": "Google: Sensitive scope verification"
+          }
+        ]
+      }
+    },
+    {
+      "symptom": "Verification is refused because of a policy flag",
+      "cause": "A project on your account was flagged for a Terms of Service violation, or your domain is marked dangerous in Google Search.",
+      "fix": "Resolve the flagged project and appeal in the Google Cloud console, or fix the Search Console issues and request a security review. Resubmit only after that review finishes.",
+      "escalate": {
+        "url": "https://support.google.com/cloud/answer/13804782",
+        "label": "Google Cloud: common verification issues"
+      },
+      "useCaseIds": [
+        "read",
+        "send"
+      ],
+      "evidence": {
+        "level": "sourced",
+        "sources": [
+          {
+            "url": "https://support.google.com/cloud/answer/13804782",
+            "title": "Google Cloud: Examples of common issues"
+          }
+        ]
+      }
+    }
+  ]
 }

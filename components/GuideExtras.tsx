@@ -25,6 +25,31 @@ export function WhoList({ guide: g, ids }: { guide: Guide; ids: string[] | null 
   );
 }
 
+export function BlockedList({ guide: g, ids }: { guide: Guide; ids: string[] | null }) {
+  const blockers = (g.blockers ?? []).filter((b) => !ids || appliesTo(b.useCaseIds, ids));
+  if (!blockers.length) return null;
+  return (
+    <section className="block">
+      <h2 className="label">Blocked or rejected?</h2>
+      <div className="faq">
+        {blockers.map((b) => (
+          <details key={b.symptom}>
+            <summary>{b.symptom}</summary>
+            <div className="faq-body">
+              <p><strong>Why:</strong> {b.cause}</p>
+              <p><strong>What to do:</strong> {b.fix}</p>
+              {b.escalate && (
+                <p><strong>Where to go:</strong> <a className="escalate-link" href={b.escalate.url} target="_blank" rel="noreferrer">{b.escalate.label}</a></p>
+              )}
+              <EvidenceBadge evidence={b.evidence} />
+            </div>
+          </details>
+        ))}
+      </div>
+    </section>
+  );
+}
+
 export function FaqList({ guide: g, ids }: { guide: Guide; ids: string[] | null }) {
   const keep = (x: { useCaseIds?: string[] | null }) => !ids || appliesTo(x.useCaseIds, ids);
   const faqs = [

@@ -568,5 +568,49 @@
         }
       }
     ]
-  }
+  },
+  "blockers": [
+    {
+      "symptom": "Your Community Management access request is rejected",
+      "cause": "LinkedIn vets the use case, a verified business email (personal addresses fail), your organisation, its website and domain, and that a super admin of your company Page verified the app.",
+      "fix": "You cannot re-apply with the same app. Fix what failed, create a new app, and submit a new Development tier request.",
+      "escalate": {
+        "url": "https://www.linkedin.com/help/linkedin/ask/dsapi",
+        "label": "LinkedIn Developer Support"
+      },
+      "useCaseIds": [
+        "pages"
+      ],
+      "evidence": {
+        "level": "sourced",
+        "sources": [
+          {
+            "url": "https://learn.microsoft.com/en-us/linkedin/marketing/community-management-app-review",
+            "title": "LinkedIn: Community Management app review"
+          }
+        ]
+      }
+    },
+    {
+      "symptom": "Your Standard tier upgrade is rejected",
+      "cause": "The screencast did not show every use case on your form, the privacy policy was missing or invalid, or the app breaks LinkedIn's data storage rules.",
+      "fix": "Record a high-resolution, narrated screencast of only your app showing each test case, then start again with a new app and a new Development tier request. The same app cannot re-apply.",
+      "escalate": {
+        "url": "https://www.linkedin.com/help/linkedin/ask/dsapi",
+        "label": "LinkedIn Developer Support"
+      },
+      "useCaseIds": [
+        "pages"
+      ],
+      "evidence": {
+        "level": "sourced",
+        "sources": [
+          {
+            "url": "https://learn.microsoft.com/en-us/linkedin/marketing/community-management-app-review",
+            "title": "LinkedIn: Community Management app review"
+          }
+        ]
+      }
+    }
+  ]
 }

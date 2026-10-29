@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { AccessModal } from "@/components/AccessModal";
 import { EvidenceBadge } from "@/components/EvidenceBadge";
-import { FaqList, WhoList } from "@/components/GuideExtras";
+import { BlockedList, FaqList, WhoList } from "@/components/GuideExtras";
 import { HandoffButtons } from "@/components/HandoffButtons";
 import { GRADE_MEANING, GRADE_WORD, GradeMark } from "@/components/GradeMark";
 import { PathVisual } from "@/components/PathVisual";
@@ -120,6 +120,7 @@ export function GuideBody({ guide: g, initialIds, initialExisting = false, baseU
         </>
       )}
       <WhoList guide={g} ids={u.ids} />
+      <BlockedList guide={g} ids={u.ids} />
       <FaqList guide={g} ids={u.ids} />
       <ViewToggle human={`/guides/${g.slug}${selectionQuery(sel)}`} machine={`/guides/${g.slug}/ai${selectionQuery(sel)}`} current="human" />
     </>
