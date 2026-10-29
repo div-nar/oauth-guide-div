@@ -46,9 +46,10 @@ Over successive iterations, I became increasingly convinced that the workflow wa
 
 **Agents.** I also explored whether agent-friendly documentation could reduce retrieval overhead. Comparing a guide’s web page with its Markdown version (listed in `llms.txt`), I observed an improvement of approximately 0.15 seconds in request time in one agent run. While modest per request, this could compound when agents repeatedly retrieve information from the same provider. The larger bottleneck was end-to-end research, which typically took 60–90 seconds per run. This was more a cost issue, so I split the workflow between two models: GPT-5.6 Luna for finding relevant documentation and GPT-5.6 Terra for consolidating it into a coherent setup guide.
 
-I validated it with unit tests, local browser testing, stubbed API responses, database checks, and trial runs, finding three interesting features:
+I validated it with unit tests, local browser testing, stubbed API responses, database checks, and trial runs, finding four interesting features:
 
 - **Application discovery:** App names could be ambiguous, nonexistent, or duplicated. I tested cases such as Hinge, ensuring the system distinguished between products.
+- **One app, several services:** A single company can run separate developer platforms, each with its own OAuth app. Uber, for example, has the Uber Developer Platform for rides, Uber for Business and Uber Eats. The system asks which one the developer means, then gives a guide for that service.
 - **Integration paths:** Not every application requires OAuth. OpenWeather, for instance, used an API-key approach, while some applications lacked an accessible developer platform. The system needed to identify the appropriate authentication method or state clearly when a path couldn’t be found.
 - **Protocol differences:** I accounted for differences in how providers apply OAuth 2.0 and the stricter OAuth 2.1 rules, such as PKCE and exact callback matching, ensuring the guides reflected the relevant protocol requirements and setup steps rather than treating all OAuth implementations identically.
 
