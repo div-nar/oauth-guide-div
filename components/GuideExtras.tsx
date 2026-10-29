@@ -73,13 +73,15 @@ function Chevron() {
   );
 }
 
-// Ask anything first (answered from this guide), then this app's four most useful
-// what-ifs and gotchas. The rest stay in the Markdown that agents and the ask box read.
+// Ask anything first (answered from this guide), then up to four of this app's
+// questions. The rest stay in the Markdown that agents and the ask box read.
 export function FaqList({ guide: g, ids }: { guide: Guide; ids: string[] | null }) {
   const keep = (x: { useCaseIds?: string[] | null }) => !ids || appliesTo(x.useCaseIds, ids);
   const faqs = [
     ...g.forks.filter(keep).map((f) => ({ q: `What if ${f.condition.charAt(0).toLowerCase() + f.condition.slice(1)}?`, a: f.effect, stuck: null as string | null, evidence: f.evidence })),
-    ...g.nuances.filter(keep).map((n) => ({ q: n.title, a: n.detail, stuck: n.ifStuck, evidence: n.evidence })),
+    // Gotchas are titled as statements ("Ask for the narrowest permission"); only real
+    // questions belong in this list. The rest stay with the ask box and the Markdown.
+    ...g.nuances.filter((n) => keep(n) && n.title.trim().endsWith("?")).map((n) => ({ q: n.title, a: n.detail, stuck: n.ifStuck, evidence: n.evidence })),
   ].slice(0, 4);
   return (
     <section className="block">
