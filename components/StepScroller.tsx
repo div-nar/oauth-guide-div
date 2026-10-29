@@ -5,34 +5,14 @@ import { EvidenceBadge } from "@/components/EvidenceBadge";
 import type { Step } from "@/lib/guide-schema";
 import { formatRange } from "@/lib/format";
 
-const OWNER = { agent: "Your agent", human: "You", waiting: "Waiting on the provider" } as const;
+const OWNER = { agent: "Your agent", human: "You", waiting: "Waiting" } as const;
 // A step opens once it crosses this line (a fraction of the window's height).
 const LINE = 0.35;
 
 const timeOf = (s: Step) => (s.waitDays ? formatRange(s.waitDays, "day") : s.minutes ? formatRange(s.minutes, "min") : "");
 
-// What to do on a step: shown in the sticky panel on wide screens, inline on phones.
-function Action({ s, i, n }: { s: Step; i: number; n: number }) {
-  return (
-    <>
-      <p className="step-panel-meta">Step {i + 1} of {n}{timeOf(s) && `, ${timeOf(s)}`}</p>
-      <p className="step-panel-who"><span className="owner-chip">{OWNER[s.owner]}</span></p>
-      {s.link ? (
-        <a className="step-cta" href={s.link.url} target="_blank" rel="noreferrer">
-          {s.link.label}
-          {s.link.prefilled && <span className="prefilled">pre-filled</span>}
-        </a>
-      ) : (
-        s.owner === "waiting" && <p className="muted small">Nothing to do here but wait. The next step starts when the provider replies.</p>
-      )}
-      {s.technical && <p className="tech-text">{s.technical}</p>}
-      <EvidenceBadge evidence={s.evidence} />
-    </>
-  );
-}
-
-// Steps as a timeline that opens each step as you scroll onto it, beside a sticky
-// panel with what to do on the open step (after Stripe's quickstart layout).
+// A pinned index of every step beside the step cards. A card opens when you scroll
+// onto it and stays open after, so nothing above your position changes height.
 export function StepScroller({ steps }: { steps: Step[] }) {
   const [active, setActive] = useState(0);
   const items = useRef<(HTMLElement | null)[]>([]);
@@ -82,12 +62,23 @@ export function StepScroller({ steps }: { steps: Step[] }) {
     });
   };
 
-  const s = steps[active] ?? steps[0];
-  if (!s) return null;
+  if (!steps.length) return null;
 
   return (
     <div className="steps-layout">
-      <ol className="step-tl">
+      <nav className="step-index" aria-label="Steps">
+        <ol>
+          {steps.map((x, i) => (
+            <li key={x.id} className={`${x.owner}${i === active ? " on" : ""}${i < active ? " done" : ""}`}>
+              <button type="button" onClick={(e) => open(i, e.timeStamp)} aria-current={i === active ? "step" : undefined}>
+                <span className="step-index-num">{i + 1}</span>
+                <span>{x.title}</span>
+              </button>
+            </li>
+          ))}
+        </ol>
+      </nav>
+      <ol className="step-cards">
         {steps.map((x, i) => {
           const on = i === active;
           const opened = on || reached.has(i);
@@ -96,27 +87,32 @@ export function StepScroller({ steps }: { steps: Step[] }) {
               key={x.id}
               id={`step-${x.id}`}
               ref={(el) => { items.current[i] = el; }}
-              className={`st-item ${x.owner}${on ? " on" : ""}${i < active ? " done" : ""}`}
+              className={`step-card ${x.owner}${on ? " on" : ""}${opened ? " open" : ""}`}
             >
-              <span className="st-dot" aria-hidden>{i + 1}</span>
-              <button type="button" className="st-head" onClick={(e) => open(i, e.timeStamp)} aria-expanded={on}>
-                <span className="st-title">{x.title}</span>
-                <span className="st-meta">{OWNER[x.owner]}{timeOf(x) && `, ${timeOf(x)}`}</span>
+              <button type="button" className="step-card-head" onClick={(e) => open(i, e.timeStamp)} aria-expanded={opened}>
+                <span className="step-index-num">{i + 1}</span>
+                <span className="owner-chip">{OWNER[x.owner]}</span>
+                <span className="step-card-title">{x.title}</span>
+                <span className="muted small nowrap">{timeOf(x)}</span>
               </button>
               {opened && (
-                <div className="st-body">
+                <div className="step-card-body">
                   <p>{x.plain}</p>
                   {x.whyHuman && <p className="why">{x.whyHuman}</p>}
-                  <div className="st-action"><Action s={x} i={i} n={steps.length} /></div>
+                  {x.link && (
+                    <a className="step-cta" href={x.link.url} target="_blank" rel="noreferrer">
+                      {x.link.label}
+                      {x.link.prefilled && <span className="prefilled">pre-filled</span>}
+                    </a>
+                  )}
+                  {x.technical && <p className="tech-text">{x.technical}</p>}
+                  <EvidenceBadge evidence={x.evidence} />
                 </div>
               )}
             </li>
           );
         })}
       </ol>
-      <aside className={`step-panel ${s.owner}`} aria-live="polite" key={s.id}>
-        <Action s={s} i={active} n={steps.length} />
-      </aside>
     </div>
   );
 }

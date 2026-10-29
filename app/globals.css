@@ -169,46 +169,44 @@ section.block, details.block { margin-top: 48px; }
 .step-link:hover { background: var(--cw); }
 .show-sm { display: none; }
 
-/* Steps: a timeline that opens one step at a time beside a sticky action panel.
-   The layout is wider than the reading column, like Stripe's quickstarts. */
-.steps-layout { width: calc(100% + max(0px, min(280px, (100vw - 900px) / 2))); margin-top: 24px; display: grid; grid-template-columns: minmax(0, 1fr) 360px; gap: 40px; align-items: start; }
-.step-tl { overflow-anchor: none; list-style: none; margin: 0; padding: 0; }
-.st-item { --c: var(--agent); --cw: var(--agent-wash); position: relative; min-height: 112px; padding: 0 0 4px 46px; scroll-margin-top: calc(35vh - 4px); }
-.st-item.human { --c: var(--you); --cw: var(--you-wash); }
-.st-item.waiting { --c: var(--wait); --cw: var(--wait-wash); }
-.st-item::before { content: ""; position: absolute; left: 14px; top: 30px; bottom: -2px; width: 1px; background: var(--border-strong); }
-.st-item:last-child::before { display: none; }
-.st-item.waiting::before { background: repeating-linear-gradient(180deg, var(--wait) 0 4px, transparent 4px 8px); }
-.st-dot { position: absolute; left: 0; top: 6px; width: 29px; height: 29px; border-radius: 50%; display: grid; place-items: center; font-family: var(--font-mono), monospace; font-size: 12px; color: var(--faint); background: var(--bg); border: 1px solid var(--border-strong); transition: background 150ms, color 150ms; }
-.st-item.done .st-dot { color: var(--c); border-color: var(--c); }
-.st-item.on .st-dot { color: #000; background: var(--c); border-color: var(--c); box-shadow: 0 0 0 4px var(--cw); font-weight: 700; }
-.st-head { all: unset; box-sizing: border-box; width: 100%; cursor: pointer; display: flex; flex-direction: column; padding: 8px 0 12px; }
-.st-head:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
-.st-title { font-weight: 600; color: var(--muted); transition: color 150ms; }
-.st-head:hover .st-title { color: var(--ink); }
-.st-item.on .st-title { color: var(--ink); font-size: 19px; font-weight: 700; }
-.st-meta { font-size: 12.5px; color: var(--faint); }
-.st-item.on .st-meta { color: var(--c); }
-.st-body { padding: 0 0 22px; animation: card-in 200ms ease-out; }
-.st-item.done .st-body p { color: var(--faint); }
-.st-body p { margin: 4px 0; color: var(--muted); max-width: 62ch; overflow-wrap: anywhere; }
-.st-body .why { font-size: 14px; color: var(--faint); }
-.st-action { display: none; }
-.step-panel { --c: var(--agent); --cw: var(--agent-wash); position: sticky; top: calc(35vh - 40px); padding: 20px 22px; background: var(--card); border: 1px solid var(--border); border-top: 2px solid var(--c); border-radius: 10px; overflow-wrap: anywhere; animation: card-in 200ms ease-out; }
-.step-panel.human { --c: var(--you); --cw: var(--you-wash); }
-.step-panel.waiting { --c: var(--wait); --cw: var(--wait-wash); }
-.step-panel-meta { margin: 0; font-family: var(--font-mono), monospace; font-size: 12px; color: var(--faint); }
-.step-panel-who { margin: 10px 0 4px; }
-.step-panel .tech-text, .st-action .tech-text { font-size: 13px; color: var(--muted); padding: 10px 12px; margin: 12px 0 0; background: var(--bg); border: 1px solid var(--border); border-radius: 6px; }
-.step-cta { display: flex; justify-content: center; gap: 10px; align-items: center; margin: 14px 0 4px; padding: 10px 14px; border-radius: 7px; background: var(--c); color: #000; font-weight: 700; font-size: 14px; text-decoration: none; }
+/* Steps: a pinned index beside step cards that open as you scroll onto them. */
+.steps-layout { width: calc(100% + max(0px, min(200px, (100vw - 900px) / 2))); margin-top: 24px; display: grid; grid-template-columns: 230px minmax(0, 1fr); gap: 28px; align-items: start; }
+.step-index { position: sticky; top: 24px; }
+.step-index ol { list-style: none; margin: 0; padding: 0; font-size: 13.5px; }
+.step-index li, .step-card { --c: var(--agent); --cw: var(--agent-wash); }
+.step-index li.human, .step-card.human { --c: var(--you); --cw: var(--you-wash); }
+.step-index li.waiting, .step-card.waiting { --c: var(--wait); --cw: var(--wait-wash); }
+.step-index button { all: unset; box-sizing: border-box; width: 100%; cursor: pointer; display: flex; gap: 10px; padding: 6px 10px; border-left: 2px solid var(--border); color: var(--faint); line-height: 1.4; transition: color 150ms, background 150ms; }
+.step-index button:hover { color: var(--ink); }
+.step-index li.done button { color: var(--muted); }
+.step-index li.on button { border-left-color: var(--c); color: var(--ink); background: var(--card); font-weight: 600; }
+.step-index button:focus-visible { outline: 2px solid var(--ink); }
+.step-index-num { font-family: var(--font-mono), monospace; color: var(--c); min-width: 18px; }
+.step-cards { overflow-anchor: none; list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 10px; }
+.step-card { min-height: 92px; display: flex; flex-direction: column; justify-content: center; background: var(--card); border: 1px solid var(--border); border-left: 3px solid var(--border-strong); border-radius: 8px; overflow-wrap: anywhere; scroll-margin-top: calc(35vh - 4px); transition: border-color 150ms; }
+.step-card.open { justify-content: flex-start; }
+.step-card.on { border-left-color: var(--c); box-shadow: 0 0 0 1px var(--cw); }
+.step-card.open:not(.on) { border-left-color: var(--c); opacity: 0.75; }
+.step-card-head { all: unset; box-sizing: border-box; width: 100%; cursor: pointer; display: grid; grid-template-columns: 20px auto minmax(0, 1fr) auto; gap: 12px; align-items: center; padding: 16px 18px; }
+.step-card-head:focus-visible { outline: 2px solid var(--ink); outline-offset: -2px; }
+.step-card-title { font-weight: 600; color: var(--muted); }
+.step-card.open .step-card-title { color: var(--ink); }
+.step-card.on .step-card-title { font-size: 17.5px; }
+.step-card-body { padding: 0 18px 18px 50px; animation: card-in 200ms ease-out; }
+.step-card-body p { margin: 4px 0; color: var(--muted); max-width: 64ch; }
+.step-card-body .why { font-size: 14px; color: var(--faint); }
+.step-card-body .tech-text { font-size: 13px; padding: 10px 12px; margin: 12px 0 0; background: var(--bg); border: 1px solid var(--border); border-radius: 6px; }
+.step-cta { display: inline-flex; gap: 10px; align-items: center; margin: 14px 0 4px; padding: 9px 16px; border-radius: 7px; background: var(--c); color: #000; font-weight: 700; font-size: 14px; text-decoration: none; }
 .step-cta:hover { filter: brightness(1.1); }
 .step-cta .prefilled { background: rgba(0, 0, 0, 0.15); }
 @keyframes card-in { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
-@media (prefers-reduced-motion: reduce) { .st-body, .step-panel { animation: none; } }
-@media (max-width: 900px) {
-  .steps-layout { width: auto; margin-left: 0; grid-template-columns: minmax(0, 1fr); }
-  .step-panel { display: none; }
-  .st-action { display: block; margin-top: 12px; }
+@media (prefers-reduced-motion: reduce) { .step-card-body { animation: none; } }
+@media (max-width: 860px) {
+  .steps-layout { width: auto; grid-template-columns: minmax(0, 1fr); }
+  .step-index { display: none; }
+  .step-card-head { grid-template-columns: 20px minmax(0, 1fr) auto; }
+  .step-card-head .owner-chip { display: none; }
+  .step-card-body { padding-left: 18px; }
 }
 
 .ev { font-size: 12.5px; margin-top: 8px; color: var(--faint); display: flex; flex-wrap: wrap; gap: 4px 8px; align-items: baseline; }
