@@ -14,7 +14,10 @@ import { getGuide } from "@/lib/guides";
 
 export async function generateMetadata({ params }: PageProps<"/guides/[slug]">): Promise<Metadata> {
   const g = await getGuide((await params).slug);
-  return g ? { title: `${g.app.name} OAuth app setup`, description: g.verdict.summary } : {};
+  // Agents that land on the web page can find the Markdown version from here.
+  return g
+    ? { title: `${g.app.name} OAuth app setup`, description: g.verdict.summary, alternates: { types: { "text/markdown": `/guides/${g.slug}.md` } } }
+    : {};
 }
 
 export default async function GuidePage({ params, searchParams }: PageProps<"/guides/[slug]">) {

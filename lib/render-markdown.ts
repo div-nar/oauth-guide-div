@@ -47,18 +47,14 @@ export function guideToMarkdown(g: Guide, baseUrl: string, sel?: Selection): str
   }
   if (g.oauth.notes) out.push("", `Note: ${g.oauth.notes}`);
   if (g.useCases.length && !c) {
-    out.push("", "## Difficulty depends on what access you need");
+    out.push("", "## Difficulty depends on what access you need", "Fetch just one path with ?access=<id> (combine with commas), and add &existing=1 if the user already has an app.");
     for (const u of g.useCases) {
       out.push(
-        `- ${u.label}: ${u.difficulty} (hands-on ${range(u.handsOnMinutes, "min")}, waiting ${range(u.waitDays, "days")}). ${u.summary}${u.scopes.length ? ` Scopes: ${u.scopes.join(", ")}.` : ""}`,
+        `- \`${u.id}\` ${u.label}: ${u.difficulty} (hands-on ${range(u.handsOnMinutes, "min")}, waiting ${range(u.waitDays, "days")}). ${u.summary}${u.scopes.length ? ` Scopes: ${u.scopes.join(", ")}.` : ""} Path: ${baseUrl}/guides/${g.slug}.md?access=${u.id}`,
       );
     }
   }
   for (const line of composioOffer(g, picked, v.waitDays.max > 0 && !existing)) out.push(line);
-  if (g.whoYouNeed.some((x) => appliesTo(x.useCaseIds, picked))) {
-    out.push("", "## Who you need");
-    for (const w of g.whoYouNeed.filter((x) => appliesTo(x.useCaseIds, picked))) out.push(`- ${w.role}: ${w.why}`);
-  }
   if (existing && g.existingApp) {
     out.push("", "## You already have an app", g.existingApp.summary, "", "## What could send you back to review");
     for (const t of g.existingApp.reReviewTriggers) out.push(`- ${t.trigger}: ${t.effect} ${evidenceLine(t.evidence)}`);
@@ -72,13 +68,9 @@ export function guideToMarkdown(g: Guide, baseUrl: string, sel?: Selection): str
     if (s.link) out.push(`   Link${s.link.prefilled ? " (pre-filled)" : ""}: ${s.link.url}`);
     out.push(`   ${evidenceLine(s.evidence)}`);
   });
-  if (g.forks.length) {
-    out.push("", "## When it gets harder or easier");
-    for (const f of g.forks.filter((x) => appliesTo(x.useCaseIds, picked))) out.push(`- If ${f.condition}: ${f.effect} ${evidenceLine(f.evidence)}`);
-  }
-  if (g.nuances.length) {
-    out.push("", "## Nuances and blockers");
-    for (const n of g.nuances.filter((x) => appliesTo(x.useCaseIds, picked))) out.push(`- ${n.title}: ${n.detail} If stuck: ${n.ifStuck} ${evidenceLine(n.evidence)}`);
+  if (g.whoYouNeed.some((x) => appliesTo(x.useCaseIds, picked))) {
+    out.push("", "## Who you need");
+    for (const w of g.whoYouNeed.filter((x) => appliesTo(x.useCaseIds, picked))) out.push(`- ${w.role}: ${w.why}`);
   }
   const blockers = (g.blockers ?? []).filter((x) => appliesTo(x.useCaseIds, picked));
   if (blockers.length) {
@@ -88,6 +80,13 @@ export function guideToMarkdown(g: Guide, baseUrl: string, sel?: Selection): str
       if (b.escalate) out.push(`  Escalate: ${b.escalate.label} ${b.escalate.url}`);
       out.push(`  ${evidenceLine(b.evidence)}`);
     }
+  }
+  const forks = g.forks.filter((x) => appliesTo(x.useCaseIds, picked));
+  const gotchas = g.nuances.filter((x) => appliesTo(x.useCaseIds, picked));
+  if (forks.length || gotchas.length) {
+    out.push("", "## Questions");
+    for (const f of forks) out.push(`- What if ${f.condition}? ${f.effect} ${evidenceLine(f.evidence)}`);
+    for (const n of gotchas) out.push(`- ${n.title}: ${n.detail} If stuck: ${n.ifStuck} ${evidenceLine(n.evidence)}`);
   }
   out.push("", "## Configuration");
   if (g.config.consoleUrl) out.push(`- Console: ${g.config.consoleUrl}`);
