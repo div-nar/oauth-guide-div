@@ -3,11 +3,7 @@ import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { GuideBody } from "@/components/GuideBody";
 import { AppLogo } from "@/components/AppLogo";
-import { BlockedList, FaqList, OAuthBasics, WhoList } from "@/components/GuideExtras";
 import { GuideCheck } from "@/components/EvidenceBadge";
-import { HandoffButtons } from "@/components/HandoffButtons";
-import { StepTable } from "@/components/StepTable";
-import { ViewToggle } from "@/components/ViewToggle";
 import { getBaseUrl } from "@/lib/base-url";
 import { getGuide } from "@/lib/guides";
 import { logoFor } from "@/lib/logos";
@@ -75,26 +71,7 @@ export default async function GuidePage({ params, searchParams }: PageProps<"/gu
         <GuideCheck checks={g.checks} />
       </header>
 
-      {headline || !g.oauth.supported ? (
-        <GuideBody guide={g} initialIds={initialIds} initialExisting={sp.existing === "1"} baseUrl={baseUrl} />
-      ) : (
-        <>
-          <HandoffButtons guide={g} baseUrl={baseUrl} />
-          <p className="verdict-summary">{g.verdict.summary} {g.oauth.notes}</p>
-          <WhoList guide={g} ids={null} />
-          {g.steps.length > 0 && (
-            <section className="block">
-              <h2 className="label">Steps</h2>
-              <StepTable steps={g.steps} />
-            </section>
-          )}
-          <BlockedList guide={g} ids={null} />
-          <FaqList guide={g} ids={null} />
-          <OAuthBasics />
-        </>
-      )}
-
-      {!(headline || !g.oauth.supported) && <ViewToggle human={`/guides/${g.slug}`} machine={`/guides/${g.slug}/ai`} current="human" />}
+      <GuideBody guide={g} initialIds={initialIds} initialExisting={sp.existing === "1"} baseUrl={baseUrl} />
     </main>
   );
 }

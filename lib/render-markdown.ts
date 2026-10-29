@@ -106,6 +106,14 @@ export function guideToMarkdown(g: Guide, baseUrl: string, sel?: Selection): str
     for (const f of forks) out.push(`- What if ${f.condition}? ${f.effect} ${evidenceLine(f.evidence)}`);
     for (const n of gotchas) out.push(`- ${n.title}: ${n.detail} If stuck: ${n.ifStuck} ${evidenceLine(n.evidence)}`);
   }
+  if (g.protocol) {
+    const p = g.protocol;
+    out.push("", "## Protocol", "Read this before you write the OAuth code.");
+    for (const [k, label] of [["version", "Version"], ["flow", "Flow"], ["pkce", "PKCE"], ["callback", "Callback"], ["tokens", "Tokens"], ["state", "State"]] as const) {
+      const f = p[k];
+      out.push(`- ${label}: ${f.value}.${f.note ? ` ${f.note}` : ""} ${evidenceLine(f.evidence)}`);
+    }
+  }
   out.push("", "## Configuration");
   if (g.config.consoleUrl) out.push(`- Console: ${g.config.consoleUrl}`);
   if (g.config.authorizeUrl) out.push(`- Sign-in (authorization) endpoint: ${g.config.authorizeUrl}`);

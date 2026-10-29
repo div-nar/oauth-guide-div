@@ -553,6 +553,92 @@
       ]
     }
   ],
+  "protocol": {
+    "version": {
+      "value": "OAuth 2.0",
+      "note": "This is not OAuth 1.0a. You do not sign each request.",
+      "evidence": {
+        "level": "sourced",
+        "sources": [
+          {
+            "url": "https://developers.google.com/identity/protocols/oauth2/web-server",
+            "title": "Google: OAuth 2.0 for web server apps"
+          }
+        ],
+        "note": null
+      }
+    },
+    "flow": {
+      "value": "Authorization code",
+      "note": "Your server exchanges the code for a token.",
+      "evidence": {
+        "level": "sourced",
+        "sources": [
+          {
+            "url": "https://developers.google.com/identity/protocols/oauth2/web-server",
+            "title": "Google: OAuth 2.0 for web server apps"
+          }
+        ],
+        "note": null
+      }
+    },
+    "pkce": {
+      "value": "Supported",
+      "note": "The published configuration of Google lists S256 and plain.",
+      "evidence": {
+        "level": "sourced",
+        "sources": [
+          {
+            "url": "https://accounts.google.com/.well-known/openid-configuration",
+            "title": "Google: published OAuth configuration"
+          }
+        ],
+        "note": null
+      }
+    },
+    "callback": {
+      "value": "Exact match",
+      "note": "The scheme, the case and the trailing slash must also match.",
+      "evidence": {
+        "level": "sourced",
+        "sources": [
+          {
+            "url": "https://developers.google.com/identity/protocols/oauth2/web-server",
+            "title": "Google: OAuth 2.0 for web server apps"
+          }
+        ],
+        "note": null
+      }
+    },
+    "tokens": {
+      "value": "Short access, long refresh",
+      "note": "The expires_in field gives the access token lifetime. Refresh tokens last until the user revokes access or they expire.",
+      "evidence": {
+        "level": "sourced",
+        "sources": [
+          {
+            "url": "https://developers.google.com/identity/protocols/oauth2/web-server",
+            "title": "Google: OAuth 2.0 for web server apps"
+          }
+        ],
+        "note": null
+      }
+    },
+    "state": {
+      "value": "Use it against CSRF",
+      "note": "Google says that your app must prevent CSRF attacks.",
+      "evidence": {
+        "level": "sourced",
+        "sources": [
+          {
+            "url": "https://developers.google.com/identity/protocols/oauth2/web-server",
+            "title": "Google: OAuth 2.0 for web server apps"
+          }
+        ],
+        "note": null
+      }
+    }
+  },
   "composio": {
     "managedApp": "yes",
     "note": "Users can connect today through the Composio Gmail app. Use it while you set up your own app or wait for the review. Users see 'Composio' on the approval screen. Other Composio customers share the same rate limits. Polling triggers run a maximum of one time in 15 minutes. Change to your own app when it is ready.",

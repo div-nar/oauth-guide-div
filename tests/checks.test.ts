@@ -96,6 +96,12 @@ describe("checkDiscovery", () => {
     body: JSON.stringify({ authorization_endpoint: endpoint, scopes_supported: scopes }),
   });
 
+  test("reports the PKCE methods the provider publishes", async () => {
+    const body = JSON.stringify({ authorization_endpoint: auth, code_challenge_methods_supported: ["S256"] });
+    const { probe } = net({ "https://acme.example/.well-known/openid-configuration": { body } });
+    expect((await checkDiscovery(auth, [], probe))?.detail).toContain("PKCE methods: S256");
+  });
+
   test("a matching published endpoint is ok and counts known scopes", async () => {
     const { probe } = net({ "https://acme.example/.well-known/openid-configuration": doc(`${auth}/`, ["read", "openid"]) });
     const c = await checkDiscovery(auth, ["read", "write"], probe);

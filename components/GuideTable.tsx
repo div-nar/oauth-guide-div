@@ -3,7 +3,6 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
-import { type AccessOption, AccessModal } from "@/components/AccessModal";
 import { AppLogo } from "@/components/AppLogo";
 import { GRADE_WORD, GradeMark } from "@/components/GradeMark";
 import type { Difficulty } from "@/lib/guide-schema";
@@ -21,7 +20,7 @@ export type GuideRow = {
   waitMax: number;
   source: "library" | "agent";
   easier?: string | null;
-  options: AccessOption[];
+  options: { id: string; label: string; difficulty: Difficulty }[];
   defaultAccess: string | null;
   hasExisting: boolean;
 };
@@ -40,7 +39,6 @@ export function GuideTable({ rows }: { rows: GuideRow[] }) {
   const router = useRouter();
   const [q, setQ] = useState("");
   const [tab, setTab] = useState<(typeof TABS)[number]["id"]>("all");
-  const [open, setOpen] = useState<GuideRow | null>(null);
   const shown = useMemo(() => {
     const needle = q.trim().toLowerCase();
     return rows.filter(
@@ -87,11 +85,6 @@ export function GuideTable({ rows }: { rows: GuideRow[] }) {
             key={r.slug}
             href={`/guides/${r.slug}`}
             className="card"
-            onClick={(e) => {
-              if (e.metaKey || e.ctrlKey || e.shiftKey || (r.options.length < 2 && !r.hasExisting)) return;
-              e.preventDefault();
-              setOpen(r);
-            }}
           >
             <div className="card-title">
               <AppLogo name={r.name} website={r.website} logoUrl={r.logoUrl} size={24} />
@@ -109,16 +102,6 @@ export function GuideTable({ rows }: { rows: GuideRow[] }) {
           </Link>
         ))}
       </div>
-      {open && (
-        <AccessModal
-          app={{ name: open.name, website: open.website, logoUrl: open.logoUrl }}
-          options={open.options}
-          hasExisting={open.hasExisting}
-          initial={{ access: [open.defaultAccess ?? open.options[0]?.id ?? ""], existing: false }}
-          onClose={() => setOpen(null)}
-          onConfirm={(access, existing) => router.push(`/guides/${open.slug}?access=${access.join(",")}${existing ? "&existing=1" : ""}`)}
-        />
-      )}
       {shown.length === 0 && (
         <p className="empty">
           There is no guide for &ldquo;{q.trim()}&rdquo; yet. Press Enter. The research agent then writes a guide from

@@ -522,6 +522,92 @@
       ]
     }
   ],
+  "protocol": {
+    "version": {
+      "value": "OAuth 2.0",
+      "note": "This is not OAuth 1.0a. You do not sign each request.",
+      "evidence": {
+        "level": "sourced",
+        "sources": [
+          {
+            "url": "https://learn.microsoft.com/en-us/linkedin/shared/authentication/authorization-code-flow",
+            "title": "LinkedIn: 3-legged OAuth flow"
+          }
+        ],
+        "note": null
+      }
+    },
+    "flow": {
+      "value": "Authorization code",
+      "note": "The token request needs the client secret.",
+      "evidence": {
+        "level": "sourced",
+        "sources": [
+          {
+            "url": "https://learn.microsoft.com/en-us/linkedin/shared/authentication/authorization-code-flow",
+            "title": "LinkedIn: 3-legged OAuth flow"
+          }
+        ],
+        "note": null
+      }
+    },
+    "pkce": {
+      "value": "Native clients only",
+      "note": "LinkedIn must turn it on for your app first.",
+      "evidence": {
+        "level": "sourced",
+        "sources": [
+          {
+            "url": "https://learn.microsoft.com/en-us/linkedin/shared/authentication/authorization-code-flow-native",
+            "title": "LinkedIn: OAuth for native clients"
+          }
+        ],
+        "note": null
+      }
+    },
+    "callback": {
+      "value": "Must match a registered URL",
+      "note": "Use HTTPS and an absolute URL. LinkedIn ignores query parameters, and # is not allowed.",
+      "evidence": {
+        "level": "sourced",
+        "sources": [
+          {
+            "url": "https://learn.microsoft.com/en-us/linkedin/shared/authentication/authorization-code-flow",
+            "title": "LinkedIn: 3-legged OAuth flow"
+          }
+        ],
+        "note": null
+      }
+    },
+    "tokens": {
+      "value": "Access tokens last 60 days",
+      "note": "Refresh tokens are only for some partners.",
+      "evidence": {
+        "level": "sourced",
+        "sources": [
+          {
+            "url": "https://learn.microsoft.com/en-us/linkedin/shared/authentication/authorization-code-flow",
+            "title": "LinkedIn: 3-legged OAuth flow"
+          }
+        ],
+        "note": null
+      }
+    },
+    "state": {
+      "value": "Send a random value",
+      "note": "If it does not match on return, send 401 Unauthorized.",
+      "evidence": {
+        "level": "sourced",
+        "sources": [
+          {
+            "url": "https://learn.microsoft.com/en-us/linkedin/shared/authentication/authorization-code-flow",
+            "title": "LinkedIn: 3-legged OAuth flow"
+          }
+        ],
+        "note": null
+      }
+    }
+  },
   "composio": {
     "managedApp": "yes",
     "note": "Users can connect today through the Composio LinkedIn app. Use it while you set up your own app or wait for the review. Users see 'Composio' on the approval screen. Other Composio customers share the same rate limits. Polling triggers run a maximum of one time in 15 minutes. Change to your own app when it is ready. LinkedIn Ads is a different Composio toolkit. It needs your own app.",
