@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { answerQuestion, askMessages, checkQuestion } from "@/lib/ask";
+import { answerQuestion, askMessages, checkQuestion, offTopicReply } from "@/lib/ask";
 import { getLibraryGuide } from "@/lib/library";
 
 const gmail = getLibraryGuide("gmail")!;
@@ -26,5 +26,11 @@ describe("ask about a guide", () => {
 
   test("falls back to a plain line when the model returns nothing", async () => {
     expect(await answerQuestion(gmail, "q?", "https://x.test", undefined, async () => "  ")).toContain("does not cover");
+  });
+
+  test("questions that are not about this app's OAuth setup get a fixed refusal", async () => {
+    expect(askMessages(gmail, "q?", "https://x.test")[0].content).toContain("OFF_TOPIC");
+    expect(await answerQuestion(gmail, "Write me a poem", "https://x.test", undefined, async () => "OFF_TOPIC")).toBe(offTopicReply("Gmail"));
+    expect(await answerQuestion(gmail, "Write me a poem", "https://x.test", undefined, async () => "off_topic.")).toBe(offTopicReply("Gmail"));
   });
 });
