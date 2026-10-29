@@ -28,8 +28,8 @@ export type GuideRow = {
 
 const TABS = [
   { id: "all", label: "All" },
-  { id: "library", label: "Checked by hand" },
-  { id: "agent", label: "Researched by agent" },
+  { id: "library", label: "Curated" },
+  { id: "agent", label: "Agentic Search" },
 ] as const;
 
 function domain(website: string) {
@@ -104,7 +104,7 @@ export function GuideTable({ rows }: { rows: GuideRow[] }) {
             {r.easier && <p className="card-easier">{r.easier}</p>}
             <p className="card-meta">
               {r.handsOn} of work{r.waitMax ? `, ${r.waiting} waiting` : ", no waiting"}
-              {r.source === "agent" && <span className="card-agent">agent-researched</span>}
+              {r.source === "agent" && <span className="card-agent">agentic search</span>}
             </p>
           </Link>
         ))}

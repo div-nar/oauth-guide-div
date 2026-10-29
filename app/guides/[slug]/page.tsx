@@ -55,7 +55,7 @@ export default async function GuidePage({ params, searchParams }: PageProps<"/gu
         <div>
           <h1>{g.app.name}</h1>
           <p className="small muted">
-            {g.generatedBy === "agent" ? "Researched by the agent from public docs" : "Researched by hand from official docs"},
+            {g.generatedBy === "agent" ? "Agentic Search from public docs" : "Curated from official docs"},
             last checked {g.lastChecked}
             {g.generatedBy === "agent" && (
               <>

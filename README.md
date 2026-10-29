@@ -84,7 +84,7 @@ Checks: `bun test`, `bunx tsc --noEmit` (run `bunx next typegen` first on a fres
 
 **Still uncertain:**
 
-- Nothing is `Tested by hand` yet. Creating a GitHub OAuth app and a Slack app on free accounts is the next check.
+- A real coding agent followed a guide from the copied prompt (see `docs/evidence-log.md`). No step is marked `Tested by hand` yet. Creating a GitHub OAuth app and a Slack app on free accounts is the next check.
 - The agent's checks (29 Oct 2026) found no broken step links across the five guides. The sign-in endpoints of GitHub, Gmail and LinkedIn answered; Slack's and HubSpot's gave no readable answer. Google and HubSpot publish OAuth configurations that list the same endpoint.
 - Google publishes no price or duration for the security assessment.
 - LinkedIn's company Page requirement comes from third-party guides.
