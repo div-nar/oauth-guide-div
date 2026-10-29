@@ -9,12 +9,17 @@ import type { Check, Checks, Guide } from "@/lib/guide-schema";
 export type CheckDeps = {
   probe?: (url: string, opts?: { accept?: string; userAgent?: string; maxRedirects?: number }) => Promise<Probe>;
   today?: string;
+  // Time limits in ms: per check, and for the whole run (research must still be saved in time).
+  checkMs?: number;
+  totalMs?: number;
 };
 
 const USER_AGENT = "Mozilla/5.0 (compatible; oauth-guides-checker/1.0)";
 // Consoles bounce through several sign-in redirects before settling.
 const MAX_REDIRECTS = 8;
 const CONCURRENCY = 4;
+const CHECK_MS = 15_000;
+const TOTAL_MS = 45_000;
 // A made-up app ID, so the provider can only say the app does not exist.
 const FAKE_CLIENT_ID = "oauth-guides-check-not-a-real-app";
 
@@ -156,6 +161,15 @@ export async function checkDiscovery(authorizeUrl: string, scopes: string[], p: 
   return null;
 }
 
+// Settles with the fallback if the work takes too long; the work is abandoned, not awaited.
+function within<T>(work: Promise<T>, ms: number, fallback: () => T): Promise<T> {
+  let timer: ReturnType<typeof setTimeout>;
+  const late = new Promise<T>((resolve) => { timer = setTimeout(() => resolve(fallback()), ms); });
+  return Promise.race([work, late]).finally(() => clearTimeout(timer));
+}
+
+const tooSlow = (kind: Check["kind"], url: string) => (): Check => ({ kind, url, outcome: "inconclusive", detail: "The site took too long to answer" });
+
 async function inBatches<T, R>(xs: T[], n: number, f: (x: T) => Promise<R>): Promise<R[]> {
   const out: R[] = [];
   for (let i = 0; i < xs.length; i += n) out.push(...(await Promise.all(xs.slice(i, i + n).map(f))));
@@ -168,11 +182,21 @@ export function linkUrls(g: Guide): string[] {
   return [...new Set(urls)];
 }
 
+// Rejects if the whole run passes deps.totalMs, so the caller can save the guide without checks.
 export async function runChecks(g: Guide, emit: (e: AgentEvent) => void = () => {}, deps: CheckDeps = {}): Promise<Checks> {
+  const total = deps.totalMs ?? TOTAL_MS;
+  const timedOut = Symbol();
+  const res = await within<Checks | typeof timedOut>(checkAll(g, emit, deps), total, () => timedOut);
+  if (res === timedOut) throw new Error(`Checks took longer than ${total / 1000} seconds.`);
+  return res;
+}
+
+async function checkAll(g: Guide, emit: (e: AgentEvent) => void, deps: CheckDeps): Promise<Checks> {
   const p = deps.probe ?? (await import("@/lib/agent/fetch-page")).probe;
+  const ms = deps.checkMs ?? CHECK_MS;
   const urls = linkUrls(g);
   emit({ type: "status", text: `Checking that ${urls.length} step links load` });
-  const links = await inBatches(urls, CONCURRENCY, (u) => checkLink(u, p));
+  const links = await inBatches(urls, CONCURRENCY, (u) => within(checkLink(u, p), ms, tooSlow("link", u)));
   const count = (o: Check["outcome"]) => links.filter((l) => l.outcome === o).length;
   emit({
     type: "status",
@@ -185,8 +209,8 @@ export async function runChecks(g: Guide, emit: (e: AgentEvent) => void = () => 
   if (g.oauth.supported && g.config.authorizeUrl) {
     emit({ type: "status", text: "Asking the sign-in endpoint about a made-up app" });
     [authorize, discovery] = await Promise.all([
-      checkAuthorize(g.config.authorizeUrl, scopes, p),
-      checkDiscovery(g.config.authorizeUrl, scopes, p),
+      within(checkAuthorize(g.config.authorizeUrl, scopes, p), ms, tooSlow("authorize", g.config.authorizeUrl)),
+      within(checkDiscovery(g.config.authorizeUrl, scopes, p), ms, () => null),
     ]);
   }
   return { date: deps.today ?? new Date().toISOString().slice(0, 10), links, authorize, discovery };

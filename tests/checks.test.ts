@@ -146,6 +146,21 @@ describe("runChecks", () => {
   });
 });
 
+describe("time limits", () => {
+  const hang = async (): Promise<Probe> => new Promise(() => {});
+
+  test("a check that hangs becomes inconclusive after the per-check limit", async () => {
+    const g = parseGuide(minimalGuide());
+    const c = await runChecks(g, () => {}, { probe: hang, checkMs: 20, totalMs: 1000 });
+    expect(c.links[0]).toMatchObject({ outcome: "inconclusive", detail: expect.stringContaining("too long") });
+  });
+
+  test("the whole run gives up after the total limit, so the guide can be saved without checks", async () => {
+    const g = parseGuide(minimalGuide());
+    await expect(runChecks(g, () => {}, { probe: hang, checkMs: 1000, totalMs: 20 })).rejects.toThrow(/longer than/);
+  });
+});
+
 describe("excerpt", () => {
   test("starts at the sentence around the match", () => {
     const t = "Sign in with Google  Access blocked: Authorization Error  The OAuth client was not found.  If you are a developer";
