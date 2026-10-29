@@ -169,41 +169,44 @@ section.block, details.block { margin-top: 48px; }
 .step-link:hover { background: var(--cw); }
 .show-sm { display: none; }
 
-/* Steps: the path strip and one card stay frozen; scrolling fills the strip like a
-   progress bar and swaps the card. Each step takes about one wheel notch of scroll. */
-.step-scroll { position: relative; margin-top: 16px; }
-.step-stage .stop::before { height: 3px; border-radius: 2px; }
-.step-anchor { position: absolute; left: 0; width: 1px; height: 1px; scroll-margin-top: 0; }
-.step-stage { position: sticky; top: 16px; display: flex; flex-direction: column; gap: 14px; background: var(--bg); padding-bottom: 8px; }
-.stop.reached .dot { opacity: 1; }
-.stop.later .dot { background: var(--bg); color: var(--faint); box-shadow: inset 0 0 0 1px var(--border-strong); }
+/* Steps: the path strip doubles as a progress bar above one step card. */
+.step-viewer { position: relative; margin-top: 20px; display: flex; flex-direction: column; gap: 32px; }
+.step-anchor { position: absolute; top: 0; }
+.step-viewer .stop::before { height: 1px; }
+.step-viewer .stop .dot { width: 24px; height: 24px; font-size: 11px; font-weight: 600; transition: background 150ms, box-shadow 150ms, color 150ms; }
 .stop.reached::before { background: var(--c); }
 .stop.waiting.reached::before { background: repeating-linear-gradient(90deg, var(--wait) 0 6px, transparent 6px 12px); }
-.stop.later::before { background: linear-gradient(90deg, var(--ink) calc(var(--seg, 0) * 100%), var(--border-strong) 0); }
-.stop.later.waiting::before { background: linear-gradient(90deg, var(--ink) calc(var(--seg, 0) * 100%), transparent 0), repeating-linear-gradient(90deg, var(--border-strong) 0 6px, transparent 6px 12px); }
-.stop.current .dot { box-shadow: 0 0 0 3px var(--bg), 0 0 0 5px var(--c); }
-.stop .dot { transition: background 150ms, box-shadow 150ms; }
-.step-card { --c: var(--agent); --cw: var(--agent-wash); min-height: 250px; padding: 20px 22px; background: var(--card); border: 1px solid var(--border); border-top: 2px solid var(--c); border-radius: 10px; overflow-wrap: anywhere; animation: card-in 180ms ease-out; }
+.stop.later .dot { background: transparent; color: var(--faint); box-shadow: inset 0 0 0 1px var(--border-strong); }
+.stop.current .dot { box-shadow: 0 0 0 3px var(--bg), 0 0 0 4px var(--c); }
+.step-card { --c: var(--agent); --cw: var(--agent-wash); position: relative; padding: 22px 24px 18px; border: 1px solid var(--border); border-radius: 12px; background: radial-gradient(120% 90% at 0% 0%, var(--cw), transparent 55%), var(--card); overflow-wrap: anywhere; }
 .step-card.human { --c: var(--you); --cw: var(--you-wash); }
 .step-card.waiting { --c: var(--wait); --cw: var(--wait-wash); }
-.step-card-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
-.step-card-count { font-family: var(--font-mono), monospace; font-size: 12px; color: var(--faint); }
-.step-card-title { font-size: 21px; font-weight: 700; margin: 12px 0 6px; }
-.step-card p { margin: 6px 0; color: var(--muted); max-width: 66ch; }
+.step-card.from-right { animation: from-right 220ms ease-out; }
+.step-card.from-left { animation: from-left 220ms ease-out; }
+.step-card-head { display: flex; align-items: center; gap: 12px; }
+.step-card-count { font-family: var(--font-mono), monospace; font-size: 12px; color: var(--faint); white-space: nowrap; }
+.step-card-head .owner-chip { white-space: nowrap; }
+.step-arrows { margin-left: auto; display: flex; gap: 6px; }
+.step-arrows button { all: unset; cursor: pointer; width: 32px; height: 32px; display: grid; place-items: center; border-radius: 8px; color: var(--muted); border: 1px solid var(--border); background: var(--bg); transition: color 120ms, border-color 120ms; }
+.step-arrows button:hover:not(:disabled) { color: var(--ink); border-color: var(--border-strong); }
+.step-arrows button:disabled { opacity: 0.3; cursor: default; }
+.step-arrows button:focus-visible { outline: 2px solid var(--ink); }
+.step-card-title { font-size: 20px; font-weight: 700; letter-spacing: -0.01em; margin: 16px 0 6px; }
+.step-card p { margin: 6px 0; color: var(--muted); max-width: 64ch; font-size: 15.5px; }
 .step-card .why { font-size: 14px; color: var(--faint); }
-.step-card .tech-text { font-size: 13px; padding: 10px 12px; margin: 12px 0 0; background: var(--bg); border: 1px solid var(--border); border-radius: 6px; }
-.step-cta { display: inline-flex; gap: 10px; align-items: center; margin: 14px 0 4px; padding: 9px 16px; border-radius: 7px; background: var(--c); color: #000; font-weight: 700; font-size: 14px; text-decoration: none; }
-.step-cta:hover { filter: brightness(1.1); }
-.step-cta .prefilled { background: rgba(0, 0, 0, 0.15); }
-.step-nav { display: flex; justify-content: space-between; align-items: center; gap: 12px; font-size: 13px; color: var(--faint); }
-.step-nav button { all: unset; cursor: pointer; padding: 6px 12px; border: 1px solid var(--border-strong); border-radius: 6px; color: var(--ink); }
-.step-nav button:disabled { opacity: 0.3; cursor: default; }
-.step-nav button:focus-visible { outline: 2px solid var(--ink); }
-@keyframes card-in { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
-@media (prefers-reduced-motion: reduce) { .step-card { animation: none; } }
+.step-card .tech-text { font-family: var(--font-mono), monospace; font-size: 12.5px; line-height: 1.6; color: var(--muted); padding: 10px 12px; margin: 14px 0 0; background: rgba(255, 255, 255, 0.02); border: 1px solid var(--border); border-radius: 8px; }
+.step-card .ev { margin-top: 16px; padding-top: 12px; border-top: 1px solid var(--border); }
+.step-cta { display: inline-flex; gap: 8px; align-items: center; margin: 16px 0 2px; padding: 8px 14px; border-radius: 8px; background: var(--cw); border: 1px solid color-mix(in srgb, var(--c) 45%, transparent); color: var(--c); font-weight: 600; font-size: 14px; text-decoration: none; transition: background 120ms, border-color 120ms; }
+.step-cta::after { content: "\2197"; font-size: 13px; }
+.step-cta:hover { background: color-mix(in srgb, var(--c) 22%, transparent); border-color: var(--c); }
+.step-cta .prefilled { font-size: 11px; padding: 1px 6px; border-radius: 4px; background: rgba(0, 0, 0, 0.25); }
+.step-hint { margin: -18px 0 0; text-align: center; font-size: 12.5px; color: var(--faint); }
+@keyframes from-right { from { opacity: 0; transform: translateX(12px); } to { opacity: 1; transform: none; } }
+@keyframes from-left { from { opacity: 0; transform: translateX(-12px); } to { opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: reduce) { .step-card.from-right, .step-card.from-left { animation: none; } }
 @media (max-width: 760px) {
-  .step-card { min-height: 300px; padding: 16px; }
-  .step-nav span { display: none; }
+  .step-card { padding: 18px 16px 14px; }
+  .step-hint, .step-card-time { display: none; }
 }
 
 .ev { font-size: 12.5px; margin-top: 8px; color: var(--faint); display: flex; flex-wrap: wrap; gap: 4px 8px; align-items: baseline; }
