@@ -14,6 +14,9 @@ describe("handoff", () => {
     expect(prompt).toContain("[AGENT]");
     expect(prompt).toContain("[YOU]");
     expect(prompt.toLowerCase()).toContain("stop");
+    expect(prompt).toContain("exact callback URL");
+    expect(prompt).toContain("Protocol section");
+    expect(prompt).toContain("Troubleshooting section");
   });
 
   test("claude code link round-trips the prompt", () => {

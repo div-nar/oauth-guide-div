@@ -72,7 +72,7 @@ export function guideToMarkdown(g: Guide, baseUrl: string, sel?: Selection): str
   }
   for (const line of composioOffer(g, picked, v.waitDays.max > 0 && !existing)) out.push(line);
   if (g.whoYouNeed.some((x) => appliesTo(x.useCaseIds, picked))) {
-    out.push("", "## What you need");
+    out.push("", "## Before you begin");
     for (const w of g.whoYouNeed.filter((x) => appliesTo(x.useCaseIds, picked))) out.push(`- ${w.role}: ${w.why}`);
   }  if (existing && g.existingApp) {
     out.push("", "## You already have an app", g.existingApp.summary, "", "## What could send you back to review");
@@ -90,21 +90,20 @@ export function guideToMarkdown(g: Guide, baseUrl: string, sel?: Selection): str
     if (seen && g.checks) out.push(`   ${observedLine(seen, g.checks.date)}`);
   });
 
+  // Same order as the web page: pitfalls, troubleshooting, protocol, then questions.
+  const gotchas = g.nuances.filter((x) => appliesTo(x.useCaseIds, picked));
+  if (gotchas.length) {
+    out.push("", "## Common pitfalls");
+    for (const n of gotchas) out.push(`- ${n.title}: ${n.detail} If stuck: ${n.ifStuck} ${evidenceLine(n.evidence)}`);
+  }
   const blockers = (g.blockers ?? []).filter((x) => appliesTo(x.useCaseIds, picked));
   if (blockers.length) {
-    out.push("", "## If you get blocked or rejected");
+    out.push("", "## Troubleshooting");
     for (const b of blockers) {
       out.push(`- ${b.symptom}`, `  Why: ${b.cause}`, `  What to do: ${b.fix}`);
       if (b.escalate) out.push(`  Escalate: ${b.escalate.label} ${b.escalate.url}`);
       out.push(`  ${evidenceLine(b.evidence)}`);
     }
-  }
-  const forks = g.forks.filter((x) => appliesTo(x.useCaseIds, picked));
-  const gotchas = g.nuances.filter((x) => appliesTo(x.useCaseIds, picked));
-  if (forks.length || gotchas.length) {
-    out.push("", "## Questions");
-    for (const f of forks) out.push(`- What if ${f.condition}? ${f.effect} ${evidenceLine(f.evidence)}`);
-    for (const n of gotchas) out.push(`- ${n.title}: ${n.detail} If stuck: ${n.ifStuck} ${evidenceLine(n.evidence)}`);
   }
   if (g.protocol) {
     const p = g.protocol;
@@ -113,6 +112,11 @@ export function guideToMarkdown(g: Guide, baseUrl: string, sel?: Selection): str
       const f = p[k];
       out.push(`- ${label}: ${f.value}.${f.note ? ` ${f.note}` : ""} ${evidenceLine(f.evidence)}`);
     }
+  }
+  const forks = g.forks.filter((x) => appliesTo(x.useCaseIds, picked));
+  if (forks.length) {
+    out.push("", "## Questions");
+    for (const f of forks) out.push(`- What if ${f.condition}? ${f.effect} ${evidenceLine(f.evidence)}`);
   }
   out.push("", "## Configuration");
   if (g.config.consoleUrl) out.push(`- Console: ${g.config.consoleUrl}`);

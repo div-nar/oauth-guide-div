@@ -67,7 +67,7 @@ describe("blockers", () => {
 
   test("markdown has a blocked section with the fix and escalation link", () => {
     const b = gmail.blockers![0];
-    expect(md).toContain("## If you get blocked or rejected");
+    expect(md).toContain("## Troubleshooting");
     expect(md).toContain(b.fix);
     if (b.escalate) expect(md).toContain(b.escalate.url);
   });
@@ -103,7 +103,7 @@ describe("composio managed app", () => {
 
 describe("agent structure", () => {
   test("sections follow the web page's order", () => {
-    const order = ["## Can't wait? Connect on Composio", "## What you need", "## Steps", "## If you get blocked or rejected", "## Questions", "## Configuration"];
+    const order = ["## Can't wait? Connect on Composio", "## Before you begin", "## Steps", "## Common pitfalls", "## Troubleshooting", "## Protocol", "## Questions", "## Configuration"];
     const at = order.map((h) => md.indexOf(h));
     expect(at.every((i) => i >= 0)).toBe(true);
     expect([...at].sort((a, b) => a - b)).toEqual(at);
