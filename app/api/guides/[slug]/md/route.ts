@@ -34,7 +34,7 @@ export async function GET(req: Request, ctx: RouteContext<"/api/guides/[slug]/md
       `# Researching ${r.job.query}`,
       "",
       "There is no guide for this app yet, so a research agent has started reading its official developer docs.",
-      `Fetch ${base}/guides/${r.job.slug}.md again in about 2 minutes.`,
+      `Fetch ${base}/guides/${r.job.slug}.md again in about 90 seconds.`,
       `Progress: ${base}/api/generate/${r.job.id}`,
       "",
     ].join("\n"),

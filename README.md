@@ -52,7 +52,7 @@ Building this changed how I think about development from here on out.
 
 **Agents.** While I stuck first to building for humans, post-GPT, the primary reader of documentation is an agent, and not a person, so the Markdown became the product and the website became a layer for oversight. Designing for agents also meant designing for their weaknesses: they invent citations and guess at details, so checks had to be placed at every layer, with honesty being rewarded. And most crucially for me, I realised, not all agent-driven development is an MCP server; for a task an agent reads once, a plain URL and an `llms.txt` were enough.
 
-**Humans.** Less was more. My first version's polish didn't land; cutting friction did. What mattered was a high-level overview for decision-making: before committing to an integration, a developer needs to know whether it is worth it, which access they need, how long approval takes, and who must be involved. An agent is prone to make small mistakes. But these small details decide success, such as a callback that differs only by "www" which delays response time by 5 minutes or not enforcing PKCE rules that change from one provider to the next.
+**Humans.** Less was more. My first version's polish didn't land; cutting friction did. What mattered was a high-level overview for decision-making: before committing to an integration, a developer needs to know whether it is worth it, which access they need, how long approval takes, and who must be involved. An agent is prone to make small mistakes. But these small details decide success, such as a callback that differs only by "www", which makes sign-in fail or not enforcing PKCE rules that change from one provider to the next.
 
 ## Limitations
 

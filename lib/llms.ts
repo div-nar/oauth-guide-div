@@ -28,7 +28,7 @@ export async function buildIndex(base: string): Promise<string> {
     "",
     "## Any other app",
     "",
-    `- Fetch ${base}/guides/<app-name>.md for any app. If there is no guide yet, research starts automatically and the response (HTTP 202) says when to fetch again, usually about 2 minutes.`,
+    `- Fetch ${base}/guides/<app-name>.md for any app. If there is no guide yet, research starts automatically and the response (HTTP 202) says when to fetch again, usually 60 to 90 seconds.`,
     `- Or POST ${base}/api/generate with JSON {"query": "<app name or website>"}; poll the returned statusUrl until status is "done".`,
     "",
   ].join("\n");

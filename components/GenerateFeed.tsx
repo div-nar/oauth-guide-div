@@ -85,7 +85,7 @@ export function GenerateFeed({ query, jobId, exact = false, refresh = false }: {
   return (
     <div>
       <p className="research-meta" aria-live="polite">
-        {running ? `Working, ${mmss(elapsed)}. Most apps take about 2 minutes.` : job?.status === "done" ? `Finished in ${mmss(elapsed)}.` : "Stopped."}
+        {running ? `Working, ${mmss(elapsed)}. Most apps take 60 to 90 seconds.` : job?.status === "done" ? `Finished in ${mmss(elapsed)}.` : "Stopped."}
         {running && <span> You can go to other pages. The header shows the progress.</span>}
       </p>
       <ol className="timeline">
