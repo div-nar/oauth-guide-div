@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { GuideBody } from "@/components/GuideBody";
 import { AppLogo } from "@/components/AppLogo";
 import { BlockedList, FaqList, OAuthBasics, WhoList } from "@/components/GuideExtras";
@@ -37,6 +37,8 @@ export default async function GuidePage({ params, searchParams }: PageProps<"/gu
       </main>
     );
   }
+  // Another name for an app that has its own guide: go to the guide's own address.
+  if (g.slug !== slug) redirect(`/guides/${g.slug}`);
   const baseUrl = await getBaseUrl();
   const picked = typeof sp.access === "string" ? sp.access.split(",").filter((id) => g.useCases.some((u) => u.id === id)) : [];
   const headline = g.useCases.find((u) => u.difficulty === g.verdict.difficulty) ?? g.useCases[0];

@@ -3,4 +3,4 @@ export type AgentEvent =
   | { type: "search"; query: string }
   | { type: "read"; url: string }
   | { type: "done"; slug: string }
-  | { type: "error"; message: string };
+  | { type: "error"; message: string; notFound?: boolean };
