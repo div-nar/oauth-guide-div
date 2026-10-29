@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { guideToMarkdown } from "@/lib/render-markdown";
+import { guideToMarkdown, OWNER_TAG } from "@/lib/render-markdown";
 import { getLibraryGuide } from "@/lib/library";
 
 const gmail = getLibraryGuide("gmail")!;
@@ -96,5 +96,20 @@ describe("agent structure", () => {
       expect(md).toContain(`\`${u.id}\``);
       expect(md).toContain(`https://example.test/guides/gmail.md?access=${u.id}`);
     }
+  });
+});
+
+describe("easier for agents", () => {
+  test("without a chosen access, the agent is told to ask the user first", () => {
+    expect(md).toContain("## First, ask the user");
+    expect(md.indexOf("## First, ask the user")).toBeLessThan(md.indexOf("## Steps"));
+  });
+
+  test("with a chosen access, there is nothing to ask", () => {
+    expect(guideToMarkdown(gmail, "https://example.test", { ids: ["send"], existing: false })).not.toContain("## First, ask the user");
+  });
+
+  test("steps are a checklist the agent can tick off", () => {
+    expect(md).toContain(`- [ ] 1. ${OWNER_TAG[gmail.steps[0].owner]} ${gmail.steps[0].title}`);
   });
 });

@@ -40,12 +40,20 @@ export function guideToMarkdown(g: Guide, baseUrl: string, sel?: Selection): str
     "",
     v.summary,
     "",
-    "Step tags: [AGENT] an agent can do this in your signed-in browser or CLI. [YOU] a person must do this. [WAIT] waiting on the provider.",
+    "Step tags: [AGENT] an agent can do this in your signed-in browser or CLI. [YOU] a person must do this. [WAIT] waiting on the provider. Tick each box as it is done, and stop at every [YOU] step until the user confirms.",
   ];
   if (c) {
     out.splice(2, 0, `Access: ${c.labels.join(" + ")}${existing ? " | Reusing an existing app" : ""}`, "");
   }
   if (g.oauth.notes) out.push("", `Note: ${g.oauth.notes}`);
+  if (g.useCases.length > 1 && !c) {
+    out.push(
+      "",
+      "## First, ask the user",
+      `Ask: "What should your agent be able to do in ${g.app.name}? Pick all that apply." Offer the options below, and also ask whether they already have a ${g.app.name} OAuth app.`,
+      `Then fetch only their path: ${baseUrl}/guides/${g.slug}.md?access=<ids, comma-separated> (add &existing=1 if they have an app). It drops the steps and review waits they do not need.`,
+    );
+  }
   if (g.useCases.length && !c) {
     out.push("", "## Difficulty depends on what access you need", "Fetch just one path with ?access=<id> (combine with commas), and add &existing=1 if the user already has an app.");
     for (const u of g.useCases) {
@@ -62,7 +70,7 @@ export function guideToMarkdown(g: Guide, baseUrl: string, sel?: Selection): str
   if (!existing) out.push("", "## Steps");
   (existing ? [] : steps).forEach((s, i) => {
     const time = range(s.minutes, "min") ?? range(s.waitDays, "days");
-    out.push("", `${i + 1}. ${OWNER_TAG[s.owner]} ${s.title}${time ? ` (${time})` : ""}`, `   ${s.plain}`, `   Permalink: ${baseUrl}/guides/${g.slug}#step-${s.id}`);
+    out.push("", `- [ ] ${i + 1}. ${OWNER_TAG[s.owner]} ${s.title}${time ? ` (${time})` : ""}`, `   ${s.plain}`, `   Permalink: ${baseUrl}/guides/${g.slug}#step-${s.id}`);
     if (s.technical) out.push(`   Technical: ${s.technical}`);
     if (s.whyHuman) out.push(`   Why a person: ${s.whyHuman}`);
     if (s.link) out.push(`   Link${s.link.prefilled ? " (pre-filled)" : ""}: ${s.link.url}`);
