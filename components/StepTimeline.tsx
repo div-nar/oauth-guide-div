@@ -116,8 +116,8 @@ export function StepTimeline({ steps, waitTip }: { steps: Step[]; waitTip?: Reac
                   {(s.technical || stepPoints(s.plain).rest) && <TechDetails text={[stepPoints(s.plain).rest, s.technical].filter(Boolean).join(" ")} label="More detail" />}
                   <EvidenceBadge evidence={s.evidence} />
                   <div className="st-nav">
-                    {i > 0 ? <button type="button" onClick={() => go(i - 1)}>← {steps[i - 1].title}</button> : <span />}
-                    {i < steps.length - 1 && <button type="button" className="next" onClick={() => go(i + 1)}>Next: {steps[i + 1].title} →</button>}
+                    {i > 0 ? <button type="button" onClick={() => go(i - 1)} title={steps[i - 1].title}>← Previous</button> : <span />}
+                    {i < steps.length - 1 && <button type="button" className="next" onClick={() => go(i + 1)} title={steps[i + 1].title}>Next →</button>}
                   </div>
                 </div>
               )}
