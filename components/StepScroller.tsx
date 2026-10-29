@@ -10,6 +10,14 @@ const OWNER = { agent: "Your agent", human: "You", waiting: "Waiting on the prov
 
 const timeOf = (s: Step) => (s.waitDays ? formatRange(s.waitDays, "day") : s.minutes ? formatRange(s.minutes, "min") : "");
 
+function ExternalIcon() {
+  return (
+    <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden>
+      <path d="M9.5 2.5h4v4M13.5 2.5 7.5 8.5M12 9.5v3a1 1 0 0 1-1 1H3.5a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1h3" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
 function Arrow({ left }: { left?: boolean }) {
   return (
     <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden>
@@ -100,6 +108,7 @@ export function StepScroller({ steps }: { steps: Step[] }) {
           <a className="step-cta" href={s.link.url} target="_blank" rel="noreferrer">
             {s.link.label}
             {s.link.prefilled && <span className="prefilled">pre-filled</span>}
+            <ExternalIcon />
           </a>
         )}
         {s.owner === "waiting" && !s.link && <p className="why">Nothing to do but wait. The next step starts when the provider replies.</p>}
