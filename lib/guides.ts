@@ -17,8 +17,41 @@ export async function saveGuide(g: Guide, q: string): Promise<void> {
   );
 }
 
+// One app, one guide: the website identifies the app, whatever name was typed.
+export function appKey(website: string): string {
+  try {
+    return new URL(website.startsWith("http") ? website : `https://${website}`).hostname.toLowerCase().replace(/^www\./, "");
+  } catch {
+    return website.toLowerCase();
+  }
+}
+
+// Newest first, one per website, and none that repeat a hand-checked guide.
+export function oneGuidePerApp(newestFirst: Guide[], library: Guide[]): Guide[] {
+  const seen = new Set(library.flatMap((g) => [g.slug, appKey(g.app.website)]));
+  const out: Guide[] = [];
+  for (const g of newestFirst) {
+    const key = appKey(g.app.website);
+    if (seen.has(g.slug) || seen.has(key)) continue;
+    seen.add(key);
+    out.push(g);
+  }
+  return out;
+}
+
 export async function listGeneratedGuides(limit = 12): Promise<Guide[]> {
-  const libSlugs = new Set(listLibraryGuides().map((g) => g.slug));
-  const rows = await query<{ guide: unknown }>("SELECT guide FROM guides ORDER BY created_at DESC LIMIT $1", [limit]);
-  return rows.map((r) => parseStoredGuide(r.guide)).filter((g) => !libSlugs.has(g.slug));
+  const rows = await query<{ guide: unknown }>("SELECT guide FROM guides ORDER BY created_at DESC LIMIT $1", [limit * 3]);
+  return oneGuidePerApp(rows.map((r) => parseStoredGuide(r.guide)), listLibraryGuides()).slice(0, limit);
+}
+
+// Where a newly researched guide belongs: the slug of the existing guide for the same
+// website (a hand-checked one wins), so a second name for an app refreshes its guide
+// instead of adding another.
+export async function slugForApp(g: Guide): Promise<string> {
+  const key = appKey(g.app.website);
+  const lib = listLibraryGuides().find((x) => appKey(x.app.website) === key);
+  if (lib) return lib.slug;
+  const rows = await query<{ guide: unknown }>("SELECT guide FROM guides ORDER BY created_at DESC LIMIT 500");
+  const same = rows.map((r) => parseStoredGuide(r.guide)).find((x) => appKey(x.app.website) === key);
+  return same?.slug ?? g.slug;
 }

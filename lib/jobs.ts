@@ -5,7 +5,7 @@ import { runChecks } from "@/lib/agent/checks";
 import { composioLookup } from "@/lib/agent/composio";
 import { runGuideAgent } from "@/lib/agent/run";
 import { query } from "@/lib/db";
-import { getGuide, saveGuide } from "@/lib/guides";
+import { getGuide, saveGuide, slugForApp } from "@/lib/guides";
 import { getLibraryGuide } from "@/lib/library";
 import { checkRateLimit } from "@/lib/rate-limit";
 import { resolveSlug } from "@/lib/slug";
@@ -47,8 +47,10 @@ async function runJob(id: number, q: string) {
       console.error("checks failed", id, err);
       return null;
     });
-    const composio = await composioLookup(researched);
-    const guide = { ...researched, composio, checks };
+    // A second name for an app already covered refreshes that guide instead of adding one.
+    const slug = await slugForApp(researched).catch(() => researched.slug);
+    const composio = await composioLookup({ ...researched, slug });
+    const guide = { ...researched, slug, composio, checks };
     await saveGuide(guide, q);
     await appendEvent(id, started, { type: "done", slug: guide.slug });
     await query("UPDATE generations SET status = 'done', finished_at = now() WHERE id = $1", [id]);
