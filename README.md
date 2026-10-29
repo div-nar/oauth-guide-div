@@ -23,13 +23,13 @@ Proficiency varies, so a guide asks what access you need, shows the verdict, the
 
 ## 3. What did I build?
 
-Much of this work is handled by agents, but the experience is fragmented. This realisation led me to construct a two-sided website, with a default preference for agents, so they can pick up information as easily as developers would.
+Much of this work is handled by agents, but the experience is fragmented. This realization led me to construct a two-faced website, with a default preference for servicing agents and a website for human fallback.
 
-**The developer's side** is a guide they can read and share. They first pick the access their agent needs, because that, not the app, decides how hard the setup is: Slack takes minutes if the agent only posts, and months if it reads messages. The guide then shows how long setup takes including any wait for approval, who needs to be involved, the steps in order, and what to do when they get blocked or rejected.
+**For agents (the default).** Every guide is plain Markdown at a stable address, and `llms.txt` lists every guide, so an agent finds and reads the right one in a single fetch. A developer copies one prompt into their agent, and it points at the exact path for the access they picked. Each step is tagged as something the agent can do in the developer's signed-in browser or terminal, something only the developer can do (signing in, accepting terms, handling the client secret), or a wait on the provider. The agent does its steps, stops at every one that needs the developer, and never asks for a secret in chat.
 
-**The agent's side** is the same guide, without the layout around it. Each guide is plain Markdown at a stable address, and `llms.txt` lists every guide, so an agent finds and reads the right one in a single fetch. A developer copies one prompt into their agent, and the agent takes it from there. It does the steps it can in the developer's signed-in browser or terminal, and stops at the ones only the developer can do, such as signing in, accepting terms, or handling the client secret.
+**For humans (the fallback).** The website shows the same guide for developers who want to read it themselves, share it, or check what their agent is doing. They first pick the access their agent needs, because that, not the app, decides how hard the setup is: Slack takes minutes if the agent only posts, and months if it reads messages. The guide then shows how long setup takes including any wait for approval, who needs to be involved, the steps in order, and what to do when they get blocked or rejected. An ask box answers questions about that app's setup from the guide alone.
 
-Both sides come from the same guide, so the developer and their agent never disagree about what to do next.
+Both faces come from the same guide, so the developer and their agent never disagree about what to do next.
 
 **Any app, not just a list.** Five guides are curated by hand, each showing a different kind of challenge. For any other app, an agent reads the provider's own developer docs in real time and writes a guide in the same structure, usually in about two minutes. If it can't confirm the app exists, it says so rather than making one up.
 
