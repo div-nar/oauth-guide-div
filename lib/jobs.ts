@@ -1,9 +1,11 @@
 import { after } from "next/server";
 import { disambiguate, type Option } from "@/lib/agent/disambiguate";
 import type { AgentEvent } from "@/lib/agent/events";
-import { runGuideAgent } from "@/lib/agent/run";
+import { runChecks } from "@/lib/agent/checks";
+import { composioLookup } from "@/lib/agent/composio";
+import { AppNotFoundError, runGuideAgent } from "@/lib/agent/run";
 import { query } from "@/lib/db";
-import { getGuide, saveGuide } from "@/lib/guides";
+import { getGuide, saveGuide, slugForApp } from "@/lib/guides";
 import { getLibraryGuide } from "@/lib/library";
 import { checkRateLimit } from "@/lib/rate-limit";
 import { resolveSlug } from "@/lib/slug";
@@ -39,14 +41,24 @@ async function runJob(id: number, q: string) {
   const emit = (e: AgentEvent) => void appendEvent(id, started, e).catch(() => {});
   try {
     await appendEvent(id, started, { type: "status", text: `Researching ${q}` });
-    const guide = await runGuideAgent(q, emit);
+    const researched = await runGuideAgent(q, emit);
+    // A failed check run never loses the guide; it is saved without checks.
+    const checks = await runChecks(researched, emit).catch((err) => {
+      console.error("checks failed", id, err);
+      return null;
+    });
+    // A second name for an app already covered refreshes that guide instead of adding one.
+    const slug = await slugForApp(researched).catch(() => researched.slug);
+    const composio = await composioLookup({ ...researched, slug });
+    const guide = { ...researched, slug, composio, checks };
     await saveGuide(guide, q);
     await appendEvent(id, started, { type: "done", slug: guide.slug });
     await query("UPDATE generations SET status = 'done', finished_at = now() WHERE id = $1", [id]);
   } catch (err) {
     console.error("research job failed", id, err);
     const message = err instanceof Error ? err.message : "Something went wrong. Try again.";
-    await appendEvent(id, started, { type: "error", message }).catch(() => {});
+    const notFound = err instanceof AppNotFoundError;
+    await appendEvent(id, started, notFound ? { type: "error", message, notFound } : { type: "error", message }).catch(() => {});
     await query("UPDATE generations SET status = 'failed', finished_at = now() WHERE id = $1", [id]).catch(() => {});
   }
 }
@@ -67,6 +79,20 @@ export async function startResearch(
   if (getLibraryGuide(slug)) return { kind: "ready", slug };
   if (!opts.refresh && (await getGuide(slug))) return { kind: "ready", slug };
 
+  // A name that was just researched and not found answers at once, instead of
+  // spending another run (agents re-fetch a guide URL until it exists).
+  if (!opts.refresh) {
+    const [miss] = await query<{ events: { type: string; message?: string; notFound?: boolean }[] }>(
+      `SELECT events FROM generations
+        WHERE slug = $1 AND status = 'failed' AND created_at > now() - interval '24 hours'
+          AND events @> '[{"notFound": true}]'::jsonb
+        ORDER BY id DESC LIMIT 1`,
+      [slug],
+    );
+    const e = miss?.events.find((x) => x.notFound);
+    if (e) return { kind: "rejected", reason: e.message ?? "We did not find that app.", status: 404 };
+  }
+
   const [running] = await query<{ id: number; query: string }>(
     `SELECT id, query FROM generations
       WHERE slug = $1 AND status = 'started' AND created_at > now() - make_interval(mins => $2)
@@ -76,7 +102,7 @@ export async function startResearch(
   if (running) return { kind: "job", job: { id: running.id, slug, query: running.query } };
 
   // Rate limit before any model call, including the name check.
-  const limit = await checkRateLimit(ip, new Date());
+  const limit = await checkRateLimit(new Date());
   if (!limit.allowed) return { kind: "rejected", reason: limit.reason!, status: 429 };
 
   if (!opts.exact && !opts.refresh) {

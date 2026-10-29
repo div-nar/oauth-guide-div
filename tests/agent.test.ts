@@ -1,9 +1,9 @@
 import { describe, expect, test } from "bun:test";
 import { z } from "zod";
 import { minimalGuide } from "./fixtures";
-import { type AgentDeps, type ChatMessage, runGuideAgent } from "@/lib/agent/run";
+import { type AgentDeps, AppNotFoundError, type ChatMessage, runGuideAgent } from "@/lib/agent/run";
 import { toStrictSchema } from "@/lib/agent/strict-schema";
-import { GuideSchema } from "@/lib/guide-schema";
+import { AgentGuideSchema, GuideSchema } from "@/lib/guide-schema";
 
 type ToolCall = { name: string; args: unknown; id?: string };
 const turn = (calls: ToolCall[], finish = "tool_calls", content = "") => ({
@@ -38,10 +38,12 @@ function deps(turns: ReturnType<typeof turn>[], extra: Partial<AgentDeps> = {}) 
 }
 
 const submit = (g: unknown) => turn([{ name: "submit_guide", args: g }]);
+// A real run finds the app's docs first; guides need at least one claim from its own site.
+const lookup = turn([{ name: "web_search", args: { query: "acme oauth" } }]);
 
 describe("runGuideAgent", () => {
   test("returns a parsed guide with our slug, date and generatedBy", async () => {
-    const g = await runGuideAgent("Acme", () => {}, deps([submit(minimalGuide({ slug: "whatever", generatedBy: "library" }))]));
+    const g = await runGuideAgent("Acme", () => {}, deps([lookup, submit(minimalGuide({ slug: "whatever", generatedBy: "library" }))]));
     expect(g.slug).toBe("acme");
     expect(g.generatedBy).toBe("agent");
     expect(g.lastChecked).toBe("2026-10-29");
@@ -67,7 +69,7 @@ describe("runGuideAgent", () => {
   });
 
   test("recovers when the first submission is invalid and the second is valid", async () => {
-    const d = deps([submit({ nope: true }), submit(minimalGuide())]);
+    const d = deps([lookup, submit({ nope: true }), submit(minimalGuide())]);
     expect((await runGuideAgent("Acme", () => {}, d)).app.name).toBe("Acme");
   });
 
@@ -82,20 +84,33 @@ describe("runGuideAgent", () => {
   });
 
   test("a failing page read is reported to the model, not thrown", async () => {
-    const d = deps([turn([{ name: "fetch_page", args: { url: "https://acme.example/x" } }]), submit(minimalGuide())], {
+    const d = deps([lookup, turn([{ name: "fetch_page", args: { url: "https://acme.example/x" } }]), submit(minimalGuide())], {
       fetchPage: async () => {
         throw new Error("blocked address");
       },
     });
     await runGuideAgent("Acme", () => {}, d);
-    expect(d.bodies[1].some((m) => m.role === "tool" && String(m.content).includes("blocked address"))).toBe(true);
+    expect(d.bodies[2].some((m) => m.role === "tool" && String(m.content).includes("blocked address"))).toBe(true);
   });
 
   test("never trusts 'tested' from the agent", async () => {
     const bad = minimalGuide();
     bad.steps[0].evidence = { level: "tested", sources: [] } as never;
-    const g = await runGuideAgent("Acme", () => {}, deps([submit(bad)]));
+    const g = await runGuideAgent("Acme", () => {}, deps([lookup, submit(bad)]));
     expect(g.steps[0].evidence.level).toBe("uncertain");
+  });
+});
+
+describe("checks are code's, not the model's", () => {
+  test("the submit tool asks for the sign-in endpoint but has no checks field", () => {
+    const tools = JSON.stringify(z.toJSONSchema(AgentGuideSchema));
+    expect(tools).toContain("authorizeUrl");
+    expect(tools).not.toContain('"checks"');
+  });
+
+  test("checks the model submits anyway are dropped", async () => {
+    const g = minimalGuide({ checks: { date: "2026-10-29", links: [{ kind: "link", url: "https://acme.example/apps/new", outcome: "ok", detail: "Page loads" }] } });
+    expect((await runGuideAgent("Acme", () => {}, deps([lookup, submit(g)]))).checks).toBeNull();
   });
 });
 
@@ -104,7 +119,7 @@ describe("repairs the model cannot see in the schema", () => {
     const g = minimalGuide();
     (g.verdict as { handsOnMinutes: { min: number; max: number } }).handsOnMinutes = { min: 30, max: 10 };
     g.steps[0].evidence = { level: "sourced", sources: [] };
-    const out = await runGuideAgent("Acme", () => {}, deps([submit(g)]));
+    const out = await runGuideAgent("Acme", () => {}, deps([lookup, submit(g)]));
     expect(out.verdict.handsOnMinutes).toEqual({ min: 10, max: 30 });
     expect(out.steps[0].evidence.level).toBe("uncertain");
   });
@@ -116,13 +131,13 @@ describe("link safety", () => {
     g.steps[0].link = { url: "https://evil.example/phish", label: "Create your app", prefilled: false };
     g.steps.push({ ...g.steps[0], id: "own", link: { url: "https://dashboard.acme.example/apps/new", label: "Open", prefilled: false } });
     g.steps.push({ ...g.steps[0], id: "seen", link: { url: "https://acme.example/docs", label: "Docs", prefilled: false } });
-    g.steps.push({ ...g.steps[0], id: "composio", link: { url: "https://dashboard.composio.dev/~/project/auth-configs", label: "Composio", prefilled: false } });
+    g.steps.push({ ...g.steps[0], id: "unseen", link: { url: "https://dashboard.composio.dev/~/project/auth-configs", label: "Composio", prefilled: false } });
     const out = await runGuideAgent("Acme", () => {}, deps([turn([{ name: "web_search", args: { query: "q" } }]), submit(g)]));
     const link = (id: string) => out.steps.find((s) => s.id === id)?.link?.url ?? null;
     expect(link("create-app")).toBeNull();
     expect(link("own")).toBe("https://dashboard.acme.example/apps/new");
     expect(link("seen")).toBe("https://acme.example/docs");
-    expect(link("composio")).toBe("https://dashboard.composio.dev/~/project/auth-configs");
+    expect(link("unseen")).toBeNull();
   });
 });
 
@@ -151,7 +166,7 @@ describe("citation checking", () => {
   test("drops a cited page the agent never saw and downgrades to uncertain when none remain", async () => {
     const g = minimalGuide();
     g.steps[0].evidence = { level: "sourced", sources: [{ url: "https://godocs.acme.example/made-up", title: "Invented" }] };
-    const out = await runGuideAgent("Acme", () => {}, deps([submit(g)]));
+    const out = await runGuideAgent("Acme", () => {}, deps([lookup, submit(g)]));
     expect(out.steps[0].evidence.sources).toEqual([]);
     expect(out.steps[0].evidence.level).toBe("uncertain");
     expect(out.steps[0].evidence.note).toContain("did not open");
@@ -172,5 +187,27 @@ describe("toStrictSchema", () => {
       Object.values(o).forEach(walk);
     };
     walk(s);
+  });
+});
+
+describe("apps that cannot be confirmed", () => {
+  test("the agent can report that an app was not found, and nothing is returned", async () => {
+    const run = runGuideAgent("Zorblax Widgets", () => {}, deps([lookup, turn([{ name: "report_not_found", args: { reason: "No company or developer docs by that name." } }])]));
+    expect(run).rejects.toBeInstanceOf(AppNotFoundError);
+    expect(run).rejects.toThrow('couldn\'t confirm a developer platform for "Zorblax Widgets"');
+  });
+
+  test("a guide with no claim from a page on the app's own site is rejected as not found", async () => {
+    const g = minimalGuide({ app: { name: "Zorblax", website: "https://zorblax.example" } });
+    // Cites only generic pages it saw in search results, nothing from zorblax.example.
+    const run = runGuideAgent("Zorblax", () => {}, deps([lookup, submit(g)]));
+    expect(run).rejects.toBeInstanceOf(AppNotFoundError);
+  });
+
+  test("docs on a domain carrying the app's name still count (shopify.dev for Shopify)", async () => {
+    const g = minimalGuide({ app: { name: "Shopify", website: "https://www.shopify.com" } });
+    g.steps[0].evidence = { level: "sourced", sources: [{ url: "https://shopify.dev/docs/apps/auth", title: "Auth" }] };
+    const d = deps([turn([{ name: "fetch_page", args: { url: "https://shopify.dev/docs/apps/auth" } }]), submit(g)]);
+    expect((await runGuideAgent("Shopify", () => {}, d)).app.name).toBe("Shopify");
   });
 });

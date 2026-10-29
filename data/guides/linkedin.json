@@ -2,7 +2,8 @@
   "slug": "linkedin",
   "app": {
     "name": "LinkedIn",
-    "website": "https://www.linkedin.com"
+    "website": "https://www.linkedin.com",
+    "canDo": "Sign users in and post for them. With partner approval, manage company pages, ads and recruiting."
   },
   "lastChecked": "2026-10-28",
   "generatedBy": "library",
@@ -140,8 +141,8 @@
     {
       "id": "redirect-credentials",
       "owner": "human",
-      "title": "Add the redirect address and copy the credentials",
-      "plain": "On the Auth tab, add the redirect address from your Composio LinkedIn auth config. Then paste the client ID and secret into Composio.",
+      "title": "Add the callback address and copy the credentials",
+      "plain": "On the Auth tab, add the callback address of your app. Then keep the client ID and secret in the secret store or environment variables of your app.",
       "whyHuman": "The secret is the password for your app. Paste it yourself. Then it does not go into the chat history of an agent.",
       "minutes": {
         "min": 2,
@@ -151,8 +152,8 @@
         "level": "sourced",
         "sources": [
           {
-            "url": "https://docs.composio.dev/docs/authentication/custom-app-vs-managed-app",
-            "title": "Composio: Managed vs custom auth"
+            "url": "https://learn.microsoft.com/en-us/linkedin/shared/authentication/authorization-code-flow",
+            "title": "LinkedIn: Authorization code flow"
           }
         ]
       },
@@ -347,7 +348,7 @@
     {
       "title": "API versions expire",
       "detail": "LinkedIn publishes a new version of its marketing APIs each month. Old versions stop on a set date. For example, the November 2025 version stops on November 16, 2026.",
-      "ifStuck": "If calls fail after an end date, find the version that Composio uses.",
+      "ifStuck": "If calls fail after an end date, find the API version that your code sends.",
       "evidence": {
         "level": "sourced",
         "sources": [
@@ -365,7 +366,8 @@
   ],
   "config": {
     "consoleUrl": "https://www.linkedin.com/developers/apps",
-    "redirectUriNote": "On the Auth tab of the app, add the redirect address from your Composio auth config.",
+    "authorizeUrl": "https://www.linkedin.com/oauth/v2/authorization",
+    "redirectUriNote": "Add your HTTPS callback address on the Auth tab of the app.",
     "scopes": [
       {
         "name": "openid profile email",
@@ -557,7 +559,7 @@
     ]
   },
   "existingApp": {
-    "summary": "Add the Composio redirect address on the Auth tab of your app. Paste the client ID and secret into Composio. The products that LinkedIn approved stay on the app.",
+    "summary": "If the callback address of your agent is different, add it on the Auth tab of your app. Use the existing client ID and secret. The products that LinkedIn approved stay on the app.",
     "steps": [],
     "reReviewTriggers": [
       {
@@ -631,5 +633,41 @@
         ]
       }
     }
-  ]
+  ],
+  "checks": {
+    "date": "2026-10-29",
+    "links": [
+      {
+        "kind": "link",
+        "url": "https://www.linkedin.com/developers/apps",
+        "outcome": "ok",
+        "detail": "Page loads"
+      },
+      {
+        "kind": "link",
+        "url": "https://www.linkedin.com/developers/apps/new",
+        "outcome": "ok",
+        "detail": "Page loads"
+      },
+      {
+        "kind": "link",
+        "url": "https://learn.microsoft.com/en-us/linkedin/marketing/quick-start",
+        "outcome": "ok",
+        "detail": "Page loads"
+      },
+      {
+        "kind": "link",
+        "url": "https://learn.microsoft.com/en-us/linkedin/marketing/community-management/community-management-overview",
+        "outcome": "ok",
+        "detail": "Page loads"
+      }
+    ],
+    "authorize": {
+      "kind": "authorize",
+      "url": "https://www.linkedin.com/oauth/v2/authorization",
+      "outcome": "ok",
+      "detail": "Sign-in endpoint answers and rejects a made-up app ID: \"Authorize LinkedIn LinkedIn The passed in client_id is invalid oauth-guides-check-not-a-real-app\""
+    },
+    "discovery": null
+  }
 }

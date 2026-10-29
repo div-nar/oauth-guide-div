@@ -42,26 +42,34 @@ export function htmlToText(html: string): string {
     .trim();
 }
 
-export async function fetchPage(raw: string): Promise<{ url: string; text: string }> {
+export type Probe = { status: number; url: string; type: string; body: string };
+
+// Follows redirects (each hop must be public) and reports what came back without
+// treating an error status as a failure. Network errors still throw.
+export async function probe(raw: string, opts: { accept?: string; userAgent?: string; maxRedirects?: number } = {}): Promise<Probe> {
   let url = new URL(raw);
-  for (let hop = 0; hop <= MAX_REDIRECTS; hop++) {
+  for (let hop = 0; hop <= (opts.maxRedirects ?? MAX_REDIRECTS); hop++) {
     await assertPublic(url);
     const res = await fetch(url, {
       redirect: "manual",
       signal: AbortSignal.timeout(12_000),
-      headers: { "user-agent": "oauth-guides-research/1.0", accept: "text/html,text/plain,text/markdown" },
+      headers: { "user-agent": opts.userAgent ?? "oauth-guides-research/1.0", accept: opts.accept ?? "text/html,text/plain,text/markdown" },
     });
     if (res.status >= 300 && res.status < 400 && res.headers.get("location")) {
       url = new URL(res.headers.get("location")!, url);
       continue;
     }
-    if (!res.ok) throw new Error(`The page returned HTTP ${res.status}.`);
     const len = Number(res.headers.get("content-length") ?? 0);
     if (len > MAX_BYTES) throw new Error("The page is too large to read.");
     const body = (await res.text()).slice(0, MAX_BYTES);
-    const type = res.headers.get("content-type") ?? "";
-    const text = type.includes("html") ? htmlToText(body) : body;
-    return { url: url.toString(), text: text.slice(0, MAX_CHARS) };
+    return { status: res.status, url: url.toString(), type: res.headers.get("content-type") ?? "", body };
   }
   throw new Error("Too many redirects.");
+}
+
+export async function fetchPage(raw: string): Promise<{ url: string; text: string }> {
+  const res = await probe(raw);
+  if (res.status < 200 || res.status >= 300) throw new Error(`The page returned HTTP ${res.status}.`);
+  const text = res.type.includes("html") ? htmlToText(res.body) : res.body;
+  return { url: res.url, text: text.slice(0, MAX_CHARS) };
 }

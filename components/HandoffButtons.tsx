@@ -1,6 +1,5 @@
 import { AgentLaunchers } from "@/components/AgentLaunchers";
 import { AgentLinks } from "@/components/AgentLinks";
-import { CopyLine } from "@/components/CopyLine";
 import type { Guide, Step } from "@/lib/guide-schema";
 import type { Selection } from "@/lib/paths";
 import { handoffPrompt } from "@/lib/handoff";
@@ -17,10 +16,9 @@ export function HandoffButtons({ guide, baseUrl, sel, steps }: { guide: Guide; b
           <p>{agentSteps === 0 ? "Your agent tells you how to do each step." : `Your agent does ${agentSteps === 1 ? "1 step" : `${agentSteps} steps`}. It stops at each step that you must do.`}</p>
         </div>
         <div className="handoff-actions">
-          <AgentLaunchers prompt={prompt} />
+          <AgentLaunchers prompt={prompt} label="Copy prompt" />
         </div>
       </div>
-      <CopyLine text={prompt} />
       <AgentLinks md={`/guides/${guide.slug}.md${sel ? selectionQuery(sel) : ""}`} json={`/guides/${guide.slug}.json`} />
     </section>
   );

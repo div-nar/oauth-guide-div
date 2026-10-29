@@ -2,7 +2,7 @@ import { z } from "zod";
 import type { AgentEvent } from "@/lib/agent/events";
 import { SYSTEM_PROMPT, userPrompt } from "@/lib/agent/prompt";
 import { toStrictSchema } from "@/lib/agent/strict-schema";
-import { type Evidence, type Guide, GuideSchema } from "@/lib/guide-schema";
+import { AgentGuideSchema, type Evidence, type Guide } from "@/lib/guide-schema";
 import { resolveSlug } from "@/lib/slug";
 
 // OpenAI chat-completions shapes (sent through OpenRouter).
@@ -26,6 +26,10 @@ const MAX_INVALID = 2;
 const MAX_SEARCHES = 6;
 const MAX_READS = 8;
 
+// The app could not be confirmed: it may not exist, or it has no public developer
+// platform. Research stops and nothing is saved, rather than inventing a guide.
+export class AppNotFoundError extends Error {}
+
 const TOOLS = [
   {
     type: "function",
@@ -48,10 +52,19 @@ const TOOLS = [
   {
     type: "function",
     function: {
+      name: "report_not_found",
+      description: "Call instead of submit_guide when you cannot confirm the app exists, or it has no public developer platform or sign-in for third-party apps. Say what you searched for and what you found.",
+      strict: true,
+      parameters: { type: "object", properties: { reason: { type: "string" } }, required: ["reason"], additionalProperties: false },
+    },
+  },
+  {
+    type: "function",
+    function: {
       name: "submit_guide",
       description: "Submit the finished guide. Call exactly once, after research is done.",
       strict: true,
-      parameters: toStrictSchema(z.toJSONSchema(GuideSchema, { io: "input" })),
+      parameters: toStrictSchema(z.toJSONSchema(AgentGuideSchema, { io: "input" })),
     },
   },
 ];
@@ -96,25 +109,55 @@ function baseDomain(host: string): string {
 }
 
 // A step link is clickable on our site, so only keep it if it points at the app's own
-// domain, Composio, or a host the agent actually saw. A poisoned page cannot plant one.
+// domain or a host the agent actually saw. A poisoned page cannot plant one.
 function safeLink(url: string, appWebsite: string, seen: Set<string>): boolean {
   try {
     const host = new URL(url).hostname.toLowerCase().replace(/^www\./, "");
     if (new URL(url).protocol !== "https:") return false;
     const appBase = baseDomain(new URL(appWebsite.startsWith("http") ? appWebsite : `https://${appWebsite}`).hostname);
     const seenHosts = new Set([...seen].map((u) => u.split("/")[0]));
-    return baseDomain(host) === appBase || baseDomain(host) === "composio.dev" || seenHosts.has(host);
+    return baseDomain(host) === appBase || seenHosts.has(host);
   } catch {
     return false;
   }
 }
 
+function notFoundMessage(query: string, reason: string): string {
+  return `We couldn't confirm a developer platform for "${query}". Check the spelling, or try the app's website address.${reason ? ` (${reason.slice(0, 300)})` : ""}`;
+}
+
+function citesAppSite(g: Pick<Guide, "app" | "steps" | "useCases" | "forks" | "nuances">): boolean {
+  let appBase = "";
+  try {
+    appBase = baseDomain(new URL(g.app.website.startsWith("http") ? g.app.website : `https://${g.app.website}`).hostname);
+  } catch {}
+  const name = g.app.name.toLowerCase().split(/[^a-z0-9]+/).find((w) => w.length >= 4) ?? "";
+  const evidence = [...g.steps, ...g.useCases, ...g.forks, ...g.nuances].map((x) => x.evidence);
+  return evidence.some((e) =>
+    e.level === "sourced" &&
+    e.sources.some((s) => {
+      try {
+        const host = new URL(s.url).hostname.toLowerCase();
+        return (appBase && baseDomain(host) === appBase) || (name && host.includes(name));
+      } catch {
+        return false;
+      }
+    }),
+  );
+}
+
 function finalize(raw: unknown, query: string, today: string, seen: Set<string>): Guide {
   const fixed = repair(raw) as object;
-  const g = GuideSchema.parse({ ...fixed, slug: resolveSlug(query), generatedBy: "agent", lastChecked: today });
+  const g = AgentGuideSchema.parse({ ...fixed, slug: resolveSlug(query), generatedBy: "agent", lastChecked: today });
   const fix = <T extends { evidence: Evidence }>(xs: T[]) => xs.map((x) => ({ ...x, evidence: sanitizeEvidence(x.evidence, seen) }));
   const steps = fix(g.steps).map((st) => (st.link && !safeLink(st.link.url, g.app.website, seen) ? { ...st, link: null } : st));
-  return { ...g, useCases: fix(g.useCases), steps, forks: fix(g.forks), nuances: fix(g.nuances) };
+  // Backstop against an invented guide: at least one claim must cite a page the agent
+  // actually saw on the app's own site (same base domain, or a host carrying its name).
+  if (!citesAppSite({ ...g, useCases: fix(g.useCases), steps, forks: fix(g.forks), nuances: fix(g.nuances) })) {
+    throw new AppNotFoundError(notFoundMessage(query, "No page on the app's own site confirmed any part of the setup."));
+  }
+  // Checks are recorded by code after research (lib/agent/checks.ts), never by the model.
+  return { ...g, useCases: fix(g.useCases), steps, forks: fix(g.forks), nuances: fix(g.nuances), composio: null, checks: null };
 }
 
 export async function runGuideAgent(query: string, emit: (e: AgentEvent) => void, deps: AgentDeps = {}): Promise<Guide> {
@@ -143,7 +186,7 @@ export async function runGuideAgent(query: string, emit: (e: AgentEvent) => void
 
     if (!calls.length) {
       if (++invalid >= MAX_INVALID) throw new Error("The agent finished without producing a guide.");
-      messages.push({ role: "user", content: "Call submit_guide now with the finished guide." });
+      messages.push({ role: "user", content: "Call submit_guide now with the finished guide, or report_not_found if you could not confirm the app." });
       continue;
     }
 
@@ -160,7 +203,7 @@ export async function runGuideAgent(query: string, emit: (e: AgentEvent) => void
       if (call.function.name === "web_search") {
         const q = String(args.query ?? "");
         if (++searches > MAX_SEARCHES) {
-          reply("Search limit reached. Use what you have and submit the guide.");
+          reply("Search limit reached. Submit the guide from what you found, or call report_not_found if you could not confirm the app.");
           continue;
         }
         emit({ type: "search", query: q });
@@ -174,7 +217,7 @@ export async function runGuideAgent(query: string, emit: (e: AgentEvent) => void
       } else if (call.function.name === "fetch_page") {
         const url = String(args.url ?? "");
         if (++reads > MAX_READS) {
-          reply("Page read limit reached. Use what you have and submit the guide.");
+          reply("Page read limit reached. Submit the guide from what you found, or call report_not_found if you could not confirm the app.");
           continue;
         }
         emit({ type: "read", url });
@@ -186,11 +229,14 @@ export async function runGuideAgent(query: string, emit: (e: AgentEvent) => void
         } catch (err) {
           reply(`Could not read the page: ${err instanceof Error ? err.message : String(err)}`);
         }
+      } else if (call.function.name === "report_not_found") {
+        throw new AppNotFoundError(notFoundMessage(query, String(args.reason ?? "")));
       } else if (call.function.name === "submit_guide") {
         try {
           emit({ type: "status", text: "Checking the guide's structure" });
           return finalize(args, query, today, seen);
         } catch (err) {
+          if (err instanceof AppNotFoundError) throw err;
           if (++invalid >= MAX_INVALID) throw new Error("The agent's guide did not match the required structure twice.");
           const detail = err instanceof z.ZodError ? z.prettifyError(err).slice(0, 1500) : String(err);
           console.warn("submit_guide rejected:", detail);

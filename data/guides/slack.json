@@ -2,7 +2,8 @@
   "slug": "slack",
   "app": {
     "name": "Slack",
-    "website": "https://slack.com"
+    "website": "https://slack.com",
+    "canDo": "Post messages and replies. Read channel history and threads to summarise, search or sort them."
   },
   "lastChecked": "2026-10-28",
   "generatedBy": "library",
@@ -64,7 +65,7 @@
       "id": "create-app",
       "owner": "agent",
       "title": "Create the app from a pre-filled link",
-      "plain": "This link opens the Slack 'Create app' screen. The Composio redirect address and the usual agent permissions are already on it. Change the name and select your workspace. Remove the permissions that you do not need. Then create the app.",
+      "plain": "This link opens the Slack 'Create app' screen. The usual agent permissions are already on it. Change the name and select your workspace. Remove the permissions that you do not need. Then create the app.",
       "minutes": {
         "min": 2,
         "max": 4
@@ -82,9 +83,9 @@
           }
         ]
       },
-      "technical": "The link uses the Slack manifest URL (api.slack.com/apps?new_app=1&manifest_json=...). It adds these bot scopes: chat:write, channels:read, channels:history, users:read. It adds this redirect URL: https://backend.composio.dev/api/v3/toolkits/auth/callback. Make sure that it is the same as the address in your Composio auth config.",
+      "technical": "The link uses the Slack manifest URL (`api.slack.com/apps?new_app=1&manifest_json=...`). It adds these bot scopes: `chat:write`, `channels:read`, `channels:history`, `users:read`. You add your callback address in the next step.",
       "link": {
-        "url": "https://api.slack.com/apps?new_app=1&manifest_json=%7B%22display_information%22%3A%7B%22name%22%3A%22Your%20agent%27s%20name%22%7D%2C%22oauth_config%22%3A%7B%22redirect_urls%22%3A%5B%22https%3A//backend.composio.dev/api/v3/toolkits/auth/callback%22%5D%2C%22scopes%22%3A%7B%22bot%22%3A%5B%22chat%3Awrite%22%2C%22channels%3Aread%22%2C%22channels%3Ahistory%22%2C%22users%3Aread%22%5D%7D%7D%2C%22settings%22%3A%7B%22org_deploy_enabled%22%3Afalse%2C%22token_rotation_enabled%22%3Afalse%7D%7D",
+        "url": "https://api.slack.com/apps?new_app=1&manifest_json=%7B%22display_information%22%3A%7B%22name%22%3A%22Your%20agent%27s%20name%22%7D%2C%22oauth_config%22%3A%7B%22scopes%22%3A%7B%22bot%22%3A%5B%22chat%3Awrite%22%2C%22channels%3Aread%22%2C%22channels%3Ahistory%22%2C%22users%3Aread%22%5D%7D%7D%2C%22settings%22%3A%7B%22org_deploy_enabled%22%3Afalse%2C%22token_rotation_enabled%22%3Afalse%7D%7D",
         "label": "Create the app with settings pre-filled",
         "prefilled": true
       }
@@ -92,9 +93,9 @@
     {
       "id": "redirect-scopes",
       "owner": "agent",
-      "title": "Examine the redirect address and permissions",
-      "plain": "Open OAuth & Permissions. Make sure that the redirect address is the same as in your Composio auth config. Make sure that the permissions are the ones that your agent needs.",
-      "technical": "Redirect URLs must use HTTPS. They cannot contain '#'. Slack shows bot scopes and user scopes in two lists. Your Composio auth config shows the scopes that it requests.",
+      "title": "Examine the callback address and permissions",
+      "plain": "Open OAuth & Permissions. Add the callback address of your app as a redirect URL. Make sure that the permissions are the ones that your agent needs.",
+      "technical": "Redirect URLs must use HTTPS. They cannot contain '#'. Slack shows bot scopes and user scopes in two lists.",
       "minutes": {
         "min": 3,
         "max": 8
@@ -142,8 +143,8 @@
     {
       "id": "credentials",
       "owner": "human",
-      "title": "Copy the client ID and secret into Composio",
-      "plain": "Open Basic Information. Copy the client ID and client secret into your Composio Slack auth config.",
+      "title": "Keep the client ID and secret in your app",
+      "plain": "Open Basic Information. Copy the client ID and client secret into the secret store or environment variables of your app.",
       "whyHuman": "The secret is the password for your app. Paste it yourself. Then it does not go into the chat history of an agent.",
       "minutes": {
         "min": 1,
@@ -153,14 +154,14 @@
         "level": "sourced",
         "sources": [
           {
-            "url": "https://docs.composio.dev/docs/authentication/custom-app-vs-managed-app",
-            "title": "Composio: Managed vs custom auth"
+            "url": "https://docs.slack.dev/authentication/installing-with-oauth",
+            "title": "Slack: Installing with OAuth"
           }
         ]
       },
       "link": {
-        "url": "https://dashboard.composio.dev/~/project/auth-configs",
-        "label": "Open Composio auth configs",
+        "url": "https://api.slack.com/apps",
+        "label": "Open your Slack apps",
         "prefilled": false
       }
     },
@@ -168,7 +169,7 @@
       "id": "test",
       "owner": "agent",
       "title": "Install in a second workspace to test",
-      "plain": "Connect a different workspace through Composio. This shows that other teams can install the app.",
+      "plain": "Install the app in a different workspace through the sign-in of your app. This shows that other teams can install it.",
       "minutes": {
         "min": 2,
         "max": 5
@@ -184,8 +185,8 @@
         "note": "Slack tells Marketplace applicants to test outside the development workspace. We give the same advice here."
       },
       "link": {
-        "url": "https://dashboard.composio.dev/~/project/auth-configs",
-        "label": "Open Composio auth configs",
+        "url": "https://docs.slack.dev/authentication/installing-with-oauth",
+        "label": "Slack's install flow",
         "prefilled": false
       }
     },
@@ -299,9 +300,9 @@
       ]
     },
     {
-      "title": "The redirect address must be HTTPS",
-      "detail": "Slack does not accept redirect addresses that start with http://. This is also true for local tests.",
-      "ifStuck": "Use the Composio HTTPS redirect address. For local work, use a tunnel, for example ngrok.",
+      "title": "The callback address must be HTTPS",
+      "detail": "Slack does not accept callback addresses that start with http://. This is also true for local tests.",
+      "ifStuck": "Use an HTTPS address. For local work, use a tunnel, for example ngrok.",
       "evidence": {
         "level": "sourced",
         "sources": [
@@ -329,7 +330,8 @@
   ],
   "config": {
     "consoleUrl": "https://api.slack.com/apps",
-    "redirectUriNote": "Use the HTTPS redirect address in your Composio auth config.",
+    "authorizeUrl": "https://slack.com/oauth/v2/authorize",
+    "redirectUriNote": "Add the HTTPS callback address of your app in OAuth & Permissions > Redirect URLs.",
     "scopes": [
       {
         "name": "chat:write",
@@ -480,7 +482,7 @@
     ]
   },
   "existingApp": {
-    "summary": "Add the Composio redirect address in OAuth & Permissions. Then paste the existing client ID and secret into Composio. Existing installs continue to work.",
+    "summary": "If the callback address of your agent is different, add it in OAuth & Permissions. Use the existing client ID and secret. Existing installs continue to work.",
     "steps": [],
     "reReviewTriggers": [
       {
@@ -589,5 +591,46 @@
         ]
       }
     }
-  ]
+  ],
+  "checks": {
+    "date": "2026-10-29",
+    "links": [
+      {
+        "kind": "link",
+        "url": "https://api.slack.com/apps",
+        "outcome": "ok",
+        "detail": "Page loads"
+      },
+      {
+        "kind": "link",
+        "url": "https://api.slack.com/apps?new_app=1&manifest_json=%7B%22display_information%22%3A%7B%22name%22%3A%22Your%20agent%27s%20name%22%7D%2C%22oauth_config%22%3A%7B%22scopes%22%3A%7B%22bot%22%3A%5B%22chat%3Awrite%22%2C%22channels%3Aread%22%2C%22channels%3Ahistory%22%2C%22users%3Aread%22%5D%7D%7D%2C%22settings%22%3A%7B%22org_deploy_enabled%22%3Afalse%2C%22token_rotation_enabled%22%3Afalse%7D%7D",
+        "outcome": "ok",
+        "detail": "Page loads"
+      },
+      {
+        "kind": "link",
+        "url": "https://docs.slack.dev/authentication/installing-with-oauth",
+        "outcome": "ok",
+        "detail": "Page loads"
+      },
+      {
+        "kind": "link",
+        "url": "https://docs.slack.dev/slack-marketplace/slack-marketplace-review-guide",
+        "outcome": "ok",
+        "detail": "Page loads"
+      }
+    ],
+    "authorize": {
+      "kind": "authorize",
+      "url": "https://slack.com/oauth/v2/authorize",
+      "outcome": "inconclusive",
+      "detail": "Sign-in endpoint responds (HTTP 200) but gave no clear error for a made-up app"
+    },
+    "discovery": {
+      "kind": "discovery",
+      "url": "https://slack.com/.well-known/openid-configuration",
+      "outcome": "inconclusive",
+      "detail": "The provider's published configuration names a different sign-in address (https://slack.com/openid/connect/authorize), possibly for a separate \"Sign in with\" flow."
+    }
+  }
 }

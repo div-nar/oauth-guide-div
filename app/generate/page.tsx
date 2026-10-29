@@ -17,7 +17,10 @@ export default async function GeneratePage({ searchParams }: PageProps<"/generat
         An agent reads the official developer docs of {q || "the provider"} and writes the guide. Each search and
         each page that it reads shows below.
       </p>
-      <GenerateFeed query={q} jobId={job} exact={exact} refresh={refresh} />
+      {/* Keyed on the query: picking one of several matches (Hinge -> Hinge Dating App)
+          stays on this page, and the feed must start fresh rather than keep the old
+          request and its list of choices. */}
+      <GenerateFeed key={q} query={q} jobId={job} exact={exact} refresh={refresh} />
     </main>
   );
 }

@@ -10,9 +10,13 @@ function Pill({ t }: { t: TrackedJob }) {
   const running = !job || job.status === "started";
   const elapsed = useElapsed(job?.startedAt, running);
   if (job?.status === "done") {
+    // The finished run says where the guide was saved: a second name for an app that
+    // already has a guide lands on that guide, not on the slug guessed at the start.
+    const done = job.events.find((e) => e.type === "done");
+    const slug = done && done.type === "done" ? done.slug : t.slug;
     return (
       <span className="pill done">
-        <Link href={`/guides/${t.slug}`} onClick={() => untrackJob(t.id)}>{t.query} guide ready</Link>
+        <Link href={`/guides/${slug}`} onClick={() => untrackJob(t.id)}>{t.query} guide ready</Link>
         <button type="button" aria-label="Dismiss" onClick={() => untrackJob(t.id)}>×</button>
       </span>
     );

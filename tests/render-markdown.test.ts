@@ -6,6 +6,24 @@ const gmail = getLibraryGuide("gmail")!;
 const md = guideToMarkdown(gmail, "https://example.test");
 
 describe("guideToMarkdown", () => {
+  test("says what an agent can do once connected", () => {
+    expect(md).toContain(`Once connected, an agent can: ${gmail.app.canDo}`);
+  });
+
+  test("every hand-checked guide says what an agent can do once connected", () => {
+    for (const slug of ["github", "slack", "gmail", "hubspot", "linkedin"]) {
+      const words = getLibraryGuide(slug)!.app.canDo?.split(/\s+/).length ?? 0;
+      expect(words, slug).toBeGreaterThan(5);
+      expect(words, slug).toBeLessThanOrEqual(20);
+    }
+  });
+
+  test("titles OAuth apps and API-key apps differently", () => {
+    expect(md.split("\n")[0]).toBe("# OAuth app setup: Gmail");
+    const apiKey = { ...gmail, oauth: { supported: false }, useCases: [] };
+    expect(guideToMarkdown(apiKey, "https://example.test").split("\n")[0]).toBe("# API access setup: Gmail");
+  });
+
   test("contains the verdict line", () => {
     expect(md).toContain("Difficulty: hard");
     expect(md).toContain(gmail.verdict.summary);
@@ -85,7 +103,7 @@ describe("composio managed app", () => {
 
 describe("agent structure", () => {
   test("sections follow the web page's order", () => {
-    const order = ["## Can't wait? Connect on Composio", "## Who you need", "## Steps", "## If you get blocked or rejected", "## Questions", "## Configuration"];
+    const order = ["## Can't wait? Connect on Composio", "## What you need", "## Steps", "## If you get blocked or rejected", "## Questions", "## Configuration"];
     const at = order.map((h) => md.indexOf(h));
     expect(at.every((i) => i >= 0)).toBe(true);
     expect([...at].sort((a, b) => a - b)).toEqual(at);
@@ -111,5 +129,26 @@ describe("easier for agents", () => {
 
   test("steps are a checklist the agent can tick off", () => {
     expect(md).toContain(`- [ ] 1. ${OWNER_TAG[gmail.steps[0].owner]} ${gmail.steps[0].title}`);
+  });
+});
+
+describe("checks by the agent", () => {
+  test("a checked step link gets an Observed line, apart from its evidence", () => {
+    const g = getLibraryGuide("github")!;
+    const out = guideToMarkdown(g, "https://example.test");
+    const linked = g.steps.find((st) => st.link && g.checks?.links.some((c) => c.url === st.link!.url))!;
+    const block = out.slice(out.indexOf(`#step-${linked.id}`));
+    expect(block.slice(0, block.indexOf("- [ ]") > 0 ? block.indexOf("- [ ]") : undefined)).toMatch(/Observed \(checked by the agent \d{4}-\d{2}-\d{2}\): /);
+  });
+
+  test("the configuration lists the sign-in endpoint and what it answered", () => {
+    const out = guideToMarkdown(getLibraryGuide("gmail")!, "https://example.test");
+    expect(out).toContain("- Sign-in (authorization) endpoint: https://accounts.google.com/o/oauth2/v2/auth");
+    expect(out).toMatch(/- Observed \(checked by the agent [\d-]+\): Sign-in endpoint answers/);
+  });
+
+  test("a guide without checks has no Observed lines", () => {
+    const g = { ...getLibraryGuide("github")!, checks: null };
+    expect(guideToMarkdown(g, "https://example.test")).not.toContain("Observed");
   });
 });

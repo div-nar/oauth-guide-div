@@ -9,7 +9,7 @@ async function post(body: Record<string, unknown>) {
   if (!key) throw new Error("The research agent is not configured (OPENROUTER_API_KEY is missing).");
   const res = await fetch(BASE, {
     method: "POST",
-    headers: { authorization: `Bearer ${key}`, "content-type": "application/json", "x-title": "OAuth App Guides" },
+    headers: { authorization: `Bearer ${key}`, "content-type": "application/json", "x-title": "OAuth Guide" },
     body: JSON.stringify(body),
     signal: AbortSignal.timeout(120_000),
   });
@@ -30,6 +30,12 @@ export async function chat(messages: ChatMessage[], tools: unknown[]): Promise<C
   const choice = json.choices?.[0];
   if (!choice) throw new Error("The model returned no answer.");
   return { finish_reason: choice.finish_reason, message: choice.message };
+}
+
+// A short plain answer from the fast model, for questions about a guide.
+export async function complete(messages: { role: string; content: string }[], maxTokens = 500): Promise<string> {
+  const json = await post({ model: SEARCH_MODEL, messages, max_tokens: maxTokens });
+  return String(json.choices?.[0]?.message?.content ?? "").trim();
 }
 
 // Web search through OpenRouter's web plugin; we only use the cited results.

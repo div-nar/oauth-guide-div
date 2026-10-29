@@ -40,6 +40,17 @@ Composio's own apps, checked against each toolkit page (correction): the "Can't 
 
 Forum and blog reports of Google homepage rejections were not used: none came from Google.
 
+## 2026-10-29: a coding agent followed a guide
+
+Div gave a real coding agent the "Copy prompt" text from a live guide. The agent fetched the guide's Markdown and followed it. Div noticed the agent's route was about 0.15 s faster than the web page; the Markdown is about 16 KB against about 52 KB for the page.
+
+The same day, code checked what an agent sees on the live site:
+- `llms.txt` lists 11 guides. Each link returns its Markdown, with steps tagged `[AGENT]`, `[YOU]` or `[WAIT]`.
+- The copied Slack prompt with "read" access points at `/guides/slack.md?access=read`. That URL returns the matching path: hard, 14 to 80 days.
+- An app that does not exist ("Quorvantix Lumebridge") returns 404 with "We couldn't confirm a developer platform". No guide is saved and no second run starts.
+
+Not recorded yet, so no step is marked `Tested by hand` from this run: the app, the agent, the steps it completed, and whether an OAuth app was created.
+
 - [ ] GitHub OAuth app on a free account (Div): time taken, screens, surprises.
 - [ ] Slack app with public distribution on a free workspace (Div): time taken, screens, surprises.
 

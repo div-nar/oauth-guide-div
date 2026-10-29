@@ -2,7 +2,8 @@
   "slug": "gmail",
   "app": {
     "name": "Gmail",
-    "website": "https://mail.google.com"
+    "website": "https://mail.google.com",
+    "canDo": "Read, sort and label email, write draft replies and send messages from the inboxes that users connect."
   },
   "lastChecked": "2026-10-28",
   "generatedBy": "library",
@@ -62,8 +63,8 @@
         "level": "sourced",
         "sources": [
           {
-            "url": "https://composio.dev/auth/googleapps",
-            "title": "Composio: Google OAuth guide"
+            "url": "https://developers.google.com/workspace/guides/create-project",
+            "title": "Google: Create a Google Cloud project"
           }
         ]
       },
@@ -86,8 +87,8 @@
         "level": "sourced",
         "sources": [
           {
-            "url": "https://composio.dev/auth/googleapps",
-            "title": "Composio: Google OAuth guide"
+            "url": "https://developers.google.com/workspace/guides/enable-apis",
+            "title": "Google: Enable Google Workspace APIs"
           }
         ]
       },
@@ -111,8 +112,8 @@
         "level": "sourced",
         "sources": [
           {
-            "url": "https://composio.dev/auth/googleapps",
-            "title": "Composio: Google OAuth guide"
+            "url": "https://developers.google.com/workspace/guides/configure-oauth-consent",
+            "title": "Google: Configure the OAuth consent screen"
           }
         ]
       },
@@ -126,8 +127,8 @@
       "id": "client",
       "owner": "agent",
       "title": "Create the OAuth client",
-      "plain": "Create a 'Web application' client. Paste the redirect address from your Composio Gmail auth config.",
-      "technical": "Go to Clients > Create client > Web application. In Authorized redirect URIs, paste the address from your Composio auth config. The Composio guide for Google shows an older address: https://backend.composio.dev/api/v1/auth-apps/add.",
+      "plain": "Create a 'Web application' client. Add the callback address of your app as an authorized redirect URI.",
+      "technical": "Go to Clients > Create client > Web application. In Authorized redirect URIs, add your callback address. It must be exactly the same as the `redirect_uri` that your code sends.",
       "minutes": {
         "min": 2,
         "max": 5
@@ -136,15 +137,14 @@
         "level": "sourced",
         "sources": [
           {
-            "url": "https://composio.dev/auth/googleapps",
-            "title": "Composio: Google OAuth guide"
+            "url": "https://developers.google.com/workspace/guides/create-credentials",
+            "title": "Google: Create access credentials"
           },
           {
-            "url": "https://composio.dev/auth/github",
-            "title": "Composio: GitHub OAuth guide (notes the v3 address)"
+            "url": "https://developers.google.com/identity/protocols/oauth2/web-server",
+            "title": "Google: OAuth 2.0 for web server apps"
           }
-        ],
-        "note": "The Composio guides do not agree about the redirect address. Use the address in the dashboard."
+        ]
       },
       "link": {
         "url": "https://console.cloud.google.com/auth/clients/create",
@@ -155,8 +155,8 @@
     {
       "id": "secret",
       "owner": "human",
-      "title": "Copy the client ID and secret into Composio",
-      "plain": "Create a client secret. Paste the secret and the client ID into your Composio auth config.",
+      "title": "Keep the client ID and secret in your app",
+      "plain": "Create a client secret. Keep the secret and the client ID in the secret store or environment variables of your app.",
       "whyHuman": "The secret is the password for your app. Paste it yourself. Then it does not go into the chat history of an agent.",
       "minutes": {
         "min": 1,
@@ -166,8 +166,8 @@
         "level": "sourced",
         "sources": [
           {
-            "url": "https://composio.dev/auth/googleapps",
-            "title": "Composio: Google OAuth guide"
+            "url": "https://developers.google.com/workspace/guides/create-credentials",
+            "title": "Google: Create access credentials"
           }
         ]
       },
@@ -299,14 +299,14 @@
       "id": "casa",
       "owner": "waiting",
       "title": "Get a security assessment (each year)",
-      "plain": "Some apps get restricted Gmail data through a server, not only in the browser of the user. These apps need an assessment by an assessor that Google approves. Composio gets email for your agent through its servers, with your app. Thus, this assessment will probably apply to you. The Google Trust and Safety team tells you when to start. You do the assessment again each 12 months.",
+      "plain": "Some apps get restricted Gmail data through a server, not only in the browser of the user. These apps need an assessment by an assessor that Google approves. If your server gets email for your agent, this applies to you. The Google Trust and Safety team tells you when to start. You do the assessment again each 12 months.",
       "whyHuman": "You select and pay an assessor. You answer the questions of the assessor.",
       "waitDays": {
         "min": 7,
         "max": 30
       },
       "evidence": {
-        "level": "uncertain",
+        "level": "sourced",
         "sources": [
           {
             "url": "https://support.google.com/cloud/answer/13465431",
@@ -317,7 +317,7 @@
             "title": "Google: Restricted scope verification"
           }
         ],
-        "note": "Google gives the requirement and the yearly repeat. Google and Composio do not say that Composio servers make the assessment necessary for you. That is our conclusion. Google gives no cost or duration. The range of 7 to 30 days is our estimate."
+        "note": "Google gives no cost or duration. The range of 7 to 30 days is our estimate."
       }
     }
   ],
@@ -402,13 +402,13 @@
     {
       "title": "Your app is unverified during the review",
       "detail": "Until Google approves the app, only test users on your list can connect. Or, a maximum of 100 new users can connect after a warning screen.",
-      "ifStuck": "During the review, do tests with the Composio Gmail app. It shows 'Composio' on the consent screen.",
+      "ifStuck": "Start the verification early. During the wait, do pilots with the test users on your list.",
       "evidence": {
         "level": "sourced",
         "sources": [
           {
-            "url": "https://docs.composio.dev/docs/authentication/custom-app-vs-managed-app",
-            "title": "Composio: Managed vs custom auth"
+            "url": "https://support.google.com/cloud/answer/7454865",
+            "title": "Google: Unverified apps"
           }
         ]
       },
@@ -420,7 +420,8 @@
   ],
   "config": {
     "consoleUrl": "https://console.cloud.google.com/auth/overview",
-    "redirectUriNote": "Use the redirect address in your Composio auth config.",
+    "authorizeUrl": "https://accounts.google.com/o/oauth2/v2/auth",
+    "redirectUriNote": "Add the callback address of your app as an authorized redirect URI on the OAuth client.",
     "scopes": [
       {
         "name": "https://www.googleapis.com/auth/gmail.readonly",
@@ -589,7 +590,7 @@
     ]
   },
   "existingApp": {
-    "summary": "Add the Composio redirect address to your existing OAuth client. Or, create a second client in the same project. With the two methods, you keep the verification of your project. This is true only if you do not change the permissions.",
+    "summary": "Add the callback address of your agent to your existing OAuth client. Or, create a second client in the same project. With the two methods, you keep the verification of your project. This is true only if you do not change the permissions.",
     "steps": [],
     "reReviewTriggers": [
       {
@@ -697,5 +698,82 @@
         ]
       }
     }
-  ]
+  ],
+  "checks": {
+    "date": "2026-10-29",
+    "links": [
+      {
+        "kind": "link",
+        "url": "https://console.cloud.google.com/auth/overview",
+        "outcome": "sign_in",
+        "detail": "Loads, sign-in required"
+      },
+      {
+        "kind": "link",
+        "url": "https://console.cloud.google.com/projectcreate",
+        "outcome": "sign_in",
+        "detail": "Loads, sign-in required"
+      },
+      {
+        "kind": "link",
+        "url": "https://console.cloud.google.com/apis/library/gmail.googleapis.com",
+        "outcome": "ok",
+        "detail": "Page loads"
+      },
+      {
+        "kind": "link",
+        "url": "https://console.cloud.google.com/auth/branding",
+        "outcome": "sign_in",
+        "detail": "Loads, sign-in required"
+      },
+      {
+        "kind": "link",
+        "url": "https://console.cloud.google.com/auth/clients/create",
+        "outcome": "sign_in",
+        "detail": "Loads, sign-in required"
+      },
+      {
+        "kind": "link",
+        "url": "https://console.cloud.google.com/auth/clients",
+        "outcome": "sign_in",
+        "detail": "Loads, sign-in required"
+      },
+      {
+        "kind": "link",
+        "url": "https://console.cloud.google.com/auth/audience",
+        "outcome": "sign_in",
+        "detail": "Loads, sign-in required"
+      },
+      {
+        "kind": "link",
+        "url": "https://search.google.com/search-console",
+        "outcome": "ok",
+        "detail": "Page loads"
+      },
+      {
+        "kind": "link",
+        "url": "https://studio.youtube.com",
+        "outcome": "sign_in",
+        "detail": "Loads, sign-in required"
+      },
+      {
+        "kind": "link",
+        "url": "https://console.cloud.google.com/auth/verification",
+        "outcome": "sign_in",
+        "detail": "Loads, sign-in required"
+      }
+    ],
+    "authorize": {
+      "kind": "authorize",
+      "url": "https://accounts.google.com/o/oauth2/v2/auth",
+      "outcome": "ok",
+      "detail": "Sign-in endpoint answers and rejects a made-up app ID: \"Authorization Error The OAuth client was not found.\""
+    },
+    "discovery": {
+      "kind": "discovery",
+      "url": "https://accounts.google.com/.well-known/openid-configuration",
+      "outcome": "ok",
+      "detail": "The provider's published OAuth configuration lists the same sign-in address."
+    }
+  }
 }

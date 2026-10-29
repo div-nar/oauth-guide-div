@@ -7,9 +7,9 @@ export async function buildIndex(base: string): Promise<string> {
   const line = (g: { slug: string; app: { name: string }; verdict: { difficulty: string; summary: string }; useCases: { id: string }[] }) =>
     `- [${g.app.name}](${base}/guides/${g.slug}.md): ${g.verdict.difficulty}. ${g.verdict.summary}${g.useCases.length ? ` (access: ${g.useCases.map((u) => `\`${u.id}\``).join(", ")})` : ""}`;
   return [
-    "# OAuth App Guides",
+    "# OAuth Guide",
     "",
-    "> How to create and get approval for your own OAuth app with each provider, for use with Composio. Each guide tags steps [AGENT] (an agent can do it in the user's signed-in browser or CLI), [YOU] (a person must) and [WAIT] (provider review).",
+    "> How to create and get approval for your own OAuth app with each provider, for use in your own code. Each guide tags steps [AGENT] (an agent can do it in the user's signed-in browser or CLI), [YOU] (a person must) and [WAIT] (provider review).",
     "",
     "Agents: fetch a guide's Markdown, do the [AGENT] steps, and stop to ask the user at each [YOU] step. Never ask the user to paste secrets into chat.",
     "",
@@ -17,13 +17,13 @@ export async function buildIndex(base: string): Promise<string> {
     "",
     `- ${base}/guides/<app-name>.md is the whole guide. Difficulty depends on the access the agent needs: add ?access=<id> (ids are listed below, combine with commas) for one path, and &existing=1 if the user already has an OAuth app.`,
     `- ${base}/guides/<app-name>.json is the same guide as structured data.`,
-    "- Sections, in the same order as the web page: First, ask the user (when no access is chosen), difficulty per access, Can't wait? Connect on Composio, Who you need, Steps, If you get blocked or rejected, Questions, Configuration.",
+    "- Sections, in the same order as the web page: First, ask the user (when no access is chosen), difficulty per access, Can't wait? Connect on Composio, What you need, Steps, If you get blocked or rejected, Questions, Configuration.",
     "- Every claim carries evidence: sourced (with links), uncertain (with the reason), or tested.",
     "",
-    "## Checked by hand",
+    "## Curated (written by a person from official docs)",
     "",
     ...listLibraryGuides().map(line),
-    ...(generated.length ? ["", "## Researched by the agent (not yet reviewed by a person)", "", ...generated.map(line)] : []),
+    ...(generated.length ? ["", "## Agentic Search (researched by an agent, not yet reviewed by a person)", "", ...generated.map(line)] : []),
     "",
     "## Any other app",
     "",

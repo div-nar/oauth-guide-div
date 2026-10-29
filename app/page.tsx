@@ -1,6 +1,5 @@
 import { AgentLaunchers } from "@/components/AgentLaunchers";
 import { ViewToggle } from "@/components/ViewToggle";
-import { CopyLine } from "@/components/CopyLine";
 import { GRADE_WORD } from "@/components/GradeMark";
 import { type GuideRow, GuideTable } from "@/components/GuideTable";
 import { getBaseUrl } from "@/lib/base-url";
@@ -13,6 +12,11 @@ export const dynamic = "force-dynamic";
 
 const ORDER: Difficulty[] = ["easy", "moderate", "hard", "gated", "not_applicable"];
 
+// Cards hold one thought; a long agent-written summary is cut to its first sentence.
+function firstSentence(text: string): string {
+  return text.match(/^.+?[.!?](?=\s|$)/)?.[0] ?? text;
+}
+
 function toRow(g: Guide): GuideRow {
   const v = g.verdict;
   const easiest = [...g.useCases].sort((a, b) => ORDER.indexOf(a.difficulty) - ORDER.indexOf(b.difficulty))[0];
@@ -22,7 +26,7 @@ function toRow(g: Guide): GuideRow {
     website: g.app.website,
     logoUrl: g.app.logoUrl,
     difficulty: v.difficulty,
-    summary: v.summary,
+    summary: g.app.canDo ?? firstSentence(v.summary),
     handsOn: formatHandsOn(v.handsOnMinutes),
     waiting: formatWait(v.waitDays),
     handsOnMax: v.handsOnMinutes.max,
@@ -42,13 +46,13 @@ export default async function Home() {
   const rows = [...library, ...generated]
     .map(toRow)
     .sort((a, b) => a.handsOnMax + a.waitMax * 1440 - (b.handsOnMax + b.waitMax * 1440));
-  const prompt = `Read ${base}/llms.txt, then help me set up my own Gmail OAuth app for Composio.`;
+  const prompt = `Read ${base}/llms.txt, then help me set up my own Gmail OAuth app.`;
 
   return (
     <main className="page wide">
       <nav className="crumbs small" aria-label="Breadcrumb">guides</nav>
       <section className="home-hero">
-        <h1>OAuth app guides</h1>
+        <h1>OAuth Guide</h1>
         <p className="lede">
           Your agent needs your own OAuth app to work in the Gmail, Slack or HubSpot account of a user. Some apps
           take five minutes to set up. Others need weeks of review. Select an app to see the steps and the
@@ -61,13 +65,12 @@ export default async function Home() {
         <div className="handoff-head">
           <div>
             <h2 className="handoff-title">Give it to your agent</h2>
-            <p>Agents read the plain-text version of each guide. Click the prompt to copy it. Or, select your agent.</p>
+            <p>Agents read the plain-text version of each guide. Copy the setup prompt. Paste it into your agent.</p>
           </div>
           <div className="handoff-actions">
             <AgentLaunchers prompt={prompt} />
           </div>
         </div>
-        <CopyLine text={prompt} />
       </section>
 
       <GuideTable rows={rows} />
