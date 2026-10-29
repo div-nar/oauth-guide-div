@@ -10,6 +10,7 @@ import { StepTable } from "@/components/StepTable";
 import { ViewToggle } from "@/components/ViewToggle";
 import { getBaseUrl } from "@/lib/base-url";
 import { getGuide } from "@/lib/guides";
+import { logoFor } from "@/lib/logos";
 
 
 
@@ -17,7 +18,13 @@ export async function generateMetadata({ params }: PageProps<"/guides/[slug]">):
   const g = await getGuide((await params).slug);
   // Agents that land on the web page can find the Markdown version from here.
   return g
-    ? { title: `${g.app.name} ${g.oauth.supported ? "OAuth app" : "API access"} setup`, description: g.verdict.summary, alternates: { types: { "text/markdown": `/guides/${g.slug}.md` } } }
+    ? {
+        title: `${g.app.name} ${g.oauth.supported ? "OAuth app" : "API access"} setup`,
+        description: g.verdict.summary,
+        alternates: { types: { "text/markdown": `/guides/${g.slug}.md` } },
+        // The tab shows the app it is about.
+        icons: { icon: logoFor(g.app).src },
+      }
     : {};
 }
 
