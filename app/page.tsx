@@ -42,7 +42,7 @@ export default async function Home() {
   const rows = [...library, ...generated]
     .map(toRow)
     .sort((a, b) => a.handsOnMax + a.waitMax * 1440 - (b.handsOnMax + b.waitMax * 1440));
-  const prompt = `Read ${base}/llms.txt, then help me set up my own Gmail OAuth app for Composio.`;
+  const prompt = `Read ${base}/llms.txt, then help me set up my own Gmail OAuth app.`;
 
   return (
     <main className="page wide">

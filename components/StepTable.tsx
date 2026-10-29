@@ -1,5 +1,5 @@
-import { EvidenceBadge } from "@/components/EvidenceBadge";
-import type { Step } from "@/lib/guide-schema";
+import { EvidenceBadge, StepCheck } from "@/components/EvidenceBadge";
+import type { Checks, Step } from "@/lib/guide-schema";
 import { formatRange } from "@/lib/format";
 
 const OWNER = { agent: "Agent", human: "You", waiting: "Wait" } as const;
@@ -13,7 +13,7 @@ function ExternalIcon() {
 }
 
 // One line per step; the explanation and source open on click, so long paths stay scannable.
-export function StepTable({ steps }: { steps: Step[] }) {
+export function StepTable({ steps, checks }: { steps: Step[]; checks?: Checks | null }) {
   return (
     <ol className="step-table">
       <li className="step-head" aria-hidden>
@@ -36,6 +36,7 @@ export function StepTable({ steps }: { steps: Step[] }) {
                 {s.whyHuman && <p className="why">{s.whyHuman}</p>}
                 {s.technical && <p className="tech-text">{s.technical}</p>}
                 <EvidenceBadge evidence={s.evidence} />
+                <StepCheck step={s} checks={checks} />
                 {time && <span className="show-sm muted small">{time}</span>}
               </div>
             </details>

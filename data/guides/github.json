@@ -8,7 +8,7 @@
   "generatedBy": "library",
   "oauth": {
     "supported": true,
-    "notes": "GitHub offers OAuth apps and GitHub Apps. This guide covers OAuth apps, which is what Composio's GitHub auth config uses."
+    "notes": "GitHub offers OAuth apps and GitHub Apps. This guide covers OAuth apps."
   },
   "verdict": {
     "difficulty": "easy",
@@ -61,9 +61,9 @@
     {
       "id": "get-redirect",
       "owner": "agent",
-      "title": "Copy the redirect address from Composio",
-      "plain": "In the Composio dashboard, create a GitHub auth config and copy the redirect address it shows. GitHub needs this address so it knows where to send users back after they click Allow.",
-      "technical": "Dashboard > Auth Configs > Create Auth Config > GitHub > OAuth2 > Use your own developer credentials. Composio's docs currently give https://backend.composio.dev/api/v3/toolkits/auth/callback, but always use the value the dashboard shows.",
+      "title": "Choose your callback address",
+      "plain": "Pick the address in your app where GitHub sends people back after they click Allow, for example https://yourapp.com/auth/github/callback. Your code receives a one-time code there and swaps it for a token.",
+      "technical": "GitHub calls this the Authorization callback URL. Your callback handler sends the code, client_id and client_secret to https://github.com/login/oauth/access_token. The redirect_uri your code sends must match it.",
       "minutes": {
         "min": 1,
         "max": 3
@@ -72,19 +72,14 @@
         "level": "sourced",
         "sources": [
           {
-            "url": "https://docs.composio.dev/docs/authentication/custom-app-vs-managed-app",
-            "title": "Composio: Managed vs custom auth"
-          },
-          {
-            "url": "https://composio.dev/auth/github",
-            "title": "Composio: GitHub OAuth guide"
+            "url": "https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/authorizing-oauth-apps",
+            "title": "GitHub Docs: Authorizing OAuth apps"
           }
-        ],
-        "note": "Composio's older Google guide still shows the v1 address (/api/v1/auth-apps/add). The dashboard value wins."
+        ]
       },
       "link": {
-        "url": "https://dashboard.composio.dev/~/project/auth-configs",
-        "label": "Open Composio auth configs",
+        "url": "https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/authorizing-oauth-apps",
+        "label": "Read GitHub's callback rules",
         "prefilled": false
       }
     },
@@ -92,7 +87,7 @@
       "id": "register-app",
       "owner": "agent",
       "title": "Register the OAuth app",
-      "plain": "Fill in GitHub's short form: the app's name, your website, and the redirect address from Composio.",
+      "plain": "Fill in GitHub's short form: the app's name, your website, and your callback address.",
       "technical": "Profile picture > Settings > Developer settings > OAuth apps > New OAuth App. Fields: Application name, Homepage URL, Application description (optional), Authorization callback URL (up to 10). Leave Enable Device Flow off unless you need a CLI flow. 'Expire user access tokens' is on by default. For an organisation-owned app use https://github.com/organizations/YOUR-ORG/settings/applications/new.",
       "minutes": {
         "min": 2,
@@ -116,8 +111,8 @@
     {
       "id": "secret",
       "owner": "human",
-      "title": "Generate the client secret and paste it into Composio",
-      "plain": "On the new app's page, click to generate a client secret, then paste it, with the client ID, into the Composio auth config.",
+      "title": "Generate the client secret and store it in your app",
+      "plain": "On the new app's page, generate a client secret. Store it, with the client ID, in your app's secret store or environment variables, never in code.",
       "whyHuman": "The secret is a password for your app. Pasting it yourself keeps it out of any agent's chat history.",
       "minutes": {
         "min": 1,
@@ -127,8 +122,8 @@
         "level": "sourced",
         "sources": [
           {
-            "url": "https://composio.dev/auth/github",
-            "title": "Composio: GitHub OAuth guide"
+            "url": "https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/authorizing-oauth-apps",
+            "title": "GitHub Docs: Authorizing OAuth apps"
           }
         ],
         "note": "Keeping secrets out of the agent's context is our recommendation, not a GitHub rule."
@@ -143,7 +138,7 @@
       "id": "test",
       "owner": "agent",
       "title": "Test a connection",
-      "plain": "Connect a test GitHub account through Composio. The approval screen should now show your app's name instead of Composio's.",
+      "plain": "Sign in with a test GitHub account through your app. The approval screen should show your app's name, and your callback should get a code it can swap for a token.",
       "minutes": {
         "min": 1,
         "max": 3
@@ -152,14 +147,14 @@
         "level": "sourced",
         "sources": [
           {
-            "url": "https://docs.composio.dev/docs/authentication/custom-app-vs-managed-app",
-            "title": "Composio: Managed vs custom auth"
+            "url": "https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/authorizing-oauth-apps",
+            "title": "GitHub Docs: Authorizing OAuth apps"
           }
         ]
       },
       "link": {
-        "url": "https://dashboard.composio.dev/~/project/auth-configs",
-        "label": "Open Composio auth configs",
+        "url": "https://github.com/settings/applications",
+        "label": "See or revoke apps you have authorized",
         "prefilled": false
       }
     }
@@ -211,7 +206,8 @@
   ],
   "config": {
     "consoleUrl": "https://github.com/settings/developers",
-    "redirectUriNote": "Use the redirect URI shown in your Composio auth config (documented as https://backend.composio.dev/api/v3/toolkits/auth/callback).",
+    "authorizeUrl": "https://github.com/login/oauth/authorize",
+    "redirectUriNote": "Your app's own callback URL, entered as the Authorization callback URL. It must match the redirect_uri your code sends.",
     "scopes": [
       {
         "name": "repo",
@@ -273,7 +269,7 @@
     }
   },
   "existingApp": {
-    "summary": "Reuse it. Add Composio's redirect address as an extra callback URL (an OAuth app can have up to 10), then paste the client ID and a client secret into Composio. Generate a separate secret for Composio so you can revoke it without touching your product.",
+    "summary": "Reuse it. Its callback URL must match the address your agent's sign-in uses. Generate a separate client secret for the agent so you can revoke it without touching your product.",
     "steps": [],
     "reReviewTriggers": [
       {
@@ -290,7 +286,7 @@
         }
       },
       {
-        "trigger": "You want a separate secret for Composio",
+        "trigger": "You want a separate secret for your agent",
         "effect": "GitHub lets you generate another client secret on the app's page; the existing one keeps working until you delete it.",
         "evidence": {
           "level": "uncertain",
@@ -336,7 +332,7 @@
     {
       "symptom": "Sign-in fails with redirect_uri_mismatch",
       "cause": "The redirect address sent during sign-in does not match the callback URL registered on your OAuth app.",
-      "fix": "Copy the redirect URI from your Composio auth config into the app's Authorization callback URL field exactly, then try again.",
+      "fix": "Make the app's Authorization callback URL match the redirect_uri your code sends, then try again.",
       "escalate": {
         "url": "https://docs.github.com/en/apps/oauth-apps/maintaining-oauth-apps/troubleshooting-authorization-request-errors",
         "label": "GitHub: authorization request errors"
@@ -352,5 +348,47 @@
         ]
       }
     }
-  ]
+  ],
+  "checks": {
+    "date": "2026-10-29",
+    "links": [
+      {
+        "kind": "link",
+        "url": "https://github.com/settings/developers",
+        "outcome": "sign_in",
+        "detail": "Loads, sign-in required"
+      },
+      {
+        "kind": "link",
+        "url": "https://github.com/login",
+        "outcome": "ok",
+        "detail": "Sign-in page loads"
+      },
+      {
+        "kind": "link",
+        "url": "https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/authorizing-oauth-apps",
+        "outcome": "ok",
+        "detail": "Page loads"
+      },
+      {
+        "kind": "link",
+        "url": "https://github.com/settings/applications/new",
+        "outcome": "sign_in",
+        "detail": "Loads, sign-in required"
+      },
+      {
+        "kind": "link",
+        "url": "https://github.com/settings/applications",
+        "outcome": "sign_in",
+        "detail": "Loads, sign-in required"
+      }
+    ],
+    "authorize": {
+      "kind": "authorize",
+      "url": "https://github.com/login/oauth/authorize",
+      "outcome": "ok",
+      "detail": "Sign-in endpoint answers by asking the user to sign in first"
+    },
+    "discovery": null
+  }
 }

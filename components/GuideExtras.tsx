@@ -1,11 +1,11 @@
-import { EvidenceBadge } from "@/components/EvidenceBadge";
+import { CheckLine, EvidenceBadge } from "@/components/EvidenceBadge";
 import type { Guide } from "@/lib/guide-schema";
 import { appliesTo } from "@/lib/paths";
 
 const GLOSSARY: [string, string][] = [
   ["What is an OAuth app?", "Your app's registration with the provider. It sets the name users see on the 'Allow?' screen and what you may ask for."],
-  ["What are the client ID and secret?", "Your app's username and password. The ID is public. Keep the secret private, and paste it into Composio yourself."],
-  ["What is a redirect address (redirect URI)?", "Where the provider sends people after they click Allow. With Composio, you copy it from your auth config."],
+  ["What are the client ID and secret?", "Your app's username and password. The ID is public. Keep the secret private, in your app's secret store, and add it there yourself."],
+  ["What is a redirect address (redirect URI)?", "Where the provider sends people after they click Allow: a callback address in your own app, which must match what you register with the provider."],
   ["What are scopes?", "The specific permissions you ask for, such as 'read email'. More powerful scopes mean more review."],
 ];
 
@@ -21,6 +21,36 @@ export function WhoList({ guide: g, ids }: { guide: Guide; ids: string[] | null 
           <li key={w.role}><strong>{w.role}</strong><span className="muted">{w.why}</span></li>
         ))}
       </ul>
+    </section>
+  );
+}
+
+// Checks run by code without an account: they show the pages and the sign-in
+// endpoint are live, not that the whole setup works.
+export function CheckedList({ guide: g }: { guide: Guide }) {
+  const c = g.checks;
+  if (!c) return null;
+  const n = (o: string) => c.links.filter((l) => l.outcome === o).length;
+  const parts = [
+    n("ok") && `${n("ok")} load`,
+    n("sign_in") && `${n("sign_in")} load behind a sign-in`,
+    n("broken") && `${n("broken")} not found`,
+    n("inconclusive") && `${n("inconclusive")} gave no clear answer`,
+  ].filter(Boolean);
+  return (
+    <section className="block">
+      <h2 className="label">What the agent checked</h2>
+      <p className="muted small">
+        Without an account, so this shows the pages and the sign-in endpoint are live, not that the setup works end to end.
+      </p>
+      {c.links.length > 0 && (
+        <CheckLine
+          check={{ kind: "link", url: "", outcome: n("broken") ? "broken" : "ok", detail: `${c.links.length} step links: ${parts.join(", ")}` }}
+          date={c.date}
+        />
+      )}
+      {c.authorize && <CheckLine check={c.authorize} date={c.date} />}
+      {c.discovery && <CheckLine check={c.discovery} date={c.date} />}
     </section>
   );
 }

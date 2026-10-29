@@ -46,7 +46,24 @@ export const UseCaseSchema = z.object({
   evidence: EvidenceSchema,
 });
 
-export const GuideSchema = z
+// What code (not the model) observed when it ran a check. ok: the link loads or the
+// endpoint answers; sign_in: it loads behind a sign-in wall; broken: not found;
+// differs: the provider's published configuration disagrees; inconclusive: no clear answer.
+export const CheckSchema = z.object({
+  kind: z.enum(["link", "authorize", "discovery"]),
+  url: z.string(),
+  outcome: z.enum(["ok", "sign_in", "broken", "differs", "inconclusive"]),
+  detail: z.string(),
+});
+
+export const ChecksSchema = z.object({
+  date: z.string(),
+  links: z.array(CheckSchema),
+  authorize: CheckSchema.nullish(),
+  discovery: CheckSchema.nullish(),
+});
+
+const GuideFields = z
   .object({
   slug: z.string(),
   app: z.object({ name: z.string(), website: z.string(), logoUrl: z.string().nullish() }),
@@ -91,6 +108,8 @@ export const GuideSchema = z
     .nullish(),
   config: z.object({
     consoleUrl: z.string().nullish(),
+    // The provider's OAuth sign-in (authorization) endpoint, e.g. https://github.com/login/oauth/authorize.
+    authorizeUrl: z.string().nullish(),
     redirectUriNote: z.string().nullish(),
     scopes: z.array(
       z.object({
@@ -118,15 +137,23 @@ export const GuideSchema = z
       reReviewTriggers: z.array(z.object({ trigger: z.string(), effect: z.string(), evidence: EvidenceSchema })),
     })
     .nullish(),
-  })
-  .refine((g) => !g.oauth.supported || g.useCases.length > 0, {
-    message: "a guide for an OAuth app needs at least one use case",
-    path: ["useCases"],
   });
+
+const NEEDS_USE_CASE = { message: "a guide for an OAuth app needs at least one use case", path: ["useCases"] };
+
+// What the research agent submits. Checks are left out: only code may record them.
+export const AgentGuideSchema = GuideFields.refine((g) => !g.oauth.supported || g.useCases.length > 0, NEEDS_USE_CASE);
+
+export const GuideSchema = GuideFields.extend({ checks: ChecksSchema.nullish() }).refine(
+  (g) => !g.oauth.supported || g.useCases.length > 0,
+  NEEDS_USE_CASE,
+);
 
 export type Guide = z.infer<typeof GuideSchema>;
 export type Step = z.infer<typeof StepSchema>;
 export type Evidence = z.infer<typeof EvidenceSchema>;
+export type Check = z.infer<typeof CheckSchema>;
+export type Checks = z.infer<typeof ChecksSchema>;
 export type UseCase = z.infer<typeof UseCaseSchema>;
 export type Difficulty = Guide["verdict"]["difficulty"];
 

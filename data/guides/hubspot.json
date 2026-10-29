@@ -91,8 +91,8 @@
       "id": "configure",
       "owner": "agent",
       "title": "Add the redirect address and permissions",
-      "plain": "In the app's settings file, add Composio's redirect address and the HubSpot permissions your agent needs.",
-      "technical": "app-hsmeta.json: `auth.type: \"oauth\"`, `auth.redirectUrls: [<Composio redirect URI>]`, `auth.requiredScopes: [\"crm.objects.contacts.read\", ...]`. Production redirect URLs must be https.",
+      "plain": "In the app's settings file, add your app's callback address and the HubSpot permissions your agent needs.",
+      "technical": "app-hsmeta.json: `auth.type: \"oauth\"`, `auth.redirectUrls: [<your callback URL>]`, `auth.requiredScopes: [\"crm.objects.contacts.read\", ...]`. Production redirect URLs must be https.",
       "minutes": {
         "min": 5,
         "max": 10
@@ -144,8 +144,8 @@
     {
       "id": "credentials",
       "owner": "human",
-      "title": "Copy the client ID and secret into Composio",
-      "plain": "Open the app in HubSpot, go to the Auth tab, and paste the client ID and secret into your Composio HubSpot auth config.",
+      "title": "Store the client ID and secret in your app",
+      "plain": "Open the app in HubSpot, go to the Auth tab, and store the client ID and secret in your app's secret store or environment variables.",
       "technical": "`hs project open` > Project Components > your app > Auth > Client credentials.",
       "whyHuman": "The secret is a password for your app. Pasting it yourself keeps it out of any agent's chat history.",
       "minutes": {
@@ -171,7 +171,7 @@
       "id": "test",
       "owner": "human",
       "title": "Install it in a test account",
-      "plain": "Connect a HubSpot test account through Composio. You will need to tick a box accepting an 'unverified app', because the app isn't listed yet.",
+      "plain": "Install it in a HubSpot test account through your app's sign-in flow. You will need to tick a box accepting an 'unverified app', because the app isn't listed yet.",
       "whyHuman": "Installing needs a Super Admin of the account, and accepting the unverified-app warning is a judgment call.",
       "minutes": {
         "min": 3,
@@ -187,16 +187,16 @@
         ]
       },
       "link": {
-        "url": "https://dashboard.composio.dev/~/project/auth-configs",
-        "label": "Open Composio auth configs",
+        "url": "https://app.hubspot.com/developer",
+        "label": "Open your HubSpot developer projects",
         "prefilled": false
       }
     },
     {
       "id": "own-token",
       "owner": "human",
-      "title": "Copy the access token into Composio (your own account only)",
-      "plain": "For a private app on your own account there is no sign-in flow: copy the app's access token and add it to Composio as a token-based connection.",
+      "title": "Use the access token directly (your own account only)",
+      "plain": "For a private app on your own account there is no sign-in flow: copy the app's access token and store it in your app's secret store or environment variables.",
       "technical": "Set auth.type to \"static\" in app-hsmeta.json and remove redirectUrls. After hs project upload, copy the access token from the app's Auth tab.",
       "whyHuman": "The token is a password for your account. Paste it yourself.",
       "minutes": {
@@ -288,8 +288,8 @@
     },
     {
       "title": "Access tokens last 30 minutes",
-      "detail": "HubSpot access tokens expire after 1,800 seconds and are renewed with the refresh token. Composio handles the renewal.",
-      "ifStuck": "If connections drop, check that the refresh works in Composio's connected account view.",
+      "detail": "HubSpot access tokens expire after 1,800 seconds. Your code must renew them with the refresh token.",
+      "ifStuck": "If calls start failing about 30 minutes after sign-in, check that your code refreshes the token.",
       "evidence": {
         "level": "sourced",
         "sources": [
@@ -306,7 +306,8 @@
   ],
   "config": {
     "consoleUrl": "https://app.hubspot.com/developer",
-    "redirectUriNote": "Add the Composio redirect URI to auth.redirectUrls in app-hsmeta.json.",
+    "authorizeUrl": "https://app.hubspot.com/oauth/authorize",
+    "redirectUriNote": "Add your callback URL to auth.redirectUrls in app-hsmeta.json.",
     "scopes": [
       {
         "name": "crm.objects.contacts.read",
@@ -407,7 +408,7 @@
     }
   },
   "existingApp": {
-    "summary": "Add Composio's redirect address to auth.redirectUrls in app-hsmeta.json, run hs project upload, then paste the client ID and secret into Composio.",
+    "summary": "Add your agent's callback address to auth.redirectUrls in app-hsmeta.json if it differs, run hs project upload, and reuse the client ID and secret.",
     "steps": [],
     "reReviewTriggers": [
       {
@@ -486,5 +487,40 @@
         ]
       }
     }
-  ]
+  ],
+  "checks": {
+    "date": "2026-10-29",
+    "links": [
+      {
+        "kind": "link",
+        "url": "https://app.hubspot.com/developer",
+        "outcome": "ok",
+        "detail": "Page loads"
+      },
+      {
+        "kind": "link",
+        "url": "https://developers.hubspot.com/get-started",
+        "outcome": "ok",
+        "detail": "Page loads"
+      },
+      {
+        "kind": "link",
+        "url": "https://developers.hubspot.com/docs/apps/developer-platform/build-apps/create-an-app",
+        "outcome": "ok",
+        "detail": "Page loads"
+      }
+    ],
+    "authorize": {
+      "kind": "authorize",
+      "url": "https://app.hubspot.com/oauth/authorize",
+      "outcome": "inconclusive",
+      "detail": "Sign-in endpoint responds (HTTP 200) but gave no clear error for a made-up app"
+    },
+    "discovery": {
+      "kind": "discovery",
+      "url": "https://app.hubspot.com/.well-known/oauth-authorization-server",
+      "outcome": "ok",
+      "detail": "The provider's published OAuth configuration lists the same sign-in address."
+    }
+  }
 }

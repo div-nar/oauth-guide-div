@@ -3,7 +3,7 @@ import { z } from "zod";
 import { minimalGuide } from "./fixtures";
 import { type AgentDeps, type ChatMessage, runGuideAgent } from "@/lib/agent/run";
 import { toStrictSchema } from "@/lib/agent/strict-schema";
-import { GuideSchema } from "@/lib/guide-schema";
+import { AgentGuideSchema, GuideSchema } from "@/lib/guide-schema";
 
 type ToolCall = { name: string; args: unknown; id?: string };
 const turn = (calls: ToolCall[], finish = "tool_calls", content = "") => ({
@@ -99,6 +99,19 @@ describe("runGuideAgent", () => {
   });
 });
 
+describe("checks are code's, not the model's", () => {
+  test("the submit tool asks for the sign-in endpoint but has no checks field", () => {
+    const tools = JSON.stringify(z.toJSONSchema(AgentGuideSchema));
+    expect(tools).toContain("authorizeUrl");
+    expect(tools).not.toContain('"checks"');
+  });
+
+  test("checks the model submits anyway are dropped", async () => {
+    const g = minimalGuide({ checks: { date: "2026-10-29", links: [{ kind: "link", url: "https://acme.example/apps/new", outcome: "ok", detail: "Page loads" }] } });
+    expect((await runGuideAgent("Acme", () => {}, deps([submit(g)]))).checks).toBeNull();
+  });
+});
+
 describe("repairs the model cannot see in the schema", () => {
   test("swaps reversed ranges and downgrades sourced claims with no sources instead of rejecting", async () => {
     const g = minimalGuide();
@@ -116,13 +129,13 @@ describe("link safety", () => {
     g.steps[0].link = { url: "https://evil.example/phish", label: "Create your app", prefilled: false };
     g.steps.push({ ...g.steps[0], id: "own", link: { url: "https://dashboard.acme.example/apps/new", label: "Open", prefilled: false } });
     g.steps.push({ ...g.steps[0], id: "seen", link: { url: "https://acme.example/docs", label: "Docs", prefilled: false } });
-    g.steps.push({ ...g.steps[0], id: "composio", link: { url: "https://dashboard.composio.dev/~/project/auth-configs", label: "Composio", prefilled: false } });
+    g.steps.push({ ...g.steps[0], id: "unseen", link: { url: "https://dashboard.composio.dev/~/project/auth-configs", label: "Composio", prefilled: false } });
     const out = await runGuideAgent("Acme", () => {}, deps([turn([{ name: "web_search", args: { query: "q" } }]), submit(g)]));
     const link = (id: string) => out.steps.find((s) => s.id === id)?.link?.url ?? null;
     expect(link("create-app")).toBeNull();
     expect(link("own")).toBe("https://dashboard.acme.example/apps/new");
     expect(link("seen")).toBe("https://acme.example/docs");
-    expect(link("composio")).toBe("https://dashboard.composio.dev/~/project/auth-configs");
+    expect(link("unseen")).toBeNull();
   });
 });
 
