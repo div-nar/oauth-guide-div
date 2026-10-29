@@ -2,6 +2,7 @@ import { after } from "next/server";
 import { disambiguate, type Option } from "@/lib/agent/disambiguate";
 import type { AgentEvent } from "@/lib/agent/events";
 import { runChecks } from "@/lib/agent/checks";
+import { composioLookup } from "@/lib/agent/composio";
 import { runGuideAgent } from "@/lib/agent/run";
 import { query } from "@/lib/db";
 import { getGuide, saveGuide } from "@/lib/guides";
@@ -46,7 +47,8 @@ async function runJob(id: number, q: string) {
       console.error("checks failed", id, err);
       return null;
     });
-    const guide = { ...researched, checks };
+    const composio = await composioLookup(researched);
+    const guide = { ...researched, composio, checks };
     await saveGuide(guide, q);
     await appendEvent(id, started, { type: "done", slug: guide.slug });
     await query("UPDATE generations SET status = 'done', finished_at = now() WHERE id = $1", [id]);

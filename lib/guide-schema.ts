@@ -142,8 +142,9 @@ const GuideFields = z
 
 const NEEDS_USE_CASE = { message: "a guide for an OAuth app needs at least one use case", path: ["useCases"] };
 
-// What the research agent submits. Checks are left out: only code may record them.
-export const AgentGuideSchema = GuideFields.refine((g) => !g.oauth.supported || g.useCases.length > 0, NEEDS_USE_CASE);
+// What the research agent submits. Checks and Composio's managed app are left out:
+// code records them after research.
+export const AgentGuideSchema = GuideFields.omit({ composio: true }).refine((g) => !g.oauth.supported || g.useCases.length > 0, NEEDS_USE_CASE);
 
 export const GuideSchema = GuideFields.extend({ checks: ChecksSchema.nullish() }).refine(
   (g) => !g.oauth.supported || g.useCases.length > 0,
